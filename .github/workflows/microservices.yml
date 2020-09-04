@@ -16,8 +16,6 @@ jobs:
       # uses: s4u/maven-settings-action@63ea49dafaebee4167af1eada89922f05e77f335
       uses: s4u/maven-settings-action@v2.1.0
       with:
-        # servers definition in joson array, eg: [{"id": "serverId", "username": "username", "password": "password"}]
-        servers:    '[{"id": "github", "username": $GITHUB_ACTOR, "password": $GITHUB_TOKEN }]'
         githubServer: true
     - name: Build Track & Trace API
       run: mvn package -DskipTests #Need to skip the tests as they depend on a running DB
