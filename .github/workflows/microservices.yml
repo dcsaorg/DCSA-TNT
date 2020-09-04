@@ -11,10 +11,16 @@ jobs:
       uses: actions/setup-java@v1.3.0
       with:
         java-version: 11
+    - name: maven-setings-action
+      # You may pin to the exact commit or the version.
+      # uses: s4u/maven-settings-action@63ea49dafaebee4167af1eada89922f05e77f335
+      uses: s4u/maven-settings-action@v2.1.0
+      with:
+        # servers definition in joson array, eg: [{"id": "serverId", "username": "username", "password": "password"}]
+        servers: '[{ "id": "github",  "name": "GitHub dcsaorg Apache Maven Packages","url": "https://maven.pkg.github.com/dcsaorg/DCSA-Backend","releases": {"enabled": "true"},"snapshots": {"enabled": "true"}}]'
+        githubServer: true
     - name: Build Track & Trace API
       run: mvn package -DskipTests #Need to skip the tests as they depend on a running DB
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Build and run the microservices
       run: docker-compose -f docker-compose/docker-compose.yml up -d -V
     - name: Checkout dcsaorg/DCSA-API-Validator
