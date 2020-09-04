@@ -6,7 +6,7 @@ RUN apt-get update \
         openjdk-11-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 9090
+EXPOSE 9091
 ENV db_hostname dcsa_db
-COPY target/dcsa_backend-*.war .
-CMD java -jar dcsa_backend-*.war
+COPY target/dcsa_tnt-*.war .
+CMD java -jar dcsa_tnt-*.war

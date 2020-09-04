@@ -44,7 +44,7 @@ springdoc:
     path: /docs
 
 server:
-  port: 9090
+  port: 9091
 
 logging:
   level:

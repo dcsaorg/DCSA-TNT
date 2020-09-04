@@ -16,6 +16,7 @@ import org.dcsa.tnt.model.*;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.ExtendedEventRequest;
 import org.dcsa.core.util.ExtendedParameters;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -33,7 +34,7 @@ import java.util.UUID;
 public class EventController extends BaseController<EventService, Event, UUID> {
 
     private final EventService eventService;
-    //    @Autowired
+//    @Autowired
     private final ExtendedParameters extendedParameters;
 
 
