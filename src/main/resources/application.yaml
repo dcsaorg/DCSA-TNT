@@ -1,0 +1,52 @@
+
+# Possibility to change the separator between the sortable field and the direction (ASC or DESC). Default value is : (colon) - can be changed to e.g. | by writing
+#sort:
+#  direction:
+#    separator: \|
+
+# Pagination settings
+pagination:
+#  # encryptionKey needs to be one of the following sizes: 128, 192 or 256 bits - in the example below it is 128 bit (= 16 bytes)
+#  encryptionKey: xyz123wersdgf354
+#  config:
+#    # Change name of cursor parameter name
+#    cursorName:
+#    # Change name of pageSize parameter name
+#    pageSizeName:
+#    # Change name of current-page header name
+#    currentPageName:
+#    # Change name of next-page header name
+#    nextPageName:
+#    # Change name of previous-page header name
+#    previousPageName:
+#    # Change name of first-page header name
+#    firstPageName:
+#  # Possibility to change the default pagination size. If not specified all results will be returned as default
+  defaultPageSize: 20
+
+spring:
+  application:
+    name: DCSA-Backend
+  r2dbc:
+    url: r2dbc:postgresql://${db_hostname}
+    name: dcsa_openapi
+    properties:
+      schema: dcsa_v1_1
+    username: dcsa_db_owner
+    password: 9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5
+    initialization-mode: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    # swagger-ui custom path
+    path: /docs
+
+server:
+  port: 9090
+
+logging:
+  level:
+    dk: DEBUG
+

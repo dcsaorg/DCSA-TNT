@@ -1,0 +1,25 @@
+name: Microservices CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Java JDK
+      uses: actions/setup-java@v1.3.0
+      with:
+        java-version: 11
+    - name: Build backend
+      run: mvn package -DskipTests #Need to skip the tests as they depend on a running DB
+    - name: Build and run the microservices
+      run: docker-compose -f docker-compose/docker-compose.yml up -d -V
+    - name: Checkout dcsaorg/DCSA-API-Validator
+      uses: actions/checkout@v2.3.1
+      with:
+        repository: dcsaorg/DCSA-API-Validator
+        ref: master
+        token: ${{ secrets.read_repo_pat }}
+    - name: Run API validator
+      run: mvn test
