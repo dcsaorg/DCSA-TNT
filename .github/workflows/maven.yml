@@ -49,9 +49,6 @@ jobs:
         servers: '[{ "id": "github", "username": "AsgerStage", "password": "${{ secrets.AS_PACKAGES_PAT }}" }]'
     - name: Build backend
       run: mvn -B package --file pom.xml
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Run backend
       run: java -jar target/dcsa_backend*.war &
 
