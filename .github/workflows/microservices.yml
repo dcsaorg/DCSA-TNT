@@ -17,6 +17,8 @@ jobs:
       uses: s4u/maven-settings-action@v2.1.0
       with:
         githubServer: true
+    - name: test
+      run: cat /home/runner/.m2/settings.xml
     - name: Build Track & Trace API
       run: mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
     - name: Build and run the microservices
