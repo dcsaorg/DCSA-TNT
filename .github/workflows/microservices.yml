@@ -18,7 +18,7 @@ jobs:
       with:
         githubServer: true
     - name: Build Track & Trace API
-      run: mvn package -DskipTests #Need to skip the tests as they depend on a running DB
+      run: mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
     - name: Build and run the microservices
       run: docker-compose -f docker-compose/docker-compose.yml up -d -V
     - name: Checkout dcsaorg/DCSA-API-Validator
