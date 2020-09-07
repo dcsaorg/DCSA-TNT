@@ -11,14 +11,13 @@ jobs:
       uses: actions/setup-java@v1.3.0
       with:
         java-version: 11
-    - name: maven-setings-action
-      # You may pin to the exact commit or the version.
-      # uses: s4u/maven-settings-action@63ea49dafaebee4167af1eada89922f05e77f335
-      uses: s4u/maven-settings-action@v2.1.0
+    - name: maven-settings-xml-action
+      uses: whelk-io/maven-settings-xml-action@v12
+      env:
+        PAT: ${{ secrets.AS_Packages_PAT }}
       with:
-        githubServer: true
-    - name: test
-      run: cat /home/runner/.m2/settings.xml
+        repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Backend", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
+        servers: '[{ "id": "github", "username": "AsgerStage", "password": "$PAT" }]'
     - name: Build Track & Trace API
       run: mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
     - name: Build and run the microservices
