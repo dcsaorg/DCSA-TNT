@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.dcsa</groupId>
 			<artifactId>dcsa_core</artifactId>
-			<version>0.3.0-Update-SNAPSHOT</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -129,7 +129,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub dcsaorg Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/dcsaorg/DCSA-Backend</url>
+			<url>https://maven.pkg.github.com/dcsaorg/DCSA-Core</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -143,7 +143,7 @@
 		<repository>
 			<id>github</id>
 			<name>GitHub OWNER Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/dcsaorg/DCSA-Backend</url>
+			<url>https://maven.pkg.github.com/dcsaorg/DCSA-TNT</url>
 		</repository>
 	</distributionManagement>
 
