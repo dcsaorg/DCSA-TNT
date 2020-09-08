@@ -1,6 +1,5 @@
 package org.dcsa.tnt;
 
-import org.dcsa.Application;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 

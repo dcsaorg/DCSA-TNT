@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.core.controller.BaseController;
 import org.dcsa.core.exception.GetException;
+import org.dcsa.core.util.ExtendedParameters;
 import org.dcsa.tnt.model.*;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.ExtendedEventRequest;
-import org.dcsa.core.util.ExtendedParameters;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -33,7 +33,7 @@ import java.util.UUID;
 public class EventController extends BaseController<EventService, Event, UUID> {
 
     private final EventService eventService;
-    //    @Autowired
+
     private final ExtendedParameters extendedParameters;
 
 
