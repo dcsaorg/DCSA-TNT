@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import org.dcsa.core.exception.GetException;
-import org.dcsa.core.util.ExtendedParameters;
-import org.dcsa.core.util.ExtendedRequest;
-import org.dcsa.core.util.Join;
+import org.dcsa.core.extendedrequest.ExtendedParameters;
+import org.dcsa.core.extendedrequest.ExtendedRequest;
+import org.dcsa.core.extendedrequest.FilterItem;
+import org.dcsa.core.extendedrequest.Join;
 import org.dcsa.core.util.ReflectUtility;
 import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.Shipment;
@@ -38,7 +39,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
      * @throws NoSuchFieldException if the JSON name is not found on any of the modelClasses defined
      */
     @Override
-    protected String transformFromJsonNameToFieldName(String jsonName) throws NoSuchFieldException {
+    public String transformFromJsonNameToFieldName(String jsonName) throws NoSuchFieldException {
         // Run through all possible subClasses and see if one of them can transform the JSON name to a field name
         for (Class<Event> clazz : modelSubClasses) {
             try {
@@ -77,7 +78,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
                 join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilter(BILL_OF_LADING_PARAMETER, Shipment.class, value, true, false, true);
+                filter.addFilterItem(new FilterItem(BILL_OF_LADING_PARAMETER, Shipment.class, value, true, false, true));
                 return true;
             }
             return false;
