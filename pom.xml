@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.dcsa</groupId>
 			<artifactId>dcsa_core</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.0-Update-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
