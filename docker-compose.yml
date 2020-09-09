@@ -2,7 +2,7 @@ version: '3.5'
 services:
     dcsa-tnt:
         build:
-           ../
+           .
         ports:
             - 9090:9090
         logging:
@@ -14,7 +14,7 @@ services:
         environment:
             POSTGRES_PASSWORD: "change_this_password"
         build:
-            ../datamodel/
+            datamodel/
         ports:
             - 5432:5432
 
