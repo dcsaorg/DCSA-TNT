@@ -11,8 +11,18 @@ mvn spring-boot:run
 
 Building and running using docker-compose
 -----------------------------------------
-Rebuild (reset) the database with test data:
+To build using DCSA-core from GitHub packages
 ```
+mvn package
 docker-compose up -d -V --build
 ```
 
+To build using locally built DCSA-core
+NOTE: the "mvn install" commands "-DFile" parameter should point to a compiled dcsa_core .jar file
+```
+mvn install:install-file -Dfile=../DCSA-Core/target/dcsa_core-0.3.0.jar -DgroupId=org.dcsa -DartifactId=dcsa_core -Dversion=local-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
+
+mvn package -Ddcsa.version=local-SNAPSHOT
+
+docker-compose up -d -V --build
+´´´
