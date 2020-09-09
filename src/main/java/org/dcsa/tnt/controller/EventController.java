@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.core.controller.BaseController;
 import org.dcsa.core.exception.GetException;
-import org.dcsa.core.util.ExtendedParameters;
+import org.dcsa.core.extendedrequest.ExtendedParameters;
 import org.dcsa.tnt.model.*;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.ExtendedEventRequest;
@@ -35,7 +35,6 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     private final EventService eventService;
 
     private final ExtendedParameters extendedParameters;
-
 
     @Override
     public String getType() {
@@ -63,10 +62,12 @@ public class EventController extends BaseController<EventService, Event, UUID> {
             return Mono.error(getException);
         }
 
-        Flux<Event> result = getService().findAllExtended(extendedEventRequest);
-        // Add Link headers to the response
-        extendedEventRequest.insertHeaders(response, request);
-        return eventService.findAllWrapped(result);
+        return getService().findAllExtended(extendedEventRequest)
+                .collectList()
+                .map(Events::new)
+                .doOnSuccess(
+                        eventWrapper -> extendedEventRequest.insertHeaders(response, request)
+                );
     }
 
     @Operation(summary = "Find Event by ID", description = "Returns a single Event", tags = { "Event" }, parameters = {

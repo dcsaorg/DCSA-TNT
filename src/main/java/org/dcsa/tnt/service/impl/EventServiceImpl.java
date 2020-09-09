@@ -1,19 +1,16 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
 import org.dcsa.core.exception.NotFoundException;
+import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
 import org.dcsa.tnt.model.*;
-import org.dcsa.tnt.model.enums.EventType;
 import org.dcsa.tnt.repository.EventRepository;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.EventCallbackHandler;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -45,21 +42,6 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
                 .switchIfEmpty(transportEquipmentEventService.findById(id))
                 .switchIfEmpty(equipmentEventService.findById(id))
                 .switchIfEmpty(Mono.error(new NotFoundException("No event was found with id: " + id)));
-    }
-
-    @Override
-    public Mono<Events> findAllWrapped(Flux<Event> events) {
-        return events.collectList().map(Events::new);
-    }
-
-    @Override
-    public Flux<Event> findAllTypes(List<EventType> eventType, String bookingReference, String equipmentReference) {
-        return Flux.merge(
-                shipmentEventService.findShipmentEvents(eventType, bookingReference, equipmentReference),
-                transportEventService.findTransportEvents(eventType, bookingReference, equipmentReference),
-                transportEquipmentEventService.findTransportEquipmentEvents(eventType, bookingReference, equipmentReference),
-                equipmentEventService.findEquipmentEvents(eventType, bookingReference, equipmentReference)
-        );
     }
 
     @Override
