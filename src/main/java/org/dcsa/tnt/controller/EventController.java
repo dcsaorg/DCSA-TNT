@@ -62,10 +62,12 @@ public class EventController extends BaseController<EventService, Event, UUID> {
             return Mono.error(getException);
         }
 
-        Flux<Event> result = getService().findAllExtended(extendedEventRequest);
-        // Add Link headers to the response
-        extendedEventRequest.insertHeaders(response, request);
-        return eventService.findAllWrapped(result);
+        return getService().findAllExtended(extendedEventRequest)
+                .collectList()
+                .map(Events::new)
+                .doOnSuccess(
+                        eventWrapper -> extendedEventRequest.insertHeaders(response, request)
+                );
     }
 
     @Operation(summary = "Find Event by ID", description = "Returns a single Event", tags = { "Event" }, parameters = {
