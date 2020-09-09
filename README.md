@@ -11,4 +11,8 @@ mvn spring-boot:run
 
 Building and running using docker-compose
 -----------------------------------------
-See docker-compose/README.md
+Rebuild (reset) the database with test data:
+```
+docker-compose up -d -V --build
+```
+
