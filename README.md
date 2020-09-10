@@ -18,7 +18,7 @@ docker-compose up -d -V --build
 ```
 
 To build using locally built DCSA-core
-NOTE: the "mvn install" commands "-DFile" parameter should point to a compiled dcsa_core .jar file
+NOTE: the "mvn install" command's "-DFile" parameter should point to a compiled dcsa_core .jar file
 ```
 mvn install:install-file -Dfile=../DCSA-Core/target/dcsa_core-0.3.0.jar -DgroupId=org.dcsa -DartifactId=dcsa_core -Dversion=local-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
 
