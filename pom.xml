@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.dcsa</groupId>
 			<artifactId>dcsa_core</artifactId>
-			<version>${dcsa.version}</version>
+			<version>${dcsa.version}${dcsa.tag}${dcsa.artifacttype}</version>
 		</dependency>
 
 		<dependency>
