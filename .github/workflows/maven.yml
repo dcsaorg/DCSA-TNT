@@ -41,7 +41,7 @@ jobs:
         java-version: 11
 
     - name: Run SQL scripts
-      run: PGPASSWORD=postgres psql -h $db_hostname -U postgres -W postgres -f datamodel/initdb.d/01_create_dcsa_owner.sql -f datamodel/initdb.d/02_create_database.sql -f datamodel/initdb.d/03_dcsa_tnt_v1_2.sql -f datamodel/initdb.d/04_dcsa_v2_0.sql -f datamodel/testdata.d/05_test_data.sql
+      run: PGPASSWORD=postgres psql -h $db_hostname -U postgres -W postgres -f datamodel/initdb.d/01_create_dcsa_owner.sql -f datamodel/initdb.d/02_create_database.sql -f datamodel/initdb.d/03_dcsa_tnt_v1_2.sql -f datamodel/initdb.d/04_dcsa_tnt_v2_0.sql -f datamodel/testdata.d/05_test_data.sql
     - name: maven-settings-xml-action
       uses: whelk-io/maven-settings-xml-action@v12
       with:
