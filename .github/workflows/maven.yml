@@ -61,3 +61,9 @@ jobs:
 
     - name: Run testsuite
       run: mvn -B package --file pom.xml
+      env: 
+        client_secret: ${{ secrets.AUTH0_DCSA_CLIENT_SECRET }}
+        client_id: 1qEYXCbxWvjeYS8VVm1BfnfZrP3TY9n8
+        audience: localhost
+        OAuthTokenUri: https://dcsa.eu.auth0.com/oauth/token
+        API_ROOT_URI: http://localhost:9090

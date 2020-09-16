@@ -35,7 +35,14 @@ spring:
     username: dcsa_db_owner
     password: 9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5
     initialization-mode: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dcsa.eu.auth0.com/
 
+auth0:
+  audience: localhost
 springdoc:
   api-docs:
     path: /api-docs
