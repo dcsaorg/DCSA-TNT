@@ -124,12 +124,6 @@
 			<artifactId>json-path</artifactId>
 			<version>${rest-assured.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.dcsa</groupId>
-			<artifactId>dcsa_core</artifactId>
-			<version>0.3.0</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
