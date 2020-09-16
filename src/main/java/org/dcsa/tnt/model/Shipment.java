@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Shipment extends AuditBase {
 
     @JsonProperty("shipmentID")
-    @Column("shipment_id")
+    @Column("id")
     private UUID id;
 
     @JsonProperty("bookingReference")
@@ -29,7 +29,7 @@ public class Shipment extends AuditBase {
     private OffsetDateTime bookingDateTime;
 
     @JsonProperty("billOfLading")
-    @Column("blnumber")
+    @Column("bill_of_lading_number")
     private String billOfLading;
 
     @JsonProperty("shipperName")
