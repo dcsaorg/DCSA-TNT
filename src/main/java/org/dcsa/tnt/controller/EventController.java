@@ -77,7 +77,7 @@ public class EventController extends BaseController<EventService, Event, UUID> {
             @ApiResponse(responseCode = "200", description = "Successful operation"),
             @ApiResponse(responseCode = "404", description = "Event not found")
     })
-//    @GetMapping("{id}")
+    @GetMapping(value="{id}", produces = "application/json")
     @Override
     public Mono<Event> findById(@PathVariable UUID id) {
         return super.findById(id);
