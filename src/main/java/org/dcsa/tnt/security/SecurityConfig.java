@@ -11,6 +11,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import security.AudienceValidator;
+import security.JwtAuthenticationConverter;
 
 /**
  * Configures our application with Spring Security to restrict access to our API endpoints.
