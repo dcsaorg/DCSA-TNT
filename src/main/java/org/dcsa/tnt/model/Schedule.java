@@ -10,7 +10,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.Pattern;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -42,6 +41,7 @@ public class Schedule extends AuditBase implements GetId<UUID> {
     @Column("start_date")
     private OffsetDateTime startDate;
 
+    // https://en.wikipedia.org/wiki/ISO_8601#Durations
     @Pattern(regexp = "^(P(\\dY)?(\\dM)?(\\dD)?)?(T(\\dH)?(\\dM)?(\\dS)?)?$")
     @Column("date_range")
     private String dateRange;

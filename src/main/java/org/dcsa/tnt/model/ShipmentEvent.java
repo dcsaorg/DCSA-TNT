@@ -2,12 +2,10 @@ package org.dcsa.tnt.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.dcsa.tnt.model.enums.EventClassifierCode;
 import org.dcsa.tnt.model.enums.ShipmentInformationTypeCode;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -27,10 +25,6 @@ public class ShipmentEvent extends Event {
     @JsonProperty("shipmentInformationTypeCode")
     @Column("shipment_information_type_code")
     private ShipmentInformationTypeCode shipmentInformationTypeCode;
-
-    public ShipmentInformationTypeCode getShipmentInformationTypeCode() {
-        return shipmentInformationTypeCode;
-    }
 
     public void setShipmentInformationTypeCode(ShipmentInformationTypeCode shipmentInformationTypeCode) {
         this.shipmentInformationTypeCode = shipmentInformationTypeCode;
