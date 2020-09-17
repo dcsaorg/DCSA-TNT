@@ -96,7 +96,7 @@ CREATE TABLE dcsa_v2_0.schedule (
     vessel_partner_carrier_code varchar(10) NOT NULL,
     vessel_partner_carrier_code_list_provider text,
     start_date date,
-    date_range interval
+    date_range text
 );
 
 DROP TABLE IF EXISTS dcsa_v2_0.transport_call CASCADE;

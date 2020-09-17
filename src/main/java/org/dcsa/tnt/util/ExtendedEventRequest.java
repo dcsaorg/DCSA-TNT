@@ -52,6 +52,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     private static final String TRANSPORT_DOCUMENT_ID_PARAMETER = "transportDocumentId";
     private static final String SCHEDULE_ID_PARAMETER = "id";
+    private static final String TRANSPORT_CALL_ID_PARAMETER = "id";
 
     /**
      * A method to handle parameters that cannot be handled automatically. These parameters do not exist in the event
