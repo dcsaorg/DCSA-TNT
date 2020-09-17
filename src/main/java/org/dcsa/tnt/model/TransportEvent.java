@@ -13,31 +13,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @JsonTypeName("TRANSPORT")
 public class TransportEvent extends Event {
 
-    @JsonProperty("transportReference")
-    @Column("transport_reference")
-    private String transportReference;
+    @JsonProperty("delayReasonCode")
+    @Column("delay-reason-code")
+    private String delayReasonCode;
 
-    @JsonProperty("transportLegReference")
-    @Column("transport_leg_reference")
-    private String transportLegReference;
-
-    @JsonProperty("facilityTypeCode")
-    @Column("facility_type_code")
-    private String facilityTypeCode;
-
-    @JsonProperty("UNLocationCode")
-    @Column("un_location_code")
-    private String UNLocationCode;
-
-    @JsonProperty("facilityCode")
-    @Column("facility_code")
-    private String facilityCode;
-
-    @JsonProperty("otherFacility")
-    @Column("other_facility")
-    private String otherFacility;
-
-    @JsonProperty("modeOfTransportCode")
-    @Column("mode_of_transport_code")
-    private String modeOfTransportCode;
+    @JsonProperty("vesselScheduleChangeRemark")
+    @Column("vessel-schedule-change-remark")
+    private String vesselScheduleChangeRemark;
 }

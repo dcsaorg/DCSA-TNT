@@ -11,7 +11,13 @@ INSERT INTO dcsa_v1_2.shipment_event (
     shipment_id,
     shipment_information_type_code
 ) VALUES (
-    'PLN', 'SHIPMENT', TO_DATE('2020/07/15 13:14:15', 'yyyy/mm/dd hh24:mi:ss'), 'e48f2bc0-c746-11ea-a3ff-db48243a89f4', 'DEPA', uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'), 'Some type code text'
+    'PLN',
+    'SHIPMENT',
+    TO_DATE('2020/07/15 13:14:15', 'yyyy/mm/dd hh24:mi:ss'),
+    'e48f2bc0-c746-11ea-a3ff-db48243a89f4',
+    'DEPA',
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'),
+    'Some type code text'
 );
 
 INSERT INTO "dcsa_v1_2".shipment_event (
@@ -22,7 +28,12 @@ INSERT INTO "dcsa_v1_2".shipment_event (
     shipment_id,
     shipment_information_type_code
 ) VALUES (
-    'PLN', 'SHIPMENT', TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'), 'ARRI', uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'), 'shipment_type_code'
+    'PLN',
+    'SHIPMENT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'ARRI',
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'),
+    'shipment_type_code'
 );
 
 INSERT INTO "dcsa_v1_2".equipment_event (
@@ -37,7 +48,15 @@ INSERT INTO "dcsa_v1_2".equipment_event (
 	other_facility,
 	empty_indicator_code
 ) VALUES (
-    'ACT', 'EQUIPMENT', TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'), 'ARRI', 'equipref3453', 'HYDRO', 'LA', 'LAHO', '', 'EMPTY'
+    'ACT', 'EQUIPMENT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'ARRI',
+    'equipref3453',
+    'HYDRO',
+    'LA',
+    'LAHO',
+    '',
+    'EMPTY'
 );
 
 INSERT INTO "dcsa_v1_2".transport_equipment_event (
@@ -55,7 +74,18 @@ INSERT INTO "dcsa_v1_2".transport_equipment_event (
 	transport_leg_reference,
 	mode_of_transport_code
 ) VALUES (
-    'PLN', 'TRANSPORTEQUIPMENT', TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'), 'ARRI', 'eqref123', 'factory', 'CPH', '2', 'no', 'LADEN', 'ref123', 'legref', '7'
+    'PLN', 'TRANSPORTEQUIPMENT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'ARRI',
+    'eqref123',
+    'factory',
+    'CPH',
+    '2',
+    'no',
+    'LADEN',
+    'ref123',
+    'legref',
+    '7'
 );
 
 INSERT INTO "dcsa_v1_2".transport_event (
@@ -71,7 +101,16 @@ INSERT INTO "dcsa_v1_2".transport_event (
 	other_facility,
 	mode_of_transport_code
 ) VALUES (
-    'ACT', 'TRANSPORT', TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),  'DEPA', 'transportref123', 'legreference234', 'coal', 'PORT', 'NYC', 'no', '2'
+    'ACT', 'TRANSPORT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'DEPA',
+    'transportref123',
+    'legreference234',
+    'coal',
+    'PORT',
+    'NYC',
+    'no',
+    '2'
 );
 
 INSERT INTO dcsa_v1_2.event_subscription (
@@ -81,7 +120,11 @@ INSERT INTO dcsa_v1_2.event_subscription (
     bill_of_lading_number,
     equipment_reference
 ) VALUES (
-    'http://localhost:4567/webhook/receive', '', '', '', ''
+    'http://localhost:4567/webhook/receive',
+    '',
+    '',
+ '',
+    ''
 );
 
 INSERT INTO dcsa_v1_2.event_subscription (
@@ -91,7 +134,11 @@ INSERT INTO dcsa_v1_2.event_subscription (
     bill_of_lading_number,
     equipment_reference
 ) VALUES (
-    'http://localhost:4567/webhook/receive-transport-events', 'TRANSPORT', '', '', ''
+    'http://localhost:4567/webhook/receive-transport-events',
+    'TRANSPORT',
+    '',
+    '',
+    ''
 );
 
 INSERT INTO dcsa_v1_2.event_subscription (
@@ -101,7 +148,11 @@ INSERT INTO dcsa_v1_2.event_subscription (
     bill_of_lading_number,
     equipment_reference
 ) VALUES (
-    'http://172.17.0.1:4567/webhook/receive', '', '', '', ''
+    'http://172.17.0.1:4567/webhook/receive',
+    '',
+    '',
+    '',
+    ''
 );
 
 INSERT INTO dcsa_v1_2.shipment (
@@ -204,24 +255,6 @@ INSERT INTO dcsa_v2_0.transport_call (
     NULL
 );
 
-INSERT INTO dcsa_v2_0.shipment_event (
-    event_id,
-    event_classifier_code,
-    event_type,
-    event_date_time,
-    event_type_code,
-    shipment_information_type_code,
-    transport_call_id
-) VALUES (
-    uuid('784871e7-c9cd-4f59-8d88-2e033fa799a1'),
-    'PLN',
-    'SHIPMENT',
-    '2020-07-15',
-    'DEPA',
-    'WTF',
-    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eee')
-);
-
 INSERT INTO dcsa_v2_0.shipment (
     id,
     booking_reference,
@@ -247,5 +280,205 @@ INSERT INTO dcsa_v2_0.shipment (
     DATE '2020-03-10',
     '125, Valley Street, The land nearby',
     DATE '2020-04-10',
+    'SMDG-ZIM'
+);
+
+INSERT INTO dcsa_v2_0.shipment_event (
+    event_id,
+    event_classifier_code,
+    event_type,
+    event_date_time,
+    event_type_code,
+    shipment_information_type_code,
+    transport_call_id
+) VALUES (
+    uuid('784871e7-c9cd-4f59-8d88-2e033fa799a1'),
+    'PLN',
+    'SHIPMENT',
+    '2020-07-15',
+    'DEPA',
+    'WTF',
+    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eee')
+);
+
+INSERT INTO dcsa_v2_0.shipment_event (
+    event_id,
+    event_classifier_code,
+    event_type,
+    event_date_time,
+    event_type_code,
+    shipment_information_type_code,
+    transport_call_id
+) VALUES (
+    uuid('e48f2bc0-c746-11ea-a3ff-db48243a89f4'),
+    'PLN',
+    'SHIPMENT',
+    TO_DATE('2020/07/15 13:14:15', 'yyyy/mm/dd hh24:mi:ss'),
+    'DEPA',
+    'WTF',
+    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eed')
+);
+
+INSERT INTO dcsa_v2_0.shipment_event (
+    event_id,
+    event_classifier_code,
+    event_type,
+    event_date_time,
+    event_type_code,
+    shipment_information_type_code,
+    transport_call_id
+) VALUES (
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'),
+    'PLN',
+    'SHIPMENT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'ARRI',
+    'WTF',
+    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eed')
+);
+
+INSERT INTO dcsa_v2_0.equipment_event (
+    event_id,
+    event_classifier_code,
+    event_type,
+    event_date_time,
+    event_type_code,
+    transport_call_id,
+    equipment_reference,
+    empty_indicator_code
+) VALUES (
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea2'),
+    'ACT',
+    'EQUIPMENT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'ARRI',
+    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eed'),
+    'equipref3453',
+    'EMPTY'
+);
+
+INSERT INTO dcsa_v2_0.transport_event (
+    event_id,
+    event_classifier_code,
+    event_type,
+    event_date_time,
+    event_type_code,
+    transport_call_id,
+    delay_reason_code,
+    vessel_schedule_change_remark
+) VALUES (
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea3'),
+    'ACT',
+    'TRANSPORT',
+    TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
+    'DEPA',
+    uuid('8b64d20b-523b-4491-b2e5-32cfa5174eed'),
+    'ABC',
+    'Do not know a valid delay reason code...'
+);
+
+
+
+INSERT INTO dcsa_v2_0.event_subscription (
+    callback_url,
+    event_type,
+    booking_reference,
+    transport_document_id,
+    transport_document_type,
+    equipment_reference
+) VALUES (
+    'http://localhost:4567/webhook/receive',
+    '',
+    '',
+    '',
+    '',
+    ''
+);
+
+INSERT INTO dcsa_v2_0.event_subscription (
+    callback_url,
+    event_type,
+    booking_reference,
+    transport_document_id,
+    transport_document_type,
+    equipment_reference
+) VALUES (
+    'http://localhost:4567/webhook/receive-transport-events',
+    'TRANSPORT',
+    '',
+    '',
+    '',
+    ''
+);
+
+INSERT INTO dcsa_v2_0.event_subscription (
+    callback_url,
+    event_type,
+    booking_reference,
+    transport_document_id,
+    transport_document_type,
+    equipment_reference
+) VALUES (
+    'http://172.17.0.1:4567/webhook/receive',
+    '',
+    '',
+    '',
+    '',
+    ''
+);
+
+INSERT INTO dcsa_v2_0.shipment (
+    id,
+    booking_reference,
+    booking_datetime,
+    transport_document_id,
+    transport_document_type_code,
+    shipper_name,
+    consignee_name,
+    collection_origin,
+    collection_dateTime,
+    delivery_destination,
+    delivery_datetime,
+    carrier_code
+) VALUES (
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'),
+    'BR1239719871',
+    DATE '2020-03-07',
+    uuid('ae2d856c-d871-11ea-a630-03e5334d1811'),
+    'BOL',
+    'Magic Wands Inc.',
+    'The Mage Guild',
+    '5, Mountain Road, The land beyond the sea',
+    DATE '2020-03-10',
+    '125, Valley Street, The land nearby',
+    DATE '2020-04-10',
+    'SMDG-ZIM'
+);
+
+INSERT INTO dcsa_v2_0.shipment (
+    id,
+    booking_reference,
+    booking_datetime,
+    transport_document_id,
+    transport_document_type_code,
+    shipper_name,
+    consignee_name,
+    collection_origin,
+    collection_dateTime,
+    delivery_destination,
+    delivery_datetime,
+    carrier_code
+) VALUES (
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea2'),
+    'BR1239719872',
+    DATE '2021-03-07',
+    uuid('be2d856c-d871-11ea-a630-03e5334d1811'),
+    'BOL',
+    'Unicorn Inc.',
+    'Long horn',
+    '5, Lake View, By the lake',
+    DATE '2021-05-23',
+    '125, Wall St, Next door',
+    DATE '2020-08-01',
     'SMDG-ZIM'
 );

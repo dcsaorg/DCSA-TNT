@@ -26,8 +26,7 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EquipmentEvent.class, name="EQUIPMENT"),
         @JsonSubTypes.Type(value = TransportEvent.class, name="TRANSPORT"),
-        @JsonSubTypes.Type(value = ShipmentEvent.class, name="SHIPMENT"),
-        @JsonSubTypes.Type(value = TransportEquipmentEvent.class, name="TRANSPORTEQUIPMENT")
+        @JsonSubTypes.Type(value = ShipmentEvent.class, name="SHIPMENT")
 })
 public class Event extends AuditBase implements GetId<UUID> {
 
@@ -36,15 +35,14 @@ public class Event extends AuditBase implements GetId<UUID> {
     @Column("event_id")
     private UUID id;
 
+    @JsonProperty("eventDateTime")
+    @Column("event_date_time")
+    private OffsetDateTime eventDateTime;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public OffsetDateTime getEventDateTime() {
         return eventDateTime;
     }
-
-    @JsonProperty("eventDateTime")
-    @Column("event_date_time")
-    private OffsetDateTime eventDateTime;
 
     @JsonProperty("eventClassifierCode")
     @Column("event_classifier_code")
@@ -57,6 +55,10 @@ public class Event extends AuditBase implements GetId<UUID> {
     @JsonProperty("eventTypeCode")
     @Column("event_type_code")
     private String eventTypeCode;
+
+    @JsonProperty("transportCallId")
+    @Column("transport_call_id")
+    private UUID transportCallId;
 
     public void setEventClassifierCode(String eventClassifierCode) {
         this.eventClassifierCode = EventClassifierCode.valueOf(eventClassifierCode);

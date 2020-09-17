@@ -22,22 +22,6 @@ public class EquipmentEvent extends Event {
     @Column("empty_indicator_code")
     private EmptyIndicatorCode emptyIndicatorCode;
 
-    @JsonProperty("facilityTypeCode")
-    @Column("facility_type_code")
-    private String facilityTypeCode;
-
-    @JsonProperty("UNLocationCode")
-    @Column("un_location_code")
-    private String UNLocationCode;
-
-    @JsonProperty("facilityCode")
-    @Column("facility_code")
-    private String facilityCode;
-
-    @JsonProperty("otherFacility")
-    @Column("other_facility")
-    private String otherFacility;
-
     public void setEmptyIndicatorCode(String emptyIndicatorCode) {
         this.emptyIndicatorCode = EmptyIndicatorCode.valueOf(emptyIndicatorCode);
     }

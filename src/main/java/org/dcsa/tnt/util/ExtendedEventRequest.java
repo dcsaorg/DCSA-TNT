@@ -52,7 +52,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
         throw new NoSuchFieldException("Field: " + jsonName + " does not exist on any of: " + getModelClassNames());
     }
 
-    private static final String BILL_OF_LADING_PARAMETER = "billOfLading";
+    private static final String TRANSPORT_DOCUMENT_ID_PARAMETER = "transportDocumentID";
 
     /**
      * A method to handle parameters that cannot be handled automatically. These parameters do not exist in the event
@@ -65,8 +65,8 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     @Override
     protected boolean doJoin(String parameter, String value, boolean fromCursor) {
         try {
-            String billOfLadingParameter = ReflectUtility.transformFromFieldNameToJsonName(Shipment.class, BILL_OF_LADING_PARAMETER);
-            if (billOfLadingParameter.equals(parameter)) {
+            String transportDocumentIdParameter = ReflectUtility.transformFromFieldNameToJsonName(Shipment.class, BILL_OF_LADING_PARAMETER);
+            if (transportDocumentIdParameter.equals(parameter)) {
                 // Bill of Lading parameter
                 join = new Join();
 

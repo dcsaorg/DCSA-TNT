@@ -31,15 +31,15 @@ CREATE TABLE dcsa_v2_0.transport_event (
 
 DROP TABLE IF EXISTS dcsa_v2_0.event_subscription CASCADE;
 CREATE TABLE dcsa_v2_0.event_subscription (
-    subscription_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     callback_url text NOT NULL,
     event_type text, --This field must be able to contain multiple event types. Currently it does not.
     booking_reference varchar(35),
     transport_document_id varchar(20),
     transport_document_type text,
     equipment_reference varchar(15),
-    schedule_id uuid NOT NULL,
-    transport_call_id uuid NOT NULL
+    schedule_id uuid NULL,
+    transport_call_id uuid NULL
     );
 
 
@@ -91,7 +91,7 @@ CREATE TABLE dcsa_v2_0.schedule (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     vessel_operator_carrier_code varchar(10) NOT NULL,
     vessel_operator_carrier_code_list_provider text NOT NULL,
-    vessel_partner_carrier_code text NOT NULL,
+    vessel_partner_carrier_code varchar(10) NOT NULL,
     vessel_partner_carrier_code_list_provider text,
     start_date date,
     date_range interval

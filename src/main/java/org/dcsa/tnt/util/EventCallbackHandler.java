@@ -30,19 +30,14 @@ public class EventCallbackHandler extends Thread {
         this.callbackUrls=callbackUrls;
         this.event=event;
     }
-    public EventCallbackHandler(Flux<String> callbackUrls, TransportEquipmentEvent event) {
-        this.callbackUrls=callbackUrls;
-        this.event=event;
-    }
 
 @Override
     public void run (){
         callbackUrls.parallel().runOn(Schedulers.elastic()).doOnNext(callbackUrl -> {
             try {
-                Events eventsWrapper = new Events(event);
                 given()
                         .contentType("application/json")
-                        .body(eventsWrapper)
+                        .body(event)
                         .post(callbackUrl);
             } catch (Exception e) {
                 log.warn("Failed to connect to "+callbackUrl + " " + e.getMessage());
