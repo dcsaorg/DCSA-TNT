@@ -1,14 +1,23 @@
 package org.dcsa.tnt.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.dcsa.core.model.AuditBase;
 import org.dcsa.core.model.GetId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Table("schedule")
+@Data
+@NoArgsConstructor
 public class Schedule extends AuditBase implements GetId<UUID> {
+
+    @Id
     @JsonProperty("scheduleID")
     private UUID id;
 
