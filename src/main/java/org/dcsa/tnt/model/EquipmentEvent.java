@@ -8,6 +8,8 @@ import org.dcsa.tnt.model.enums.EmptyIndicatorCode;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("equipment_event")
 @Data
 @NoArgsConstructor
@@ -21,6 +23,10 @@ public class EquipmentEvent extends Event {
     @JsonProperty("emptyIndicatorCode")
     @Column("empty_indicator_code")
     private EmptyIndicatorCode emptyIndicatorCode;
+
+    @JsonProperty("transportCallId")
+    @Column("transport_call_id")
+    private UUID transportCallId;
 
     public void setEmptyIndicatorCode(String emptyIndicatorCode) {
         this.emptyIndicatorCode = EmptyIndicatorCode.valueOf(emptyIndicatorCode);

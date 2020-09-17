@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("transport_event")
 @Data
 @NoArgsConstructor
@@ -20,4 +22,8 @@ public class TransportEvent extends Event {
     @JsonProperty("vesselScheduleChangeRemark")
     @Column("vessel-schedule-change-remark")
     private String vesselScheduleChangeRemark;
+
+    @JsonProperty("transportCallId")
+    @Column("transport_call_id")
+    private UUID transportCallId;
 }

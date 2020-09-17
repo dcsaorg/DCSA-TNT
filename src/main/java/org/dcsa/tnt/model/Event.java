@@ -35,6 +35,10 @@ public class Event extends AuditBase implements GetId<UUID> {
     @Column("event_id")
     private UUID id;
 
+    @JsonProperty("eventType")
+    @Column("event_type")
+    private EventType eventType;
+
     @JsonProperty("eventDateTime")
     @Column("event_date_time")
     private OffsetDateTime eventDateTime;
@@ -48,17 +52,9 @@ public class Event extends AuditBase implements GetId<UUID> {
     @Column("event_classifier_code")
     private EventClassifierCode eventClassifierCode;
 
-    @JsonProperty("eventType")
-    @Column("event_type")
-    private EventType eventType;
-
     @JsonProperty("eventTypeCode")
     @Column("event_type_code")
     private String eventTypeCode;
-
-    @JsonProperty("transportCallId")
-    @Column("transport_call_id")
-    private UUID transportCallId;
 
     public void setEventClassifierCode(String eventClassifierCode) {
         this.eventClassifierCode = EventClassifierCode.valueOf(eventClassifierCode);

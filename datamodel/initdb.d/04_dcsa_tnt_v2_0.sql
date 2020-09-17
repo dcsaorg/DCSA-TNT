@@ -8,25 +8,27 @@ CREATE TABLE dcsa_v2_0.event (
     event_type text NOT NULL,
     event_classifier_code varchar(3) NOT NULL,
     event_date_time timestamp with time zone NOT NULL,
-    event_type_code varchar(4) NOT NULL,
-    transport_call_id uuid NOT NULL
+    event_type_code varchar(4) NOT NULL
 );
 
 DROP TABLE IF EXISTS dcsa_v2_0.equipment_event CASCADE;
 CREATE TABLE dcsa_v2_0.equipment_event (
     equipment_reference varchar(15),
-    empty_indicator_code text NOT NULL
+    empty_indicator_code text NOT NULL,
+    transport_call_id uuid NOT NULL
 ) INHERITS (dcsa_v2_0.event);
 
 DROP TABLE IF EXISTS dcsa_v2_0.shipment_event CASCADE;
 CREATE TABLE dcsa_v2_0.shipment_event (
+    shipment_id uuid NOT NULL,
     shipment_information_type_code varchar(3) NOT NULL
 ) INHERITS (dcsa_v2_0.event);
 
 DROP TABLE IF EXISTS dcsa_v2_0.transport_event CASCADE;
 CREATE TABLE dcsa_v2_0.transport_event (
     delay_reason_code varchar(3),
-    vessel_schedule_change_remark varchar(250)
+    vessel_schedule_change_remark varchar(250),
+    transport_call_id uuid NOT NULL
 ) INHERITS (dcsa_v2_0.event);
 
 DROP TABLE IF EXISTS dcsa_v2_0.event_subscription CASCADE;
@@ -64,7 +66,7 @@ UNION
     shipment_event.event_classifier_code,
     shipment_event.event_type_code,
     shipment_event.event_date_time,
-    shipment_event.transport_call_id,
+    NULL::UUID AS transport_call_id,
     NULL::text AS delay_reason_code,
     NULL:: text AS vessel_schedule_change_remark,
     shipment_event.shipment_information_type_code,

@@ -1,6 +1,8 @@
 package org.dcsa.tnt.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
@@ -17,6 +19,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @JsonTypeName("SHIPMENT")
 public class ShipmentEvent extends Event {
+
+    @JsonIgnore
+    @Column("shipment_id")
+    private UUID shipmentId;
 
     @JsonProperty("shipmentInformationTypeCode")
     @Column("shipment_information_type_code")
