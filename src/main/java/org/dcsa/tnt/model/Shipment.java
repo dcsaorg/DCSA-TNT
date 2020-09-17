@@ -35,7 +35,7 @@ public class Shipment extends AuditBase {
     @Column("transport_document_id")
     private UUID transportDocumentId;
 
-    @JsonProperty("transportDocumentID")
+    @JsonProperty("transportDocumentTypeCode")
     @Column("transport_document_type_code")
     private TransportDocumentType transportDocumentTypeCode;
 
