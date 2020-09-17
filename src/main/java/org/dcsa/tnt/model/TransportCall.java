@@ -19,45 +19,45 @@ public class TransportCall extends AuditBase implements GetId<UUID> {
 
     @JsonProperty("scheduleID")
     @Column("schedule_id")
-    private UUID schedule_id;
+    private UUID scheduleId;
 
     @JsonProperty("carrierServiceCode")
     @Column("carrier_service_code")
     private String carrierServiceCode;
 
     @JsonProperty("vesselIMONumber")
-    @Column("")
-    private String vesselIMONumber;
+    @Column("vessel_imo_number")
+    private Integer vesselIMONumber;
 
     @JsonProperty("vesselName")
-    @Column("")
+    @Column("vessel_name")
     private String vesselName;
 
     @JsonProperty("carrierVoyageNumber")
-    @Column("")
+    @Column("carrier_voyage_number")
     private String carrierVoyageNumber;
 
     @JsonProperty("UNLocationCode")
-    @Column("")
+    @Column("un_location_code")
     private String UNLocationCode;
 
     @JsonProperty("UNLocationName")
-    @Column("")
+    @Column("un_location_name")
     private String UNLocationName;
 
     @JsonProperty("transportCallNumber")
-    @Column("")
+    @Column("transport_call_number")
     private Integer transportCallNumber;
 
     @JsonProperty("facilityTypeCode")
-    @Column("")
+    @Column("facility_type_code")
     private String facilityTypeCode;
 
     @JsonProperty("facilityCode")
-    @Column("")
+    @Column("facility_code")
     private String facilityCode;
 
     @JsonProperty("otherFacility")
-    @Column("")
+    @Column("other_facility")
     private String otherFacility;
 }
