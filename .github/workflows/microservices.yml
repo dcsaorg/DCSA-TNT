@@ -1,6 +1,10 @@
 name: Build via docker and run V1 DCSA-API-Validator
 
-on: [push]
+on:
+  push:
+    branches: [ v1 ]
+  pull_request:
+    branches: [ v1 ]
 
 jobs:
   build:
