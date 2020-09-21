@@ -28,7 +28,7 @@ jobs:
         ref: master
         token: ${{ secrets.read_repo_pat }}
     - name: Run API validator
-      run: mvn test
+      run: mvn -Dtest.suite=TnTV1.xml test
       env: 
         client_secret: ${{ secrets.AUTH0_DCSA_CLIENT_SECRET }}
         client_id: 1qEYXCbxWvjeYS8VVm1BfnfZrP3TY9n8
