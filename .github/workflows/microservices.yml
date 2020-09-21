@@ -1,4 +1,4 @@
-name: Microservices CI
+name: Build via docker and run V1 DCSA-API-Validator
 
 on: [push]
 
