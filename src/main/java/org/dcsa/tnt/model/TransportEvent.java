@@ -16,11 +16,11 @@ import java.util.UUID;
 public class TransportEvent extends Event {
 
     @JsonProperty("delayReasonCode")
-    @Column("delay-reason-code")
+    @Column("delay_reason_code")
     private String delayReasonCode;
 
     @JsonProperty("vesselScheduleChangeRemark")
-    @Column("vessel-schedule-change-remark")
+    @Column("vessel_schedule_change_remark")
     private String vesselScheduleChangeRemark;
 
     @JsonProperty("transportCallId")
