@@ -7,37 +7,23 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("transport_event")
 @Data
 @NoArgsConstructor
 @JsonTypeName("TRANSPORT")
 public class TransportEvent extends Event {
 
-    @JsonProperty("transportReference")
-    @Column("transport_reference")
-    private String transportReference;
+    @JsonProperty("delayReasonCode")
+    @Column("delay_reason_code")
+    private String delayReasonCode;
 
-    @JsonProperty("transportLegReference")
-    @Column("transport_leg_reference")
-    private String transportLegReference;
+    @JsonProperty("vesselScheduleChangeRemark")
+    @Column("vessel_schedule_change_remark")
+    private String vesselScheduleChangeRemark;
 
-    @JsonProperty("facilityTypeCode")
-    @Column("facility_type_code")
-    private String facilityTypeCode;
-
-    @JsonProperty("UNLocationCode")
-    @Column("un_location_code")
-    private String UNLocationCode;
-
-    @JsonProperty("facilityCode")
-    @Column("facility_code")
-    private String facilityCode;
-
-    @JsonProperty("otherFacility")
-    @Column("other_facility")
-    private String otherFacility;
-
-    @JsonProperty("modeOfTransportCode")
-    @Column("mode_of_transport_code")
-    private String modeOfTransportCode;
+    @JsonProperty("transportCallId")
+    @Column("transport_call_id")
+    private UUID transportCallId;
 }

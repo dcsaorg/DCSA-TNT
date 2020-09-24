@@ -31,7 +31,7 @@ spring:
     url: r2dbc:postgresql://${db_hostname}
     name: dcsa_openapi
     properties:
-      schema: dcsa_v1_2
+      schema: dcsa_v2_0
     username: dcsa_db_owner
     password: 9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5
     initialization-mode: always
@@ -40,9 +40,12 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dcsa.eu.auth0.com/
+  webflux:
+    base-path: /v2
 
 auth0:
   audience: localhost
+
 springdoc:
   api-docs:
     path: /api-docs

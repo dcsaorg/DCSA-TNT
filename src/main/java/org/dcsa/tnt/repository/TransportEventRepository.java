@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface TransportEventRepository extends ExtendedRepository<TransportEvent, UUID> {
 
-    @Query("SELECT * FROM \"dcsa_v1_2\".transport_event a WHERE :eventType IS NULL or a.event_type =:eventType ")
+    @Query("SELECT * FROM \"dcsa_v2_0\".transport_event a WHERE :eventType IS NULL or a.event_type =:eventType ")
     Flux<TransportEvent> findTransportEventsByFilters(@Param("eventType") EventType eventType);
 }

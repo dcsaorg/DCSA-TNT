@@ -52,21 +52,19 @@ public class EventController extends BaseController<EventService, Event, UUID> {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Event.class))))
     })
     @GetMapping
-    public Mono<Events> findAll(ServerHttpResponse response, ServerHttpRequest request) {
+    public Flux<Event> findAll(ServerHttpResponse response, ServerHttpRequest request) {
         ExtendedEventRequest extendedEventRequest = new ExtendedEventRequest(extendedParameters,
-                new Class[] {EquipmentEvent.class, ShipmentEvent.class, TransportEvent.class, TransportEquipmentEvent.class});
+                new Class[] {EquipmentEvent.class, ShipmentEvent.class, TransportEvent.class});
         try {
             Map<String,String> params = request.getQueryParams().toSingleValueMap();
             extendedEventRequest.parseParameter(params);
         } catch (GetException getException) {
-            return Mono.error(getException);
+            return Flux.error(getException);
         }
 
         return getService().findAllExtended(extendedEventRequest)
-                .collectList()
-                .map(Events::new)
-                .doOnSuccess(
-                        eventWrapper -> extendedEventRequest.insertHeaders(response, request)
+                .doOnComplete(
+                        () -> extendedEventRequest.insertHeaders(response, request)
                 );
     }
 

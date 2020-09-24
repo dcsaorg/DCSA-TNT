@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dcsa.core.model.AuditBase;
+import org.dcsa.tnt.model.enums.TransportDocumentType;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -16,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Shipment extends AuditBase {
 
+    @Id
     @JsonProperty("shipmentID")
     @Column("id")
     private UUID id;
@@ -28,9 +31,13 @@ public class Shipment extends AuditBase {
     @Column("booking_datetime")
     private OffsetDateTime bookingDateTime;
 
-    @JsonProperty("billOfLading")
-    @Column("bill_of_lading_number")
-    private String billOfLading;
+    @JsonProperty("transportDocumentID")
+    @Column("transport_document_id")
+    private UUID transportDocumentId;
+
+    @JsonProperty("transportDocumentTypeCode")
+    @Column("transport_document_type_code")
+    private TransportDocumentType transportDocumentTypeCode;
 
     @JsonProperty("shipperName")
     @Column("shipper_name")

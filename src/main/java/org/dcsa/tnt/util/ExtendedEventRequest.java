@@ -10,9 +10,7 @@ import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.core.extendedrequest.FilterItem;
 import org.dcsa.core.extendedrequest.Join;
 import org.dcsa.core.util.ReflectUtility;
-import org.dcsa.tnt.model.Event;
-import org.dcsa.tnt.model.Shipment;
-import org.dcsa.tnt.model.ShipmentEvent;
+import org.dcsa.tnt.model.*;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.el.MethodNotFoundException;
@@ -52,7 +50,9 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
         throw new NoSuchFieldException("Field: " + jsonName + " does not exist on any of: " + getModelClassNames());
     }
 
-    private static final String BILL_OF_LADING_PARAMETER = "billOfLading";
+    private static final String TRANSPORT_DOCUMENT_ID_PARAMETER = "transportDocumentId";
+    private static final String SCHEDULE_ID_PARAMETER = "id";
+    private static final String TRANSPORT_CALL_ID_PARAMETER = "id";
 
     /**
      * A method to handle parameters that cannot be handled automatically. These parameters do not exist in the event
@@ -64,11 +64,23 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
      */
     @Override
     protected boolean doJoin(String parameter, String value, boolean fromCursor) {
+        if (parseTransportDocumentIdParameter(parameter, value)) {
+            return true;
+        } else if (parseScheduleIdParameter(parameter, value)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean parseTransportDocumentIdParameter(String parameter, String value) {
         try {
-            String billOfLadingParameter = ReflectUtility.transformFromFieldNameToJsonName(Shipment.class, BILL_OF_LADING_PARAMETER);
-            if (billOfLadingParameter.equals(parameter)) {
-                // Bill of Lading parameter
-                join = new Join();
+            String transportDocumentIdParameter = ReflectUtility.transformFromFieldNameToJsonName(Shipment.class, TRANSPORT_DOCUMENT_ID_PARAMETER);
+            if (transportDocumentIdParameter.equals(parameter)) {
+                // A TransportDocumentId parameter - this can be either a Bill of Lading or a Sea Waybill
+                if (join == null) {
+                    join = new Join();
+                }
 
                 Table shipmentTable = Shipment.class.getAnnotation(Table.class);
                 if (shipmentTable == null) {
@@ -78,7 +90,44 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
                 join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilterItem(new FilterItem(BILL_OF_LADING_PARAMETER, Shipment.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true));
+                return true;
+            }
+            return false;
+        } catch (NoSuchFieldException noSuchFieldException) {
+            return false;
+        }
+    }
+
+    private boolean parseScheduleIdParameter(String parameter, String value) {
+        try {
+            String scheduleIdParameter = ReflectUtility.transformFromFieldNameToJsonName(Schedule.class, SCHEDULE_ID_PARAMETER);
+            if (scheduleIdParameter.equals(parameter)) {
+                // A scheduleId parameter
+                if (join == null) {
+                    join = new Join();
+                }
+
+                Table transportCallTable = TransportCall.class.getAnnotation(Table.class);
+                if (transportCallTable == null) {
+                    throw new GetException("@Table not defined on TransportCall-class!");
+                }
+
+                Table scheduleTable = Schedule.class.getAnnotation(Table.class);
+                if (scheduleTable == null) {
+                    throw new GetException("@Table not defined on Schedule-class!");
+                }
+
+                // Make a JOIN between TransportEvent/EquipmentEvent (since it is working on the aggregated table this is the same) and TransportCall
+                String transportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "id");
+                String transportEventTransportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportEvent.class, "transportCallId");
+                join.add(transportCallTable.value() + " ON " + transportCallTable.value() + "." + transportCallIdColumn + " = " + getTableName() + "." + transportEventTransportCallIdColumn);
+
+                String scheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Schedule.class, "id");
+                String transportCallScheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "scheduleId");
+                join.add(scheduleTable.value() + " ON " + scheduleTable.value() + "." + scheduleIdColumn + " = " + transportCallTable.value() + "." + transportCallScheduleIdColumn);
+
+                filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, Schedule.class, value, true, false, true));
                 return true;
             }
             return false;
@@ -142,7 +191,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     }
 
     @Override
-    protected String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
+    public String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
         // Run through all possible subClasses and see if one of them can transform the fieldName name to a column name
         for (Class<Event> clazz : modelSubClasses) {
             try {
