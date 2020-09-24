@@ -30,7 +30,7 @@ public class TransportCall extends AuditBase implements GetId<UUID> {
 
     @JsonProperty("vesselIMONumber")
     @Column("vessel_imo_number")
-    private Integer vesselIMONumber;
+    private Long vesselIMONumber;
 
     @JsonProperty("vesselName")
     @Column("vessel_name")
