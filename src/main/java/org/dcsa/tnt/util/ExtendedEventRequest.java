@@ -191,7 +191,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     }
 
     @Override
-    protected String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
+    public String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
         // Run through all possible subClasses and see if one of them can transform the fieldName name to a column name
         for (Class<Event> clazz : modelSubClasses) {
             try {
