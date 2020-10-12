@@ -24,9 +24,9 @@ public class EquipmentEvent extends Event {
     @Column("empty_indicator_code")
     private EmptyIndicatorCode emptyIndicatorCode;
 
-    @JsonProperty("transportCallId")
+    @JsonProperty("transportCallID")
     @Column("transport_call_id")
-    private UUID transportCallId;
+    private UUID transportCallID;
 
     public void setEmptyIndicatorCode(String emptyIndicatorCode) {
         this.emptyIndicatorCode = EmptyIndicatorCode.valueOf(emptyIndicatorCode);

@@ -192,7 +192,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'SHIPMENT',
     '2020-07-15',
     'DEPA',
-    '6e2d856c-d871-11ea-a630-03e5334d1800',
+    uuid('6e2d856c-d871-11ea-a630-03e5334d1800'),
     'WTF'
 );
 
@@ -210,7 +210,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'SHIPMENT',
     TO_DATE('2020/07/15 13:14:15', 'yyyy/mm/dd hh24:mi:ss'),
     'DEPA',
-    '6e2d856c-d871-11ea-a630-03e5334d1800',
+    uuid('6e2d856c-d871-11ea-a630-03e5334d1800'),
     'WTF'
 );
 
@@ -228,7 +228,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'SHIPMENT',
     TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),
     'ARRI',
-    '5e51e72c-d872-11ea-811c-0f8f10a32ea1',
+    uuid('5e51e72c-d872-11ea-811c-0f8f10a32ea1'),
     'WTF'
 );
 
@@ -272,24 +272,6 @@ INSERT INTO dcsa_v2_0.transport_event (
     'Do not know a valid delay reason code...'
 );
 
-
-
-INSERT INTO dcsa_v2_0.event_subscription (
-    callback_url,
-    event_type,
-    booking_reference,
-    transport_document_id,
-    transport_document_type,
-    equipment_reference
-) VALUES (
-    'http://localhost:4567/webhook/receive',
-    '',
-    '',
-    '',
-    '',
-    ''
-);
-
 INSERT INTO dcsa_v2_0.event_subscription (
     callback_url,
     event_type,
@@ -314,7 +296,39 @@ INSERT INTO dcsa_v2_0.event_subscription (
     transport_document_type,
     equipment_reference
 ) VALUES (
+    'http://172.17.0.1:4567/webhook/receive-transport-events',
+    'TRANSPORT',
+    '',
+    '',
+    '',
+    ''
+);
+
+INSERT INTO dcsa_v2_0.event_subscription (
+    callback_url,
+    event_type,
+    booking_reference,
+    transport_document_id,
+    transport_document_type,
+    equipment_reference
+) VALUES (
     'http://172.17.0.1:4567/webhook/receive',
+    '',
+    '',
+    '',
+    '',
+    ''
+);
+
+INSERT INTO dcsa_v2_0.event_subscription (
+    callback_url,
+    event_type,
+    booking_reference,
+    transport_document_id,
+    transport_document_type,
+    equipment_reference
+) VALUES (
+    'http://localhost:4567/webhook/receive',
     '',
     '',
     '',
