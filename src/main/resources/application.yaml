@@ -40,7 +40,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dcsa.eu.auth0.com/
-
+  webflux:
+    base-path: /v2
 auth0:
   audience: localhost
 springdoc:
