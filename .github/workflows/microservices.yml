@@ -20,7 +20,6 @@ jobs:
       with:
         repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
         servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
-    - run: mvn install     
     - name: Build Track & Trace API
       run: mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
     - name: Build and run the microservices

@@ -47,7 +47,6 @@ jobs:
       with:
         repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
         servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
-    - run: mvn install
     - name: Build backend
       run: mvn -B package --file pom.xml
     - name: Run backend
