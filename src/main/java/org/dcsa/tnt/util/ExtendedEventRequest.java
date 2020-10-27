@@ -16,6 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import javax.el.MethodNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
 /**
  * A class to handle the fact that an Event can have multiple subEvents (Transport, Equipment, Shipment). Used primarily
@@ -90,7 +91,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
                 join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true, true, getFilter().getNewBindCounter()));
                 return true;
             }
             return false;
@@ -127,7 +128,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String transportCallScheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "scheduleId");
                 join.add(scheduleTable.value() + " ON " + scheduleTable.value() + "." + scheduleIdColumn + " = " + transportCallTable.value() + "." + transportCallScheduleIdColumn);
 
-                filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, Schedule.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, Schedule.class, UUID.fromString(value), true, false, true, true, getFilter().getNewBindCounter()));
                 return true;
             }
             return false;
