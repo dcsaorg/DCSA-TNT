@@ -16,6 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import javax.el.MethodNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
 /**
  * A class to handle the fact that an Event can have multiple subEvents (Transport, Equipment, Shipment). Used primarily
@@ -43,6 +44,27 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
             try {
                 // Verify that the field exists on the model class and transform it from JSON-name to FieldName
                 return ReflectUtility.transformFromJsonNameToFieldName(clazz, jsonName);
+            } catch (NoSuchFieldException noSuchFieldException) {
+                // Do nothing - try the next sub class
+            }
+        }
+        throw new NoSuchFieldException("Field: " + jsonName + " does not exist on any of: " + getModelClassNames());
+    }
+
+    /**
+     * Tests if a given field should be ignored. Returns true if JsonIgnore annotation is present on the field.
+     * It will look through all the modelClasses of this ExtendedEventRequest
+     * @param jsonName the JSON name to test
+     * @return true if the Ignore annotation is on the field
+     * @throws NoSuchFieldException if the JSON name is not found on any of the modelClasses defined
+     */
+    @Override
+    public boolean isFieldIgnored(String jsonName) throws NoSuchFieldException {
+        // Run through all possible subClasses and see if one of them can transform the JSON name to a field name
+        for (Class<Event> clazz : modelSubClasses) {
+            try {
+                // Verify that the field exists on the model class and transform it from JSON-name to FieldName
+                return ReflectUtility.isFieldIgnored(clazz, jsonName);
             } catch (NoSuchFieldException noSuchFieldException) {
                 // Do nothing - try the next sub class
             }
@@ -90,7 +112,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
                 join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true, true, getFilter().getNewBindCounter()));
                 return true;
             }
             return false;
@@ -127,7 +149,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String transportCallScheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "scheduleId");
                 join.add(scheduleTable.value() + " ON " + scheduleTable.value() + "." + scheduleIdColumn + " = " + transportCallTable.value() + "." + transportCallScheduleIdColumn);
 
-                filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, Schedule.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, Schedule.class, UUID.fromString(value), true, false, true, true, getFilter().getNewBindCounter()));
                 return true;
             }
             return false;
