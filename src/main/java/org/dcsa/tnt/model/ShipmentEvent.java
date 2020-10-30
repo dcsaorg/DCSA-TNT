@@ -19,7 +19,7 @@ public class ShipmentEvent extends Event {
 
     @JsonProperty("shipmentID")
     @Column("shipment_id")
-    private UUID shipmentID;
+    private UUID shipmentId;
 
     @JsonProperty("shipmentInformationTypeCode")
     @Column("shipment_information_type_code")

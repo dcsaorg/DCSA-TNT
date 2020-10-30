@@ -2,7 +2,7 @@
 
 --- Insert data into v1_2 model ---
 
-INSERT INTO dcsa_v1_2.shipment_event (
+INSERT INTO dcsa_tnt_v1_2.shipment_event (
     event_classifier_code,
     event_type,
     event_date_time,
@@ -20,7 +20,7 @@ INSERT INTO dcsa_v1_2.shipment_event (
     'Some type code text'
 );
 
-INSERT INTO "dcsa_v1_2".shipment_event (
+INSERT INTO "dcsa_tnt_v1_2".shipment_event (
     event_classifier_code,
     event_type,
     event_date_time,
@@ -36,7 +36,7 @@ INSERT INTO "dcsa_v1_2".shipment_event (
     'shipment_type_code'
 );
 
-INSERT INTO "dcsa_v1_2".equipment_event (
+INSERT INTO "dcsa_tnt_v1_2".equipment_event (
 	event_classifier_code,
 	event_type,
 	event_date_time,
@@ -59,7 +59,7 @@ INSERT INTO "dcsa_v1_2".equipment_event (
     'EMPTY'
 );
 
-INSERT INTO "dcsa_v1_2".transport_equipment_event (
+INSERT INTO "dcsa_tnt_v1_2".transport_equipment_event (
 	event_classifier_code,
 	event_type,
 	event_date_time,
@@ -88,7 +88,7 @@ INSERT INTO "dcsa_v1_2".transport_equipment_event (
     '7'
 );
 
-INSERT INTO "dcsa_v1_2".transport_event (
+INSERT INTO "dcsa_tnt_v1_2".transport_event (
 	event_classifier_code,
 	event_type,
 	event_date_time,
@@ -113,7 +113,7 @@ INSERT INTO "dcsa_v1_2".transport_event (
     '2'
 );
 
-INSERT INTO dcsa_v1_2.event_subscription (
+INSERT INTO dcsa_tnt_v1_2.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -127,7 +127,7 @@ INSERT INTO dcsa_v1_2.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v1_2.event_subscription (
+INSERT INTO dcsa_tnt_v1_2.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -141,7 +141,7 @@ INSERT INTO dcsa_v1_2.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v1_2.event_subscription (
+INSERT INTO dcsa_tnt_v1_2.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -155,7 +155,7 @@ INSERT INTO dcsa_v1_2.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v1_2.shipment (
+INSERT INTO dcsa_tnt_v1_2.shipment (
     id,
     booking_reference,
     booking_datetime,
@@ -181,7 +181,7 @@ INSERT INTO dcsa_v1_2.shipment (
     'SMDG-ZIM'
 );
 
-INSERT INTO dcsa_v1_2.shipment (
+INSERT INTO dcsa_tnt_v1_2.shipment (
     id,
     booking_reference,
     booking_datetime,

@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface ShipmentEventRepository extends ExtendedRepository<ShipmentEvent, UUID> {
 
-    @Query("SELECT * FROM \"dcsa_v2_0\".shipment_event a WHERE (:eventType IS NULL or a.event_type =:eventType)")
+    @Query("SELECT * FROM \"dcsa_tnt_v2_0\".shipment_event a WHERE (:eventType IS NULL or a.event_type =:eventType)")
     Flux<ShipmentEvent> findShipmentEventsByFilters(@Param("eventType") EventType eventType);
 }

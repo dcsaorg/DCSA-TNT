@@ -46,7 +46,7 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
     }
 
     @Override
-    public Mono<Event> save(Event event) {
+    public Mono<Event> create(Event event) {
         switch (event.getEventType()) {
             case SHIPMENT:
                 return shipmentEventService.save((ShipmentEvent) event).doOnNext(

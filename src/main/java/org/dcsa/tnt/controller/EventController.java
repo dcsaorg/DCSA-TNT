@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.dcsa.core.controller.BaseController;
 import org.dcsa.core.exception.GetException;
 import org.dcsa.core.extendedrequest.ExtendedParameters;
-import org.dcsa.tnt.model.*;
+import org.dcsa.tnt.model.EquipmentEvent;
+import org.dcsa.tnt.model.Event;
+import org.dcsa.tnt.model.ShipmentEvent;
+import org.dcsa.tnt.model.TransportEvent;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.ExtendedEventRequest;
 import org.springframework.http.MediaType;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.UUID;
 
@@ -87,8 +91,8 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
     @Override
-    public Mono<Event> save(@RequestBody Event event) {
-        return super.save(event);
+    public Mono<Event> create(@Valid @RequestBody Event event) {
+        return super.create(event);
     }
 
 }

@@ -2,7 +2,7 @@
 
 --- Insert data into v2_0 model ---
 
-INSERT INTO dcsa_v2_0.schedule (
+INSERT INTO dcsa_tnt_v2_0.schedule (
     id,
     vessel_operator_carrier_code,
     vessel_partner_carrier_code,
@@ -20,7 +20,7 @@ INSERT INTO dcsa_v2_0.schedule (
     'SMDG'
 );
 
-INSERT INTO dcsa_v2_0.schedule (
+INSERT INTO dcsa_tnt_v2_0.schedule (
     id,
     vessel_operator_carrier_code,
     vessel_partner_carrier_code,
@@ -38,7 +38,7 @@ INSERT INTO dcsa_v2_0.schedule (
     'SMDG'
 );
 
-INSERT INTO dcsa_v2_0.transport_call (
+INSERT INTO dcsa_tnt_v2_0.transport_call (
     id,
     schedule_id,
     carrier_service_code,
@@ -55,7 +55,7 @@ INSERT INTO dcsa_v2_0.transport_call (
     uuid('8b64d20b-523b-4491-b2e5-32cfa5174eee'),
     uuid('35b7b170-c751-11ea-a305-7b347bb9119f'),
     'Y6S',
-    9466960,
+    '9466960',
     'NORTHERN JASPER',
     '2007W',
     'ITGOA',
@@ -66,7 +66,7 @@ INSERT INTO dcsa_v2_0.transport_call (
     NULL
 );
 
-INSERT INTO dcsa_v2_0.transport_call (
+INSERT INTO dcsa_tnt_v2_0.transport_call (
     id,
     schedule_id,
     carrier_service_code,
@@ -83,7 +83,7 @@ INSERT INTO dcsa_v2_0.transport_call (
     uuid('8b64d20b-523b-4491-b2e5-32cfa5174eed'),
     uuid('35b7b170-c751-11ea-a305-7b347bb9119f'),
     'Y6S',
-    9466960,
+    '9466960',
     'NORTHERN JASPER',
     '2007W',
     'ITGOA',
@@ -94,7 +94,7 @@ INSERT INTO dcsa_v2_0.transport_call (
     NULL
 );
 
-INSERT INTO dcsa_v2_0.shipment (
+INSERT INTO dcsa_tnt_v2_0.shipment (
     id,
     booking_reference,
     booking_datetime,
@@ -122,7 +122,7 @@ INSERT INTO dcsa_v2_0.shipment (
     'SMDG-ZIM'
 );
 
-INSERT INTO dcsa_v2_0.shipment (
+INSERT INTO dcsa_tnt_v2_0.shipment (
     id,
     booking_reference,
     booking_datetime,
@@ -150,7 +150,7 @@ INSERT INTO dcsa_v2_0.shipment (
     'SMDG-ZIM'
 );
 
-INSERT INTO dcsa_v2_0.shipment (
+INSERT INTO dcsa_tnt_v2_0.shipment (
     id,
     booking_reference,
     booking_datetime,
@@ -178,7 +178,7 @@ INSERT INTO dcsa_v2_0.shipment (
     'SMDG-ZIM'
 );
 
-INSERT INTO dcsa_v2_0.shipment_event (
+INSERT INTO dcsa_tnt_v2_0.shipment_event (
     event_id,
     event_classifier_code,
     event_type,
@@ -196,7 +196,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'VGM'
 );
 
-INSERT INTO dcsa_v2_0.shipment_event (
+INSERT INTO dcsa_tnt_v2_0.shipment_event (
     event_id,
     event_classifier_code,
     event_type,
@@ -214,7 +214,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'VGM'
 );
 
-INSERT INTO dcsa_v2_0.shipment_event (
+INSERT INTO dcsa_tnt_v2_0.shipment_event (
     event_id,
     event_classifier_code,
     event_type,
@@ -232,7 +232,7 @@ INSERT INTO dcsa_v2_0.shipment_event (
     'VGM'
 );
 
-INSERT INTO dcsa_v2_0.equipment_event (
+INSERT INTO dcsa_tnt_v2_0.equipment_event (
     event_id,
     event_classifier_code,
     event_type,
@@ -252,7 +252,7 @@ INSERT INTO dcsa_v2_0.equipment_event (
     'EMPTY'
 );
 
-INSERT INTO dcsa_v2_0.transport_event (
+INSERT INTO dcsa_tnt_v2_0.transport_event (
     event_id,
     event_classifier_code,
     event_type,
@@ -272,7 +272,7 @@ INSERT INTO dcsa_v2_0.transport_event (
     'Do not know a valid delay reason code...'
 );
 
-INSERT INTO dcsa_v2_0.event_subscription (
+INSERT INTO dcsa_tnt_v2_0.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -288,7 +288,7 @@ INSERT INTO dcsa_v2_0.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v2_0.event_subscription (
+INSERT INTO dcsa_tnt_v2_0.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -304,7 +304,7 @@ INSERT INTO dcsa_v2_0.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v2_0.event_subscription (
+INSERT INTO dcsa_tnt_v2_0.event_subscription (
     callback_url,
     event_type,
     booking_reference,
@@ -320,7 +320,7 @@ INSERT INTO dcsa_v2_0.event_subscription (
     ''
 );
 
-INSERT INTO dcsa_v2_0.event_subscription (
+INSERT INTO dcsa_tnt_v2_0.event_subscription (
     callback_url,
     event_type,
     booking_reference,

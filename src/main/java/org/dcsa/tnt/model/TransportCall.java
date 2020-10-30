@@ -8,7 +8,10 @@ import org.dcsa.core.model.GetId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.validation.constraints.Pattern;
+import java.security.InvalidParameterException;
 import java.util.UUID;
 
 @Table("transport_call")
@@ -30,7 +33,25 @@ public class TransportCall extends AuditBase implements GetId<UUID> {
 
     @JsonProperty("vesselIMONumber")
     @Column("vessel_imo_number")
-    private Long vesselIMONumber;
+    @Pattern(regexp = "[0-9]{7}")
+    private String vesselIMONumber;
+
+    public void setVesselIMONumber(String vesselIMONumber) {
+        if (vesselIMONumber != null && vesselIMONumber.length() == 7) {
+            int sum = 0;
+            for (int i = 0; i < 6; i++) {
+                sum += (7 - i) * (int) vesselIMONumber.charAt(i);
+            }
+            String s = String.valueOf(sum);
+            if (vesselIMONumber.charAt(vesselIMONumber.length() - 1) == s.charAt(s.length() - 1)) {
+                this.vesselIMONumber = vesselIMONumber;
+            } else {
+                throw new InvalidParameterException("Invalid Vessel IMO Number. IMO number does not pass checksum - expected value: " + vesselIMONumber.charAt(vesselIMONumber.length() - 1) + " but found: " + s.charAt(s.length() - 1));
+            }
+        } else {
+            throw new InvalidParameterException("Invalid Vessel IMO Number. Must match 7-digits");
+        }
+    }
 
     @JsonProperty("vesselName")
     @Column("vessel_name")

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -39,6 +40,7 @@ public class EventSubscriptionController extends ExtendedBaseController<EventSub
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = EventSubscription.class))))
     })
     @GetMapping
+    @Override
     public Flux<EventSubscription> findAll(ServerHttpResponse response, ServerHttpRequest request) {
         return super.findAll(response, request);
     }
@@ -48,11 +50,9 @@ public class EventSubscriptionController extends ExtendedBaseController<EventSub
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = EventSubscription.class))))
     })
-    @PostMapping( consumes = "application/json", produces = "application/json")
-    public Mono<EventSubscription> save(@RequestBody EventSubscription eventSubscription) {
-        return super.save(eventSubscription);
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    @Override
+    public Mono<EventSubscription> create(@Valid @RequestBody EventSubscription eventSubscription) {
+        return super.create(eventSubscription);
     }
-
-
-
 }
