@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dcsa.core.model.AuditBase;
 import org.dcsa.core.model.GetId;
+import org.dcsa.core.util.ValidationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -37,20 +38,8 @@ public class TransportCall extends AuditBase implements GetId<UUID> {
     private String vesselIMONumber;
 
     public void setVesselIMONumber(String vesselIMONumber) {
-        if (vesselIMONumber != null && vesselIMONumber.length() == 7) {
-            int sum = 0;
-            for (int i = 0; i < 6; i++) {
-                sum += (7 - i) * (int) vesselIMONumber.charAt(i);
-            }
-            String s = String.valueOf(sum);
-            if (vesselIMONumber.charAt(vesselIMONumber.length() - 1) == s.charAt(s.length() - 1)) {
-                this.vesselIMONumber = vesselIMONumber;
-            } else {
-                throw new InvalidParameterException("Invalid Vessel IMO Number. IMO number does not pass checksum - expected value: " + vesselIMONumber.charAt(vesselIMONumber.length() - 1) + " but found: " + s.charAt(s.length() - 1));
-            }
-        } else {
-            throw new InvalidParameterException("Invalid Vessel IMO Number. Must match 7-digits");
-        }
+        ValidationUtils.validateVesselIMONumber(vesselIMONumber);
+        this.vesselIMONumber = vesselIMONumber;
     }
 
     @JsonProperty("vesselName")
