@@ -78,7 +78,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
                 join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilterItem(new FilterItem(BILL_OF_LADING_PARAMETER, Shipment.class, value, true, false, true));
+                filter.addFilterItem(new FilterItem(BILL_OF_LADING_PARAMETER, null, Shipment.class, value, true, false, true, true, filter.getNewBindCounter()));
                 return true;
             }
             return false;
@@ -142,7 +142,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     }
 
     @Override
-    protected String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
+    public String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
         // Run through all possible subClasses and see if one of them can transform the fieldName name to a column name
         for (Class<Event> clazz : modelSubClasses) {
             try {
