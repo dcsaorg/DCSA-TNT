@@ -45,6 +45,7 @@ spring:
 
 auth0:
   audience: localhost
+  enabled: true
 
 springdoc:
   api-docs:
