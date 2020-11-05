@@ -89,8 +89,8 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
     @Override
-    public Mono<Event> save(@RequestBody Event event) {
-        return super.save(event);
+    public Mono<Event> create(@RequestBody Event event) {
+        return super.create(event);
     }
 
 }

@@ -44,6 +44,8 @@ spring:
     base-path: /v1
 auth0:
   audience: localhost
+  enabled: true
+  
 springdoc:
   api-docs:
     path: /api-docs
