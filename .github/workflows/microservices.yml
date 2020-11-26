@@ -22,11 +22,11 @@ jobs:
     - name: Build and run the microservices
       run: docker-compose -f docker-compose.yml up -d -V
     - name: Checkout dcsaorg/DCSA-API-Validator
-      uses: actions/checkout@v2.3.1
+      uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-API-Validator
         ref: master
-        token: ${{ secrets.read_repo_pat }}
+        token: ${{ secrets.REPO_ACCESS_PAT }}
     - name: Run API validator
       run: mvn -Dtest.suite=TnTV2.xml test
       env: 
