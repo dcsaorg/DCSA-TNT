@@ -1,11 +1,17 @@
 package org.dcsa.tnt.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dcsa.tnt.model.*;
+import org.dcsa.tnt.model.EquipmentEvent;
+import org.dcsa.tnt.model.Event;
+import org.dcsa.tnt.model.ShipmentEvent;
+import org.dcsa.tnt.model.TransportEvent;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import static io.restassured.RestAssured.given;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * A class calling callBackHandlers when subscriptions are activated because an event has been triggered
@@ -13,8 +19,8 @@ import static io.restassured.RestAssured.given;
 @Slf4j
 public class EventCallbackHandler extends Thread {
 
-    Flux<String> callbackUrls;
-    Event event;
+    private final Flux<String> callbackUrls;
+    private final Event event;
 
     public EventCallbackHandler(Flux<String> callbackUrls, ShipmentEvent event) {
         this.callbackUrls=callbackUrls;
@@ -31,17 +37,36 @@ public class EventCallbackHandler extends Thread {
         this.event=event;
     }
 
-@Override
+    @Override
     public void run (){
-        callbackUrls.parallel().runOn(Schedulers.elastic()).doOnNext(callbackUrl -> {
+        WebClient webClient = WebClient.builder()
+                .defaultHeader("Content-Type", "application/json")
+                .build();
+        callbackUrls.parallel().runOn(Schedulers.boundedElastic()).concatMap(callbackUrl -> {
+            URI uri;
             try {
-                given()
-                        .contentType("application/json")
-                        .body(event)
-                        .post(callbackUrl);
-            } catch (Exception e) {
-                log.warn("Failed to connect to "+callbackUrl + " " + e.getMessage());
+                uri = new URI(callbackUrl);
+            } catch (URISyntaxException e) {
+                log.warn("Could not parse URI \"" + callbackUrl + "\", skipping notification. Error: "
+                        + e.getLocalizedMessage());
+                return Mono.empty();
             }
-        }).subscribe();
+            return webClient.post()
+                    .uri(uri)
+                    .bodyValue(event)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .doOnSuccess(success -> {
+                        log.debug("Notification sent to " + callbackUrl + ", it replied with: "
+                                + success.getStatusCode().toString());
+                    })
+                    // The "onErrorResume" is important to ensure we do not stop sending notifications
+                    // simply because there are issues with one recipient.
+                    .onErrorResume(error -> {
+                        log.warn("Error during notification to " + callbackUrl + " " + error.getMessage());
+                        return Mono.empty();
+                    });
+        })
+                .subscribe();
     }
 }
