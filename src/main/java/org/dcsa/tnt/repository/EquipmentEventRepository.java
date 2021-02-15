@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface EquipmentEventRepository extends ExtendedRepository<EquipmentEvent, UUID> {
 
-    @Query("SELECT * FROM \"dcsa_tnt_v2_0\".equipment_event a WHERE (:eventType IS NULL or a.event_type =:eventType) AND (:equipmentReference IS NULL or a.equipment_reference =:equipmentReference) ")
+    @Query("SELECT * FROM equipment_event a WHERE (:eventType IS NULL or a.event_type =:eventType) AND (:equipmentReference IS NULL or a.equipment_reference =:equipmentReference) ")
     Flux<EquipmentEvent> findAllEquipmentEventsByFilters(@Param("eventType") EventType eventType, String bookingReference, @Param("equipmentReference") String equipmentReference);
 }
