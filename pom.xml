@@ -19,7 +19,7 @@
 		<java.version>11</java.version>
 		<springdoc.version>1.4.2</springdoc.version>
         <groovy.version>3.0.2</groovy.version>
-		<dcsa.version>0.7.6-SNAPSHOT</dcsa.version>
+		<dcsa.version>0.7.9-SNAPSHOT</dcsa.version>
 		<dcsa.tag/>
 		<dcsa.artifacttype/>
 	</properties>
@@ -128,7 +128,7 @@
 		<repository>
 			<id>spring-libs-milestone</id>
 			<name>Spring Milestone Maven Repository</name>
-			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+			<url>https://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
 		</repository>
 		<repository>
 			<id>github</id>

@@ -57,8 +57,7 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     })
     @GetMapping
     public Flux<Event> findAll(ServerHttpResponse response, ServerHttpRequest request) {
-        ExtendedEventRequest extendedEventRequest = new ExtendedEventRequest(extendedParameters,
-                new Class[] {EquipmentEvent.class, ShipmentEvent.class, TransportEvent.class});
+        ExtendedEventRequest extendedEventRequest = new ExtendedEventRequest(extendedParameters);
         try {
             Map<String,String> params = request.getQueryParams().toSingleValueMap();
             extendedEventRequest.parseParameter(params);
