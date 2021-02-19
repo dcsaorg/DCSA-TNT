@@ -8,7 +8,10 @@ import lombok.SneakyThrows;
 import org.dcsa.core.exception.GetException;
 import org.dcsa.core.extendedrequest.*;
 import org.dcsa.core.util.ReflectUtility;
-import org.dcsa.tnt.model.*;
+import org.dcsa.tnt.model.EquipmentEvent;
+import org.dcsa.tnt.model.Event;
+import org.dcsa.tnt.model.ShipmentEvent;
+import org.dcsa.tnt.model.TransportEvent;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.lang.reflect.Constructor;
@@ -35,25 +38,35 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     }
 
     private static final String TRANSPORT_DOCUMENT_ID_JSON_NAME = "transportDocumentID";
-    private static final String TRANSPORT_DOCUMENT_ID_COLUMN_NAME = "transport_document_id";
-    private static final String SCHEDULE_ID_PARAMETER = "id";
 
     private static final String SHIPMENT_TABLE_NAME = "shipment";
     private static final String SHIPMENT_TABLE_ID_COLUMN_NAME = "id";
-    private static final String TRANSPORT_CALL_TABLE_NAME = "transport_call";
-    private static final String TRANSPORT_CALL_ID_COLUMN_NAME = "id";
-    private static final String TRANSPORT_CALL_SCHEDULE_ID_COLUMN_NAME = "schedule_id";
+
+    private static final String SHIPMENT_EQUIPMENT_TABLE_NAME = "shipment_equipment";
+    private static final String SHIPMENT_EQUIPMENT_ID_COLUMN_NAME = "id";
+    private static final String SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME = "shipment_id";
+
+    private static final String CARGO_ITEM_TABLE_NAME = "cargo_item";
+    private static final String CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME = "shipment_equipment_id";
+    private static final String CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME = "shipping_instruction_id";
+
+    private static final String SHIPPING_INSTRUCTION_TABLE_NAME = "shipping_instruction";
+    private static final String SHIPPING_INSTRUCTION_ID_COLUMN_NAME = "id";
+
+    private static final String TRANSPORT_DOCUMENT_TABLE_NAME = "transport_document";
+    private static final String TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME = "shipping_instruction_id";
+    private static final String TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME = "id";
+
+    private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_ID_JSON_NAME);
 
     @Override
     public Class<?> getPrimaryModelClass() {
         return this.getModelClass();
     }
 
-    @SneakyThrows({NoSuchFieldException.class})
     @Override
     protected void loadFieldsFromSubclass() {
         String tableName = this.getTableName(getPrimaryModelClass());
-        String scheduleIdParameter = ReflectUtility.transformFromFieldNameToJsonName(Schedule.class, SCHEDULE_ID_PARAMETER);
         Set<String> seen = new HashSet<>();
         super.loadFieldsFromSubclass();
 
@@ -71,26 +84,29 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
         }
 
         registerQueryField(QueryFields.nonSelectableQueryField(
-                SHIPMENT_TABLE_NAME,
-                TRANSPORT_DOCUMENT_ID_COLUMN_NAME,
+                TRANSPORT_DOCUMENT_TABLE_NAME,
+                TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME,
                 TRANSPORT_DOCUMENT_ID_JSON_NAME,
-                UUID.class
-        ));
-        registerQueryField(QueryFields.nonSelectableQueryField(
-                TRANSPORT_CALL_TABLE_NAME,
-                TRANSPORT_CALL_SCHEDULE_ID_COLUMN_NAME,
-                scheduleIdParameter,
                 UUID.class
         ));
     }
 
-    private JoinDescriptor joinDescriptor(String tableName, String column, String existingJoinAlias, String existingColumn) {
+    protected void finishedParsingParameters() {
+        for (FilterItem filterItem : filter.getFilters()) {
+            if (JSON_FIELDS_REQUIRING_DISTINCT.contains(filterItem.getQueryField().getJsonName())) {
+                this.selectDistinct = true;
+                break;
+            }
+        }
+    }
+
+    private JoinDescriptor joinDescriptor(String existingJoinAlias, String existingColumn, String tableName, String column) {
         return SimpleJoinDescriptor.of(
                 org.springframework.data.relational.core.sql.Join.JoinType.JOIN,
                 tableName,
                 tableName,
                 "ON " + tableName + "." + column + " = " + existingJoinAlias + "." + existingColumn,
-                null
+                existingJoinAlias
         );
     }
 
@@ -100,11 +116,20 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
         String tableName = getTableName(getModelClass());
         super.findAllTablesAndBuildJoins();
         String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
-        String transportEventTransportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportEvent.class, "transportCallID");
 
-        registerJoinDescriptor(joinDescriptor(SHIPMENT_TABLE_NAME, SHIPMENT_TABLE_ID_COLUMN_NAME, tableName, shipmentEventShipmentIdColumn));
+        registerJoinDescriptor(joinDescriptor(tableName, shipmentEventShipmentIdColumn, SHIPMENT_TABLE_NAME, SHIPMENT_TABLE_ID_COLUMN_NAME));
 
-        registerJoinDescriptor(joinDescriptor(TRANSPORT_CALL_TABLE_NAME, TRANSPORT_CALL_ID_COLUMN_NAME, tableName, transportEventTransportCallIdColumn));
+        registerJoinDescriptor(joinDescriptor(SHIPMENT_TABLE_NAME, SHIPMENT_TABLE_ID_COLUMN_NAME,
+                SHIPMENT_EQUIPMENT_TABLE_NAME, SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME));
+
+        registerJoinDescriptor(joinDescriptor(SHIPMENT_EQUIPMENT_TABLE_NAME, SHIPMENT_EQUIPMENT_ID_COLUMN_NAME,
+                CARGO_ITEM_TABLE_NAME, CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME));
+
+        registerJoinDescriptor(joinDescriptor(CARGO_ITEM_TABLE_NAME, CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME,
+                SHIPPING_INSTRUCTION_TABLE_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME));
+
+        registerJoinDescriptor(joinDescriptor(SHIPPING_INSTRUCTION_TABLE_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME,
+                TRANSPORT_DOCUMENT_TABLE_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME));
     }
 
     @Override
