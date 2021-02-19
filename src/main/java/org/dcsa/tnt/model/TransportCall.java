@@ -9,10 +9,8 @@ import org.dcsa.core.util.ValidationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.constraints.Pattern;
-import java.security.InvalidParameterException;
 import java.util.UUID;
 
 @Table("transport_call")
@@ -26,7 +24,7 @@ public class TransportCall extends AuditBase implements GetId<UUID> {
 
     @JsonProperty("scheduleID")
     @Column("schedule_id")
-    private UUID scheduleId;
+    private UUID scheduleID;
 
     @JsonProperty("carrierServiceCode")
     @Column("carrier_service_code")

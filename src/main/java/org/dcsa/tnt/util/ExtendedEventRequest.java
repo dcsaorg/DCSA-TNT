@@ -142,11 +142,11 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
                 // Make a JOIN between TransportEvent/EquipmentEvent (since it is working on the aggregated table this is the same) and TransportCall
                 String transportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "id");
-                String transportEventTransportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportEvent.class, "transportCallId");
+                String transportEventTransportCallIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportEvent.class, "transportCallID");
                 join.add(transportCallTable.value() + " ON " + transportCallTable.value() + "." + transportCallIdColumn + " = " + getTableName() + "." + transportEventTransportCallIdColumn);
 
                 String scheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Schedule.class, "id");
-                String transportCallScheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "scheduleId");
+                String transportCallScheduleIdColumn = ReflectUtility.transformFromFieldNameToColumnName(TransportCall.class, "scheduleID");
                 join.add(scheduleTable.value() + " ON " + scheduleTable.value() + "." + scheduleIdColumn + " = " + transportCallTable.value() + "." + transportCallScheduleIdColumn);
 
                 filter.addFilterItem(new FilterItem(SCHEDULE_ID_PARAMETER, null, Schedule.class, UUID.fromString(value), true, false, true, true, getFilter().getNewBindCounter()));
