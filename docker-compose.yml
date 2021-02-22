@@ -9,12 +9,12 @@ services:
             options:
                 max-file: '10'
                 max-size: 200k
+
     dcsa-test-db:
         container_name: dcsa_db
         environment:
             POSTGRES_PASSWORD: "change_this_password"
         build:
-            datamodel/
+            ../DCSA-Information-Model/datamodel/
         ports:
             - 5432:5432
-
