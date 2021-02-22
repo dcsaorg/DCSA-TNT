@@ -7,28 +7,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        path: DCSA-TNT
     - name: Set up Java JDK
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Cache local Maven repository
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
     - name: maven-settings-xml-action
       uses: whelk-io/maven-settings-xml-action@v12
       with:
         repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
         servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
-    - name: Build Track & Trace API
-      run: mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
-    - name: Build and run the microservices
-      run: docker-compose -f docker-compose.yml up -d -V
+
+    - name: Build API
+      run: cd DCSA-TNT && mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
+
+    - name: Checkout IM
+      uses: actions/checkout@v2
+      with:
+        repository: dcsaorg/DCSA-Information-Model
+        ref: master
+        path: DCSA-Information-Model
+
+    - name: Run the TNT microservice plus database
+      run: cd DCSA-TNT && docker-compose -f docker-compose.yml up -d -V
+
     - name: Checkout dcsaorg/DCSA-API-Validator
       uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-API-Validator
         ref: master
         token: ${{ secrets.REPO_ACCESS_PAT }}
+        path: DCSA-API-Validator
+
+      # Assert that the database is ready to load the test data.
+    - run: echo "SELECT 1;" | docker exec -i -u postgres dcsa_db psql -d dcsa_openapi -f - 2>/dev/null || sleep 5
+
+    - name: Load DCSA test data
+      run: cat DCSA-Information-Model/datamodel/testdata.d/*.sql | docker exec -i -u postgres dcsa_db psql -d dcsa_openapi -f -
+
     - name: Run API validator
-      run: mvn -Dtest.suite=TnTV2.xml test
-      env: 
+      run: cd DCSA-API-Validator && mvn -Dtest.suite=TnTV2.xml test
+      env:
         client_secret: ${{ secrets.AUTH0_DCSA_CLIENT_SECRET }}
         client_id: 1qEYXCbxWvjeYS8VVm1BfnfZrP3TY9n8
         audience: localhost
