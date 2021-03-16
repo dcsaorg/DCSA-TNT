@@ -7,12 +7,15 @@ import io.r2dbc.spi.RowMetadata;
 import lombok.SneakyThrows;
 import org.dcsa.core.exception.GetException;
 import org.dcsa.core.extendedrequest.*;
+import org.dcsa.core.query.DBEntityAnalysis;
 import org.dcsa.core.util.ReflectUtility;
 import org.dcsa.tnt.model.EquipmentEvent;
 import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.ShipmentEvent;
 import org.dcsa.tnt.model.TransportEvent;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.sql.Join;
+import org.springframework.data.relational.core.sql.SqlIdentifier;
+import org.springframework.data.relational.core.sql.Table;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -27,6 +30,8 @@ import java.util.UUID;
  * as this requires a Join with the Shipment table
  */
 public class ExtendedEventRequest extends ExtendedRequest<Event> {
+
+    @SuppressWarnings({"unchecked"})
     private static final Class<? extends Event>[] MODEL_SUB_CLASSES = new Class[] {
             EquipmentEvent.class,
             ShipmentEvent.class,
@@ -59,16 +64,19 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_ID_JSON_NAME);
 
-    @Override
-    public Class<?> getPrimaryModelClass() {
-        return this.getModelClass();
-    }
-
-    @Override
-    protected void loadFieldsFromSubclass() {
-        String tableName = this.getTableName(getPrimaryModelClass());
+    @SneakyThrows({NoSuchFieldException.class})
+    protected DBEntityAnalysis.DBEntityAnalysisBuilder<Event> prepareDBEntityAnalysis() {
+        DBEntityAnalysis.DBEntityAnalysisBuilder<Event> builder = super.prepareDBEntityAnalysis();
+        String tableName = ReflectUtility.getTableName(builder.getPrimaryModelClass());
+        Table eventTable = builder.getPrimaryModelTable();
         Set<String> seen = new HashSet<>();
-        super.loadFieldsFromSubclass();
+        String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
+        Table shipmentTable = Table.create(SHIPMENT_TABLE_NAME);
+        Table shipmentEquipmentTable = Table.create(SHIPMENT_EQUIPMENT_TABLE_NAME);
+        Table cargoItemTable = Table.create(CARGO_ITEM_TABLE_NAME);
+        Table shippingInstructionsTable = Table.create(SHIPPING_INSTRUCTION_TABLE_NAME);
+        Table transportDocumentTable = Table.create(TRANSPORT_DOCUMENT_TABLE_NAME);
+
 
         for (Class<?> clazz : MODEL_SUB_CLASSES) {
             Class<?> currentClass = clazz;
@@ -76,19 +84,28 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 for (Field field : currentClass.getDeclaredFields()) {
                     QueryField queryField = QueryFields.queryFieldFromField(Event.class, field, clazz, tableName, true);
                     if (seen.add(queryField.getJsonName())) {
-                        registerQueryField(queryField);
+                        builder = builder.registerQueryField(queryField);
                     }
                 }
                 currentClass = currentClass.getSuperclass();
             }
         }
-
-        registerQueryField(QueryFields.nonSelectableQueryField(
-                TRANSPORT_DOCUMENT_TABLE_NAME,
-                TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME,
-                TRANSPORT_DOCUMENT_ID_JSON_NAME,
-                UUID.class
-        ));
+        return builder
+                .join(Join.JoinType.JOIN, eventTable,  shipmentTable)
+                .onEqualsThen(shipmentEventShipmentIdColumn, SHIPMENT_TABLE_ID_COLUMN_NAME)
+                .chainJoin(shipmentEquipmentTable)
+                .onEqualsThen(SHIPMENT_TABLE_ID_COLUMN_NAME, SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME)
+                .chainJoin(cargoItemTable)
+                .onEqualsThen(SHIPMENT_EQUIPMENT_ID_COLUMN_NAME, CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME)
+                .chainJoin(shippingInstructionsTable)
+                .onEqualsThen(CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
+                .chainJoin(transportDocumentTable)
+                .onEqualsThen(SHIPPING_INSTRUCTION_ID_COLUMN_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
+                .registerQueryField(
+                        SqlIdentifier.unquoted(TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME),
+                        TRANSPORT_DOCUMENT_ID_JSON_NAME,
+                        UUID.class
+                );
     }
 
     protected void finishedParsingParameters() {
@@ -98,47 +115,6 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 break;
             }
         }
-    }
-
-    private JoinDescriptor joinDescriptor(String existingJoinAlias, String existingColumn, String tableName, String column) {
-        return SimpleJoinDescriptor.of(
-                org.springframework.data.relational.core.sql.Join.JoinType.JOIN,
-                tableName,
-                tableName,
-                "ON " + tableName + "." + column + " = " + existingJoinAlias + "." + existingColumn,
-                existingJoinAlias
-        );
-    }
-
-    @SneakyThrows({NoSuchFieldException.class})
-    @Override
-    protected void findAllTablesAndBuildJoins() {
-        String tableName = getTableName(getModelClass());
-        super.findAllTablesAndBuildJoins();
-        String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
-
-        registerJoinDescriptor(joinDescriptor(tableName, shipmentEventShipmentIdColumn, SHIPMENT_TABLE_NAME, SHIPMENT_TABLE_ID_COLUMN_NAME));
-
-        registerJoinDescriptor(joinDescriptor(SHIPMENT_TABLE_NAME, SHIPMENT_TABLE_ID_COLUMN_NAME,
-                SHIPMENT_EQUIPMENT_TABLE_NAME, SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME));
-
-        registerJoinDescriptor(joinDescriptor(SHIPMENT_EQUIPMENT_TABLE_NAME, SHIPMENT_EQUIPMENT_ID_COLUMN_NAME,
-                CARGO_ITEM_TABLE_NAME, CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME));
-
-        registerJoinDescriptor(joinDescriptor(CARGO_ITEM_TABLE_NAME, CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME,
-                SHIPPING_INSTRUCTION_TABLE_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME));
-
-        registerJoinDescriptor(joinDescriptor(SHIPPING_INSTRUCTION_TABLE_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME,
-                TRANSPORT_DOCUMENT_TABLE_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME));
-    }
-
-    @Override
-    public void getTableName(StringBuilder sb) {
-        Table table = Event.class.getAnnotation(Table.class);
-        if (table == null) {
-            throw new GetException("@Table not defined on Event-class!");
-        }
-        sb.append(table.value());
     }
 
     @Override
