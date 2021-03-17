@@ -56,19 +56,4 @@ public class Event extends AuditBase implements GetId<UUID> {
     @Column("event_type_code")
     private String eventTypeCode;
 
-    public void setEventClassifierCode(String eventClassifierCode) {
-        this.eventClassifierCode = EventClassifierCode.valueOf(eventClassifierCode);
-    }
-
-    public void setEventClassifierCode(EventClassifierCode eventClassifierCode) {
-        this.eventClassifierCode = eventClassifierCode;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = EventType.valueOf(eventType);
-    }
-
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
 }

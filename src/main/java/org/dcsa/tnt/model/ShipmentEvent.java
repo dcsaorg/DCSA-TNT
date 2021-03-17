@@ -25,11 +25,4 @@ public class ShipmentEvent extends Event {
     @Column("shipment_information_type_code")
     private ShipmentInformationTypeCode shipmentInformationTypeCode;
 
-    public void setShipmentInformationTypeCode(ShipmentInformationTypeCode shipmentInformationTypeCode) {
-        this.shipmentInformationTypeCode = shipmentInformationTypeCode;
-    }
-
-    public void setShipmentInformationTypeCode(String shipmentInformationTypeCode) {
-        this.shipmentInformationTypeCode = ShipmentInformationTypeCode.valueOf(shipmentInformationTypeCode);
-    }
 }

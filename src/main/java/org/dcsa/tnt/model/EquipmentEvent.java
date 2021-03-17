@@ -28,11 +28,4 @@ public class EquipmentEvent extends Event {
     @Column("transport_call_id")
     private UUID transportCallID;
 
-    public void setEmptyIndicatorCode(String emptyIndicatorCode) {
-        this.emptyIndicatorCode = EmptyIndicatorCode.valueOf(emptyIndicatorCode);
-    }
-
-    public void setEmptyIndicatorCode(EmptyIndicatorCode emptyIndicatorCode) {
-        this.emptyIndicatorCode = emptyIndicatorCode;
-    }
 }
