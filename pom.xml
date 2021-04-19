@@ -19,7 +19,7 @@
 		<java.version>11</java.version>
 		<springdoc.version>1.4.2</springdoc.version>
         <groovy.version>3.0.2</groovy.version>
-		<dcsa.version>0.7.12-SNAPSHOT</dcsa.version>
+		<dcsa.version>0.8.0-SNAPSHOT</dcsa.version>
 		<dcsa.tag/>
 		<dcsa.artifacttype/>
 	</properties>
