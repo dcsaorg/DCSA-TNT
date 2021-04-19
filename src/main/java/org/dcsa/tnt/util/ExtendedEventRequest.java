@@ -13,6 +13,7 @@ import org.dcsa.tnt.model.EquipmentEvent;
 import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.ShipmentEvent;
 import org.dcsa.tnt.model.TransportEvent;
+import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.data.relational.core.sql.Join;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.data.relational.core.sql.Table;
@@ -38,8 +39,8 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
             TransportEvent.class,
     };
 
-    public ExtendedEventRequest(ExtendedParameters extendedParameters) {
-        super(extendedParameters, Event.class);
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
+        super(extendedParameters, r2dbcDialect, Event.class);
     }
 
     private static final String TRANSPORT_DOCUMENT_ID_JSON_NAME = "transportDocumentID";
@@ -67,7 +68,6 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
     @SneakyThrows({NoSuchFieldException.class})
     protected DBEntityAnalysis.DBEntityAnalysisBuilder<Event> prepareDBEntityAnalysis() {
         DBEntityAnalysis.DBEntityAnalysisBuilder<Event> builder = super.prepareDBEntityAnalysis();
-        String tableName = ReflectUtility.getTableName(builder.getPrimaryModelClass());
         Table eventTable = builder.getPrimaryModelTable();
         Set<String> seen = new HashSet<>();
         String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
@@ -82,7 +82,7 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
             Class<?> currentClass = clazz;
             while (currentClass != Event.class) {
                 for (Field field : currentClass.getDeclaredFields()) {
-                    QueryField queryField = QueryFields.queryFieldFromField(Event.class, field, clazz, tableName, true);
+                    QueryField queryField = QueryFields.queryFieldFromField(Event.class, field, clazz, eventTable, true);
                     if (seen.add(queryField.getJsonName())) {
                         builder = builder.registerQueryField(queryField);
                     }
@@ -108,12 +108,11 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 );
     }
 
-    protected void finishedParsingParameters() {
-        for (FilterItem filterItem : filter.getFilters()) {
-            if (JSON_FIELDS_REQUIRING_DISTINCT.contains(filterItem.getQueryField().getJsonName())) {
-                this.selectDistinct = true;
-                break;
-            }
+    @Override
+    protected void markQueryFieldInUse(QueryField fieldInUse) {
+        super.markQueryFieldInUse(fieldInUse);
+        if (JSON_FIELDS_REQUIRING_DISTINCT.contains(fieldInUse.getJsonName())) {
+            this.selectDistinct = true;
         }
     }
 
