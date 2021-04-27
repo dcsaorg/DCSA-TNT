@@ -58,7 +58,8 @@ CREATE VIEW dcsa_v2_0.aggregated_events AS
     transport_event.vessel_schedule_change_remark,
     NULL::text AS shipment_information_type_code,
     NULL::text AS equipment_reference,
-    NULL::text AS empty_indicator_code
+    NULL::text AS empty_indicator_code,
+    NULL::uuid AS shipment_id
    FROM dcsa_v2_0.transport_event
 UNION
  SELECT shipment_event.event_id,
@@ -71,7 +72,8 @@ UNION
     NULL:: text AS vessel_schedule_change_remark,
     shipment_event.shipment_information_type_code,
     NULL::text AS equipment_reference,
-    NULL::text AS empty_indicator_code
+    NULL::text AS empty_indicator_code,
+    shipment_id
    FROM dcsa_v2_0.shipment_event
 UNION
  SELECT equipment_event.event_id,
@@ -84,7 +86,8 @@ UNION
     NULL:: text AS vessel_schedule_change_remark,
     NULL::text AS shipment_information_type_code,
     equipment_event.equipment_reference,
-    equipment_event.empty_indicator_code
+    equipment_event.empty_indicator_code,
+    NULL::uuid AS shipment_id
    FROM dcsa_v2_0.equipment_event;
 
 --Helper table in order to filter Events on schedule_id
