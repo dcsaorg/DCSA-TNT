@@ -83,13 +83,20 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 }
 
                 Table shipmentTable = Shipment.class.getAnnotation(Table.class);
+                Table shipmentEventTable = ShipmentEvent.class.getAnnotation(Table.class);
                 if (shipmentTable == null) {
                     throw new GetException("@Table not defined on Shipment-class!");
+                }
+                if (shipmentEventTable == null) {
+                    throw new GetException("@Table not defined on ShipmentEvent-class!");
                 }
 
                 String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
                 String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
-                join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
+                String shipmentEventIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "id");
+                String eventIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Event.class, "id");
+                join.add(shipmentEventTable.value() + " ON " + getTableName() + "." + eventIdColumn + " = " + shipmentEventTable.value() + "." + shipmentEventIdColumn);
+                join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + shipmentEventTable.value() + "." + shipmentEventShipmentIdColumn);
                 filter.addFilterItem(new FilterItem(TRANSPORT_DOCUMENT_ID_PARAMETER, Shipment.class, value, true, false, true));
                 return true;
             }
