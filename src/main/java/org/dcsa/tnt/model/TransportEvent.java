@@ -23,7 +23,7 @@ public class TransportEvent extends Event {
     @Column("vessel_schedule_change_remark")
     private String vesselScheduleChangeRemark;
 
-    @JsonProperty("transportCallId")
+    @JsonProperty("transportCallID")
     @Column("transport_call_id")
     private UUID transportCallId;
 }
