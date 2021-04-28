@@ -33,15 +33,11 @@ import java.util.UUID;
 public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     @SuppressWarnings({"unchecked"})
-    private static final Class<? extends Event>[] MODEL_SUB_CLASSES = new Class[] {
+    private static final Class<? extends Event>[] DEFAULT_MODEL_SUB_CLASSES = new Class[] {
             EquipmentEvent.class,
             ShipmentEvent.class,
             TransportEvent.class,
     };
-
-    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
-        super(extendedParameters, r2dbcDialect, Event.class);
-    }
 
     private static final String TRANSPORT_DOCUMENT_ID_JSON_NAME = "transportDocumentID";
 
@@ -65,6 +61,17 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_ID_JSON_NAME);
 
+    private final Class<? extends Event>[] modelSubClasses;
+
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
+        this(extendedParameters, r2dbcDialect, DEFAULT_MODEL_SUB_CLASSES);
+    }
+
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect, Class<? extends Event>[] modelSubClasses) {
+        super(extendedParameters, r2dbcDialect, Event.class);
+        this.modelSubClasses = modelSubClasses;
+    }
+
     @SneakyThrows({NoSuchFieldException.class})
     protected DBEntityAnalysis.DBEntityAnalysisBuilder<Event> prepareDBEntityAnalysis() {
         DBEntityAnalysis.DBEntityAnalysisBuilder<Event> builder = super.prepareDBEntityAnalysis();
@@ -76,10 +83,14 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
         Table cargoItemTable = Table.create(CARGO_ITEM_TABLE_NAME);
         Table shippingInstructionsTable = Table.create(SHIPPING_INSTRUCTION_TABLE_NAME);
         Table transportDocumentTable = Table.create(TRANSPORT_DOCUMENT_TABLE_NAME);
+        boolean includesShipmentEvents = false;
 
 
-        for (Class<?> clazz : MODEL_SUB_CLASSES) {
+        for (Class<?> clazz : modelSubClasses) {
             Class<?> currentClass = clazz;
+            if (ShipmentEvent.class.isAssignableFrom(currentClass)) {
+                includesShipmentEvents = true;
+            }
             while (currentClass != Event.class) {
                 for (Field field : currentClass.getDeclaredFields()) {
                     QueryField queryField = QueryFields.queryFieldFromField(Event.class, field, clazz, eventTable, true);
@@ -90,22 +101,25 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                 currentClass = currentClass.getSuperclass();
             }
         }
-        return builder
-                .join(Join.JoinType.JOIN, eventTable,  shipmentTable)
-                .onEqualsThen(shipmentEventShipmentIdColumn, SHIPMENT_TABLE_ID_COLUMN_NAME)
-                .chainJoin(shipmentEquipmentTable)
-                .onEqualsThen(SHIPMENT_TABLE_ID_COLUMN_NAME, SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME)
-                .chainJoin(cargoItemTable)
-                .onEqualsThen(SHIPMENT_EQUIPMENT_ID_COLUMN_NAME, CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME)
-                .chainJoin(shippingInstructionsTable)
-                .onEqualsThen(CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
-                .chainJoin(transportDocumentTable)
-                .onEqualsThen(SHIPPING_INSTRUCTION_ID_COLUMN_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
-                .registerQueryField(
-                        SqlIdentifier.unquoted(TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME),
-                        TRANSPORT_DOCUMENT_ID_JSON_NAME,
-                        UUID.class
-                );
+        if (includesShipmentEvents) {
+            builder = builder
+                    .join(Join.JoinType.JOIN, eventTable, shipmentTable)
+                    .onEqualsThen(shipmentEventShipmentIdColumn, SHIPMENT_TABLE_ID_COLUMN_NAME)
+                    .chainJoin(shipmentEquipmentTable)
+                    .onEqualsThen(SHIPMENT_TABLE_ID_COLUMN_NAME, SHIPMENT_EQUIPMENT_SHIPMENT_ID_COLUMN_NAME)
+                    .chainJoin(cargoItemTable)
+                    .onEqualsThen(SHIPMENT_EQUIPMENT_ID_COLUMN_NAME, CARGO_ITEM_TABLE_SHIPMENT_EQUIPMENT_ID_COLUMN_NAME)
+                    .chainJoin(shippingInstructionsTable)
+                    .onEqualsThen(CARGO_ITEM_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME, SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
+                    .chainJoin(transportDocumentTable)
+                    .onEqualsThen(SHIPPING_INSTRUCTION_ID_COLUMN_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
+                    .registerQueryField(
+                            SqlIdentifier.unquoted(TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME),
+                            TRANSPORT_DOCUMENT_ID_JSON_NAME,
+                            UUID.class
+                    );
+        }
+        return builder;
     }
 
     @Override
