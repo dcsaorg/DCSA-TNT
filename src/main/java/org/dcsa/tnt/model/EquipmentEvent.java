@@ -3,7 +3,7 @@ package org.dcsa.tnt.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.dcsa.tnt.model.enums.EmptyIndicatorCode;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Table("equipment_event")
 @Data
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @JsonTypeName("EQUIPMENT")
 public class EquipmentEvent extends Event {
 
