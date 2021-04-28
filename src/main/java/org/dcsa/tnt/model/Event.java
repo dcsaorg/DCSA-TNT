@@ -42,12 +42,8 @@ public class Event extends AuditBase implements GetId<UUID> {
 
     @JsonProperty("eventDateTime")
     @Column("event_date_time")
-    private OffsetDateTime eventDateTime;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    public OffsetDateTime getEventDateTime() {
-        return eventDateTime;
-    }
+    private OffsetDateTime eventDateTime;
 
     @JsonProperty("eventClassifierCode")
     @Column("event_classifier_code")
