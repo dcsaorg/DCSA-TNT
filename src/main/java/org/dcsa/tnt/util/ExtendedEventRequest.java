@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import lombok.SneakyThrows;
-import org.dcsa.core.exception.GetException;
-import org.dcsa.core.extendedrequest.*;
+import org.dcsa.core.extendedrequest.ExtendedParameters;
+import org.dcsa.core.extendedrequest.ExtendedRequest;
+import org.dcsa.core.extendedrequest.QueryField;
+import org.dcsa.core.extendedrequest.QueryFields;
 import org.dcsa.core.query.DBEntityAnalysis;
 import org.dcsa.core.util.ReflectUtility;
-import org.dcsa.tnt.model.EquipmentEvent;
 import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.ShipmentEvent;
-import org.dcsa.tnt.model.TransportEvent;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.data.relational.core.sql.Join;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
@@ -21,9 +21,8 @@ import org.springframework.data.relational.core.sql.Table;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * A class to handle the fact that an Event can have multiple subEvents (Transport, Equipment, Shipment). Used primarily
@@ -31,13 +30,6 @@ import java.util.UUID;
  * as this requires a Join with the Shipment table
  */
 public class ExtendedEventRequest extends ExtendedRequest<Event> {
-
-    @SuppressWarnings({"unchecked"})
-    private static final Class<? extends Event>[] DEFAULT_MODEL_SUB_CLASSES = new Class[] {
-            EquipmentEvent.class,
-            ShipmentEvent.class,
-            TransportEvent.class,
-    };
 
     private static final String TRANSPORT_DOCUMENT_ID_JSON_NAME = "transportDocumentID";
 
@@ -61,15 +53,68 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_ID_JSON_NAME);
 
-    private final Class<? extends Event>[] modelSubClasses;
+    private static final String EVENT_TYPE_FIELD_NAME;
+    private static final Map<String, Constructor<? extends Event>> NAME2CONSTRUCTOR;
+    private static final Set<Class<? extends Event>> KNOWN_EVENT_CLASSES;
 
-    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
-        this(extendedParameters, r2dbcDialect, DEFAULT_MODEL_SUB_CLASSES);
+    static {
+        JsonSubTypes jsonSubTypes = Event.class.getAnnotation(JsonSubTypes.class);
+        JsonTypeInfo jsonTypeInfo = Event.class.getAnnotation(JsonTypeInfo.class);
+        if (jsonSubTypes != null && jsonTypeInfo != null) {
+            String property = jsonTypeInfo.property();
+            // The discriminator value is on the Event class
+            try {
+                EVENT_TYPE_FIELD_NAME = ReflectUtility.transformFromFieldNameToColumnName(Event.class, property);
+            } catch (NoSuchFieldException e) {
+                throw new IllegalStateException("Event MUST have the field " + property + " (listed in @JsonTypeInfo)");
+            }
+            NAME2CONSTRUCTOR = new HashMap<>();
+            KNOWN_EVENT_CLASSES = new HashSet<>();
+            for (JsonSubTypes.Type type : jsonSubTypes.value()) {
+                String value = type.name();
+                Class<?> rawClass = type.value();
+                if (!Event.class.isAssignableFrom(rawClass)) {
+                    throw new IllegalStateException(rawClass.getSimpleName()
+                            + " (mentioned in JsonSubTypes of Event.class) was not a subclass of Event");
+                }
+                @SuppressWarnings({"unchecked"})
+                Class<? extends Event> eventClass = (Class<? extends Event>)rawClass;
+                KNOWN_EVENT_CLASSES.add(eventClass);
+                try {
+                    Constructor<? extends Event> constructor = eventClass.getDeclaredConstructor();
+                    if (!Modifier.isPublic(constructor.getModifiers())) {
+                        throw new IllegalStateException("The no-argument constructor for " + eventClass.getSimpleName()
+                                + " is not public but it must be.  The class is listed as a subclass in"
+                                + " @JsonSubTypes on the Event class.");
+                    }
+                    NAME2CONSTRUCTOR.put(value, constructor);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("The event subclass " + eventClass.getSimpleName()
+                            + " MUST have a no-argument constructor.  The class is listed as a subclass in"
+                            + " @JsonSubTypes on the Event class.");
+                }
+
+            }
+        } else {
+            throw new IllegalStateException("Event MUST have a @JsonSubTypes and @JsonTypeInfo");
+        }
     }
 
-    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect, Class<? extends Event>[] modelSubClasses) {
+    private final Iterable<Class<? extends Event>> modelSubClasses;
+
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
+        this(extendedParameters, r2dbcDialect, KNOWN_EVENT_CLASSES);
+    }
+
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect, Iterable<Class<? extends Event>> modelSubClasses) {
         super(extendedParameters, r2dbcDialect, Event.class);
         this.modelSubClasses = modelSubClasses;
+        for (Class<?> clazz : modelSubClasses) {
+            if (!KNOWN_EVENT_CLASSES.contains(clazz)) {
+                throw new IllegalStateException("Unsupported class " + clazz.getSimpleName()
+                        + " - it is not registered in @JsonSubTypes of Event");
+            }
+        }
     }
 
     @SneakyThrows({NoSuchFieldException.class})
@@ -143,30 +188,21 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
      * @param meta the Database metadata about the row
      * @return a Subclassed event (TransportEvent, EquipmentEvent or ShipmentEvent) corresponding to the discriminator
      */
+    @SneakyThrows({InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public Event getModelClassInstance(Row row, RowMetadata meta) {
-        try {
-            JsonSubTypes jsonSubTypes = Event.class.getAnnotation(JsonSubTypes.class);
-            JsonTypeInfo jsonTypeInfo = Event.class.getAnnotation(JsonTypeInfo.class);
-            if (jsonSubTypes != null && jsonTypeInfo != null) {
-                String property = jsonTypeInfo.property();
-                // The discriminator value is on the Event class
-                String columnName = ReflectUtility.transformFromFieldNameToColumnName(Event.class, property);
-                Object value = row.get(columnName);
-                for (JsonSubTypes.Type type : jsonSubTypes.value()) {
-                    if (type.name().equals(value)) {
-                        // Create a new instance of the sub class to Event
-                        Constructor<?> constructor = type.value().getDeclaredConstructor();
-                        return (Event) constructor.newInstance();
-                    }
-                }
-                throw new GetException("Unmatched sub-type: " + value + " of Event.class");
-            } else {
-                return super.getModelClassInstance(row, meta);
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchFieldException e) {
-            throw new GetException("Error when creating a new sub class of Event.class");
+        Object value = row.get(EVENT_TYPE_FIELD_NAME);
+        Constructor<? extends Event> constructor;
+        if (value instanceof String) {
+            constructor = NAME2CONSTRUCTOR.get(value);
+        } else {
+            constructor = null;
         }
+        if (constructor == null) {
+            throw new IllegalStateException("Unknown Event type (field: " + EVENT_TYPE_FIELD_NAME + "), got value: "
+                    + value);
+        }
+        return constructor.newInstance();
     }
 
 }
