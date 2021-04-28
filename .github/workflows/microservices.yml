@@ -48,7 +48,7 @@ jobs:
         path: DCSA-API-Validator
 
       # Assert that the database is ready to load the test data.
-    - run: echo "SELECT 1;" | docker exec -i -u postgres dcsa_db psql -d dcsa_openapi -f - 2>/dev/null || sleep 5
+    - run: echo 'SELECT * FROM dcsa_im_v3_0.location;' | docker exec -i -u postgres dcsa_db psql -d dcsa_openapi -f - 2>/dev/null || sleep 5
 
     - name: Load DCSA test data
       run: cat DCSA-Information-Model/datamodel/testdata.d/*.sql | docker exec -i -u postgres dcsa_db psql -d dcsa_openapi -f -
