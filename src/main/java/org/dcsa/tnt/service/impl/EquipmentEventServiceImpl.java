@@ -20,11 +20,6 @@ public class EquipmentEventServiceImpl extends ExtendedBaseServiceImpl<Equipment
         return equipmentEventRepository;
     }
 
-    @Override
-    public Class<EquipmentEvent> getModelClass() {
-        return EquipmentEvent.class;
-    }
-
     //Overriding base method here, as it marks empty results as an error, meaning we can't use switchOnEmpty()
     @Override
     public Mono<EquipmentEvent> findById(UUID id) {

@@ -24,11 +24,6 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
     }
 
     @Override
-    public Class<EventSubscription> getModelClass() {
-        return EventSubscription.class;
-    }
-
-    @Override
     protected Mono<EventSubscription> preSaveHook(EventSubscription eventSubscription) {
         // Ensure that the callback url at least looks valid.
         try {
