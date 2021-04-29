@@ -32,11 +32,6 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
     }
 
     @Override
-    public Class<Event> getModelClass() {
-        return Event.class;
-    }
-
-    @Override
     public Mono<Event> findById(UUID id) {
         return eventRepository.findById(UUID.randomUUID())
                 .switchIfEmpty(transportEventService.findById(id))
