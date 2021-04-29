@@ -44,21 +44,21 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
     public Mono<Event> create(Event event) {
         switch (event.getEventType()) {
             case SHIPMENT:
-                return shipmentEventService.save((ShipmentEvent) event).doOnNext(
+                return shipmentEventService.create((ShipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
                 ).map(e -> e);
             case TRANSPORT:
-                return transportEventService.save((TransportEvent) event).doOnNext(
+                return transportEventService.create((TransportEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
                 ).map(e -> e);
             case EQUIPMENT:
-                return equipmentEventService.save((EquipmentEvent) event).doOnNext(
+                return equipmentEventService.create((EquipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                 e.getEquipmentReference()), e)
