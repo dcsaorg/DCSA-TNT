@@ -24,11 +24,6 @@ public class ShipmentEventServiceImpl extends ExtendedBaseServiceImpl<ShipmentEv
         return shipmentEventRepository;
     }
 
-    @Override
-    public Class<ShipmentEvent> getModelClass() {
-        return ShipmentEvent.class;
-    }
-
     //Overriding base method here, as it marks empty results as an error, meaning we can't use switchOnEmpty()
     @Override
     public Mono<ShipmentEvent> findById(UUID id) {

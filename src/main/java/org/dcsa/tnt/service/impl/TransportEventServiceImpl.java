@@ -23,11 +23,6 @@ public class TransportEventServiceImpl extends ExtendedBaseServiceImpl<Transport
         return transportEventRepository;
     }
 
-    @Override
-    public Class<TransportEvent> getModelClass() {
-        return TransportEvent.class;
-    }
-
     //Overriding base method here, as it marks empty results as an error, meaning we can't use switchOnEmpty()
     @Override
     public Mono<TransportEvent> findById(UUID id) {
