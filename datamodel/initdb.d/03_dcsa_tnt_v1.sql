@@ -64,8 +64,24 @@ CREATE TABLE dcsa_v1_1.event_subscription (
     booking_reference text,
     event_type text, --This field must be able to contain multiple event types. Currently it does not.
     bill_of_lading_number text,
-    equipment_reference text
+    equipment_reference text,
+
+    -- these two combined is a cursor for the subscription to unique identify which
+    -- event was the last delivered
+    last_event_date_created_date_time timestamp with time zone,
+    last_event_id uuid NULL,
+    -- Retry state
+    retry_after timestamp with time zone NULL,
+    retry_count int DEFAULT 0 NOT NULL
     );
+
+DROP TABLE IF EXISTS dcsa_v1_1.event_subscription_event_types CASCADE;
+CREATE TABLE dcsa_v1_1.event_subscription_event_types (
+    subscription_id uuid NOT NULL REFERENCES dcsa_v1_1.event_subscription (subscription_id) ON DELETE CASCADE,
+    event_type text,
+
+    PRIMARY KEY (subscription_id, event_type)
+);
 
 DROP TABLE IF EXISTS dcsa_v1_1.shipment CASCADE;
 CREATE TABLE dcsa_v1_1.shipment (
