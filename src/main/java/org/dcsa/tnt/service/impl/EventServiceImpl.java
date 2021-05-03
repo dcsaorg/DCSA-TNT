@@ -49,21 +49,21 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             case TRANSPORT:
                 return transportEventService.create((TransportEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             case EQUIPMENT:
                 return equipmentEventService.create((EquipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                 e.getEquipmentReference()), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             default:
                 return Mono.error(new IllegalStateException("Unexpected value: " + event.getEventType()));
         }
