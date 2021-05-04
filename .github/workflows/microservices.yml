@@ -33,7 +33,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-Information-Model
-        ref: fix-tnt-subscription-model
+        ref: master
         path: DCSA-Information-Model
 
     - name: Run the TNT microservice plus database
