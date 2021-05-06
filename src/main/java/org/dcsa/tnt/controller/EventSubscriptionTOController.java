@@ -95,7 +95,7 @@ public class EventSubscriptionTOController extends BaseController<EventSubscript
     @PostMapping(consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<EventSubscriptionTO> create(@Valid @RequestBody EventSubscriptionTO eventSubscriptionTO) {
-        if (eventSubscriptionTO.getId() != null) {
+        if (eventSubscriptionTO.getSubscriptionID() != null) {
             return Mono.error(new CreateException("Id not allowed when creating a new " + getType()));
         }
         return eventSubscriptionTOService.create(eventSubscriptionTO);
@@ -104,7 +104,7 @@ public class EventSubscriptionTOController extends BaseController<EventSubscript
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<EventSubscriptionTO> update(@PathVariable UUID id, @Valid @RequestBody EventSubscriptionTO eventSubscriptionTO) {
-        if (!Objects.equals(id, eventSubscriptionTO.getId())) {
+        if (!Objects.equals(id, eventSubscriptionTO.getSubscriptionID())) {
             return Mono.error(new UpdateException("Id in url does not match id in body"));
         }
         return eventSubscriptionTOService.update(eventSubscriptionTO);
@@ -113,7 +113,7 @@ public class EventSubscriptionTOController extends BaseController<EventSubscript
     @DeleteMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> delete(@RequestBody EventSubscriptionTO eventSubscriptionTO) {
-        if (eventSubscriptionTO.getId() == null) {
+        if (eventSubscriptionTO.getSubscriptionID() == null) {
             return Mono.error(new DeleteException("No Id provided in " + getType() + " object"));
         }
         return eventSubscriptionTOService.delete(eventSubscriptionTO);
