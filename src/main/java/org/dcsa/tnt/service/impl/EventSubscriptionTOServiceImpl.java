@@ -45,14 +45,14 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
     public Mono<EventSubscriptionTO> create(EventSubscriptionTO eventSubscriptionTO) {
         return eventSubscriptionService.create(MappingUtils.instanceFrom(eventSubscriptionTO, EventSubscription::new, AbstractEventSubscription.class))
                 .flatMap(eventSubscription -> {
-                    eventSubscriptionTO.setId(eventSubscription.getId());
+                    eventSubscriptionTO.setSubscriptionID(eventSubscription.getSubscriptionID());
                     return createEventTypes(eventSubscriptionTO);
                 });
     }
 
     @Override
     public Mono<EventSubscriptionTO> update(EventSubscriptionTO eventSubscriptionTO) {
-        return eventSubscriptionRepository.deleteEventTypesForSubscription(eventSubscriptionTO.getId())
+        return eventSubscriptionRepository.deleteEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
                 .thenReturn(eventSubscriptionTO)
                 .map(subscriptionTO -> MappingUtils.instanceFrom(subscriptionTO, EventSubscription::new, AbstractEventSubscription.class))
                 .flatMap(eventSubscriptionService::update)
@@ -66,12 +66,12 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
 
     @Override
     public Mono<Void> delete(EventSubscriptionTO eventSubscriptionTO) {
-        return eventSubscriptionService.deleteById(eventSubscriptionTO.getId());
+        return eventSubscriptionService.deleteById(eventSubscriptionTO.getSubscriptionID());
     }
 
     @Override
     public UUID getIdOfEntity(EventSubscriptionTO entity) {
-        return entity.getId();
+        return entity.getSubscriptionID();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
             eventSubscriptionTO.setEventType(eventTypeList);
         }
         return Flux.fromIterable(eventTypeList)
-                .concatMap(eventType -> eventSubscriptionRepository.insertEventTypeForSubscription(eventSubscriptionTO.getId(), eventType))
+                .concatMap(eventType -> eventSubscriptionRepository.insertEventTypeForSubscription(eventSubscriptionTO.getSubscriptionID(), eventType))
                 .then(Mono.just(eventSubscriptionTO));
     }
 
@@ -94,7 +94,7 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
         return eventSubscriptionMono
                 .map(eventSubscription -> MappingUtils.instanceFrom(eventSubscription, EventSubscriptionTO::new, AbstractEventSubscription.class))
                 .flatMap(eventSubscriptionTO ->
-                        eventSubscriptionRepository.findEventTypesForSubscription(eventSubscriptionTO.getId())
+                        eventSubscriptionRepository.findEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
                         .map(EventType::valueOf)
                         .collectList()
                         .doOnNext(eventSubscriptionTO::setEventType)
@@ -108,12 +108,12 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
                 .collectList()
                 .flatMapMany(eventSubscriptionList -> {
                     Map<UUID, EventSubscriptionTO> id2subscription = eventSubscriptionList.stream().collect(Collectors.toMap(
-                            AbstractEventSubscription::getId,
+                            AbstractEventSubscription::getSubscriptionID,
                             Function.identity()
                     ));
                     return Flux.fromIterable(eventSubscriptionList)
                             .doOnNext(eventSubscriptionTO -> eventSubscriptionTO.setEventType(new ArrayList<>()))
-                            .map(AbstractEventSubscription::getId)
+                            .map(AbstractEventSubscription::getSubscriptionID)
                             .buffer(MappingUtils.SQL_LIST_BUFFER_SIZE)
                             .concatMap(eventSubscriptionRepository::findEventTypesForSubscriptionIDIn)
                             .doOnNext(eventSubscriptionEventType -> {
