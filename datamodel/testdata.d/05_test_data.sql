@@ -130,7 +130,7 @@ VALUES (
     'SHIPMENT',
     '2020-07-15',
     'DEPA',
-    'WTF');
+    'SRM');
 
 
 INSERT INTO dcsa_v1_1.event_subscription(
