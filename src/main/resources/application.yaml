@@ -35,6 +35,8 @@ spring:
     username: dcsa_db_owner
     password: 9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5
     initialization-mode: always
+auth0:
+  enabled: true
 
 springdoc:
   api-docs:
