@@ -4,20 +4,28 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
-import org.dcsa.core.exception.GetException;
+import lombok.SneakyThrows;
 import org.dcsa.core.extendedrequest.ExtendedParameters;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
-import org.dcsa.core.extendedrequest.FilterItem;
-import org.dcsa.core.extendedrequest.Join;
+import org.dcsa.core.extendedrequest.QueryField;
+import org.dcsa.core.extendedrequest.QueryFields;
+import org.dcsa.core.query.DBEntityAnalysis;
 import org.dcsa.core.util.ReflectUtility;
 import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.Shipment;
 import org.dcsa.tnt.model.ShipmentEvent;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.r2dbc.dialect.R2dbcDialect;
+import org.springframework.data.relational.core.sql.Join;
+import org.springframework.data.relational.core.sql.Table;
 
-import javax.el.MethodNotFoundException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A class to handle the fact that an Event can have multiple subEvents (Transport, Equipment, Shipment). Used primarily
@@ -25,81 +33,86 @@ import java.lang.reflect.InvocationTargetException;
  * as this requires a Join with the Shipment table
  */
 public class ExtendedEventRequest extends ExtendedRequest<Event> {
-    private final Class<Event>[] modelSubClasses;
 
-    public ExtendedEventRequest(ExtendedParameters extendedParameters, Class<Event>[] modelSubClasses) {
-        super(extendedParameters, Event.class);
-        this.modelSubClasses = modelSubClasses;
+    private static final String EVENT_TYPE_FIELD_NAME;
+    private static final Map<String, Constructor<? extends Event>> NAME2CONSTRUCTOR;
+    private static final Set<Class<? extends Event>> KNOWN_EVENT_CLASSES;
+
+    static {
+        JsonSubTypes jsonSubTypes = Event.class.getAnnotation(JsonSubTypes.class);
+        JsonTypeInfo jsonTypeInfo = Event.class.getAnnotation(JsonTypeInfo.class);
+        if (jsonSubTypes != null && jsonTypeInfo != null) {
+            String property = jsonTypeInfo.property();
+            // The discriminator value is on the Event class
+            try {
+                EVENT_TYPE_FIELD_NAME = ReflectUtility.transformFromFieldNameToColumnName(Event.class, property);
+            } catch (NoSuchFieldException e) {
+                throw new IllegalStateException("Event MUST have the field " + property + " (listed in @JsonTypeInfo)");
+            }
+            NAME2CONSTRUCTOR = new HashMap<>();
+            KNOWN_EVENT_CLASSES = new HashSet<>();
+            for (JsonSubTypes.Type type : jsonSubTypes.value()) {
+                String value = type.name();
+                Class<?> rawClass = type.value();
+                if (!Event.class.isAssignableFrom(rawClass)) {
+                    throw new IllegalStateException(rawClass.getSimpleName()
+                            + " (mentioned in JsonSubTypes of Event.class) was not a subclass of Event");
+                }
+                @SuppressWarnings({"unchecked"})
+                Class<? extends Event> eventClass = (Class<? extends Event>)rawClass;
+                KNOWN_EVENT_CLASSES.add(eventClass);
+                try {
+                    Constructor<? extends Event> constructor = eventClass.getDeclaredConstructor();
+                    if (!Modifier.isPublic(constructor.getModifiers())) {
+                        throw new IllegalStateException("The no-argument constructor for " + eventClass.getSimpleName()
+                                + " is not public but it must be.  The class is listed as a subclass in"
+                                + " @JsonSubTypes on the Event class.");
+                    }
+                    NAME2CONSTRUCTOR.put(value, constructor);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("The event subclass " + eventClass.getSimpleName()
+                            + " MUST have a no-argument constructor.  The class is listed as a subclass in"
+                            + " @JsonSubTypes on the Event class.");
+                }
+
+            }
+        } else {
+            throw new IllegalStateException("Event MUST have a @JsonSubTypes and @JsonTypeInfo");
+        }
     }
 
-    /**
-     * A method to convert a JSON name to a field. It will look through all the modelClasses of this ExtendedEventRequest
-     * @param jsonName the JSON name to convert
-     * @return the field name corresponding to the JSON name provided
-     * @throws NoSuchFieldException if the JSON name is not found on any of the modelClasses defined
-     */
-    @Override
-    public String transformFromJsonNameToFieldName(String jsonName) throws NoSuchFieldException {
-        // Run through all possible subClasses and see if one of them can transform the JSON name to a field name
-        for (Class<Event> clazz : modelSubClasses) {
-            try {
-                // Verify that the field exists on the model class and transform it from JSON-name to FieldName
-                return ReflectUtility.transformFromJsonNameToFieldName(clazz, jsonName);
-            } catch (NoSuchFieldException noSuchFieldException) {
-                // Do nothing - try the next sub class
-            }
-        }
-        throw new NoSuchFieldException("Field: " + jsonName + " does not exist on any of: " + getModelClassNames());
+    private final Iterable<Class<? extends Event>> modelSubClasses;
+
+    public ExtendedEventRequest(ExtendedParameters extendedParameters, R2dbcDialect r2dbcDialect) {
+        super(extendedParameters, r2dbcDialect, Event.class);
+        this.modelSubClasses = KNOWN_EVENT_CLASSES;
     }
 
     private static final String BILL_OF_LADING_PARAMETER = "billOfLading";
 
-    /**
-     * A method to handle parameters that cannot be handled automatically. These parameters do not exist in the event
-     * tables and therefore a JOIN is needed
-     * @param parameter the parameter to handle
-     * @param value the value of the parameter to handle
-     * @param fromCursor is this part of a cursorPagination link
-     * @return true if the parameter was handled, false if the parameter is not recognised
-     */
-    @Override
-    protected boolean doJoin(String parameter, String value, boolean fromCursor) {
-        try {
-            String billOfLadingParameter = ReflectUtility.transformFromFieldNameToJsonName(Shipment.class, BILL_OF_LADING_PARAMETER);
-            if (billOfLadingParameter.equals(parameter)) {
-                // Bill of Lading parameter
-                join = new Join();
+    protected DBEntityAnalysis.DBEntityAnalysisBuilder<Event> prepareDBEntityAnalysis() {
+        DBEntityAnalysis.DBEntityAnalysisBuilder<Event> builder = super.prepareDBEntityAnalysis();
+        Class<?> eventModel = builder.getPrimaryModelClass();
+        Table eventTable = builder.getPrimaryModelTable();
+        Set<String> seen = new HashSet<>();
 
-                Table shipmentTable = Shipment.class.getAnnotation(Table.class);
-                if (shipmentTable == null) {
-                    throw new GetException("@Table not defined on Shipment-class!");
+        for (Class<?> clazz : modelSubClasses) {
+            Class<?> currentClass = clazz;
+            while (currentClass != Event.class) {
+                for (Field field : currentClass.getDeclaredFields()) {
+                    QueryField queryField = QueryFields.queryFieldFromField(Event.class, field, clazz, eventTable, true);
+                    if (seen.add(queryField.getJsonName())) {
+                        builder = builder.registerQueryField(queryField);
+                    }
                 }
-
-                String shipmentShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(Shipment.class, "id");
-                String shipmentEventShipmentIdColumn = ReflectUtility.transformFromFieldNameToColumnName(ShipmentEvent.class, "shipmentId");
-                join.add(shipmentTable.value() + " ON " + shipmentTable.value() + "." + shipmentShipmentIdColumn + " = " + getTableName() + "." + shipmentEventShipmentIdColumn);
-                filter.addFilterItem(new FilterItem(BILL_OF_LADING_PARAMETER, Shipment.class, value, true, false, true));
-                return true;
+                currentClass = currentClass.getSuperclass();
             }
-            return false;
-        } catch (NoSuchFieldException noSuchFieldException) {
-            return false;
         }
-    }
-
-    public String getTableName() {
-        StringBuilder sb = new StringBuilder();
-        getTableName(sb);
-        return sb.toString();
-    }
-
-    @Override
-    public void getTableName(StringBuilder sb) {
-        Table table = Event.class.getAnnotation(Table.class);
-        if (table == null) {
-            throw new GetException("@Table not defined on Event-class!");
-        }
-        sb.append(table.value());
+        return builder.join(Join.JoinType.JOIN, eventModel, ShipmentEvent.class)
+                .onFieldEqualsThen("id", "id")
+                .chainJoin(Shipment.class)
+                .onFieldEqualsThen("shipmentId", "id")
+                .registerQueryFieldFromField(BILL_OF_LADING_PARAMETER);
     }
 
     @Override
@@ -115,82 +128,20 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
      * @param meta the Database metadata about the row
      * @return a Subclassed event (TransportEvent, EquipmentEvent or ShipmentEvent) corresponding to the discriminator
      */
+    @SneakyThrows({InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public Event getModelClassInstance(Row row, RowMetadata meta) {
-        try {
-            JsonSubTypes jsonSubTypes = Event.class.getAnnotation(JsonSubTypes.class);
-            JsonTypeInfo jsonTypeInfo = Event.class.getAnnotation(JsonTypeInfo.class);
-            if (jsonSubTypes != null && jsonTypeInfo != null) {
-                String property = jsonTypeInfo.property();
-                // The discriminator value is on the Event class
-                String columnName = ReflectUtility.transformFromFieldNameToColumnName(Event.class, property);
-                Object value = row.get(columnName);
-                for (JsonSubTypes.Type type : jsonSubTypes.value()) {
-                    if (type.name().equals(value)) {
-                        // Create a new instance of the sub class to Event
-                        Constructor<?> constructor = type.value().getDeclaredConstructor();
-                        return (Event) constructor.newInstance();
-                    }
-                }
-                throw new GetException("Unmatched sub-type: " + value + " of Event.class");
-            } else {
-                return super.getModelClassInstance(row, meta);
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchFieldException e) {
-            throw new GetException("Error when creating a new sub class of Event.class");
+        Object value = row.get(EVENT_TYPE_FIELD_NAME);
+        Constructor<? extends Event> constructor;
+        if (value instanceof String) {
+            constructor = NAME2CONSTRUCTOR.get(value);
+        } else {
+            constructor = null;
         }
-    }
-
-    @Override
-    protected String transformFromFieldNameToColumnName(String fieldName) throws NoSuchFieldException {
-        // Run through all possible subClasses and see if one of them can transform the fieldName name to a column name
-        for (Class<Event> clazz : modelSubClasses) {
-            try {
-                // Verify that the field exists on the model class and transform it from JSON-name to FieldName
-                return ReflectUtility.transformFromFieldNameToColumnName(clazz, fieldName);
-            } catch (NoSuchFieldException noSuchFieldException) {
-                // Do nothing - try the next sub class
-            }
+        if (constructor == null) {
+            throw new IllegalStateException("Unknown Event type (field: " + EVENT_TYPE_FIELD_NAME + "), got value: "
+                    + value);
         }
-        throw new NoSuchFieldException("Field: " + fieldName + " does not exist on any of: " + getModelClassNames());
-    }
-
-    @Override
-    protected String transformFromFieldNameToJsonName(String fieldName) throws NoSuchFieldException {
-        // Run through all possible subClasses and see if one of them can transform the fieldName name to a json name
-        for (Class<Event> clazz : modelSubClasses) {
-            try {
-                // Verify that the field exists on the model class and transform it from FieldName to JSON-name
-                return ReflectUtility.transformFromFieldNameToJsonName(clazz, fieldName);
-            } catch (NoSuchFieldException noSuchFieldException) {
-                // Do nothing - try the next sub class
-            }
-        }
-        throw new NoSuchFieldException("Field: " + fieldName + " does not exist on any of: " + getModelClassNames());
-    }
-
-    private String getModelClassNames() {
-        StringBuilder sb = new StringBuilder();
-        for (Class<Event> clazz : modelSubClasses) {
-            if (sb.length() != 0) {
-                sb.append(", ");
-            }
-            sb.append(clazz.getSimpleName());
-        }
-        return sb.toString();
-    }
-
-    @Override
-    protected Class<?> getFieldType(String fieldName) throws NoSuchFieldException {
-        // Run through all possible subClasses
-        for (Class<Event> clazz : modelSubClasses) {
-            try {
-                // Investigate if the return type of the getter method corresponding to fieldName is an Enum
-                return ReflectUtility.getFieldType(clazz, fieldName);
-            } catch (MethodNotFoundException methodNotFoundException) {
-                // Do nothing - try the next sub class
-            }
-        }
-        throw new MethodNotFoundException("No getter method found for field: " + fieldName + " tested the following subclasses: " + getModelClassNames());
+        return constructor.newInstance();
     }
 }

@@ -49,8 +49,8 @@ public class EventSubscriptionController extends ExtendedBaseController<EventSub
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = EventSubscription.class))))
     })
     @PostMapping( consumes = "application/json", produces = "application/json")
-    public Mono<EventSubscription> save(@RequestBody EventSubscription eventSubscription) {
-        return super.save(eventSubscription);
+    public Mono<EventSubscription> create(@RequestBody EventSubscription eventSubscription) {
+        return super.create(eventSubscription);
     }
 
 

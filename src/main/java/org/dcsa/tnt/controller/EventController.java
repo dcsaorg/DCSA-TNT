@@ -13,17 +13,17 @@ import lombok.RequiredArgsConstructor;
 import org.dcsa.core.controller.BaseController;
 import org.dcsa.core.exception.GetException;
 import org.dcsa.core.extendedrequest.ExtendedParameters;
-import org.dcsa.tnt.model.*;
+import org.dcsa.tnt.model.Event;
+import org.dcsa.tnt.model.Events;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.util.ExtendedEventRequest;
+import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +35,8 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     private final EventService eventService;
 
     private final ExtendedParameters extendedParameters;
+
+    private final R2dbcDialect r2dbcDialect;
 
     @Override
     public String getType() {
@@ -53,11 +55,9 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     })
     @GetMapping
     public Mono<Events> findAll(ServerHttpResponse response, ServerHttpRequest request) {
-        ExtendedEventRequest extendedEventRequest = new ExtendedEventRequest(extendedParameters,
-                new Class[] {EquipmentEvent.class, ShipmentEvent.class, TransportEvent.class, TransportEquipmentEvent.class});
+        ExtendedEventRequest extendedEventRequest = new ExtendedEventRequest(extendedParameters, r2dbcDialect);
         try {
-            Map<String,String> params = request.getQueryParams().toSingleValueMap();
-            extendedEventRequest.parseParameter(params);
+            extendedEventRequest.parseParameter(request.getQueryParams());
         } catch (GetException getException) {
             return Mono.error(getException);
         }
@@ -89,8 +89,8 @@ public class EventController extends BaseController<EventService, Event, UUID> {
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
     @Override
-    public Mono<Event> save(@RequestBody Event event) {
-        return super.save(event);
+    public Mono<Event> create(@RequestBody Event event) {
+        return super.create(event);
     }
 
 }

@@ -48,33 +48,33 @@ public class EventServiceImpl extends ExtendedBaseServiceImpl<EventRepository, E
     public Mono<Event> save(Event event) {
         switch (event.getEventType()) {
             case SHIPMENT:
-                return shipmentEventService.save((ShipmentEvent) event).doOnNext(
+                return shipmentEventService.create((ShipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             case TRANSPORT:
-                return transportEventService.save((TransportEvent) event).doOnNext(
+                return transportEventService.create((TransportEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         null), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             case TRANSPORTEQUIPMENT:
-                return transportEquipmentEventService.save((TransportEquipmentEvent) event).doOnNext(
+                return transportEquipmentEventService.create((TransportEquipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                         e.getEquipmentReference()), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             case EQUIPMENT:
-                return equipmentEventService.save((EquipmentEvent) event).doOnNext(
+                return equipmentEventService.create((EquipmentEvent) event).doOnNext(
                         e -> new EventCallbackHandler(
                                 eventSubscriptionRepository.findSubscriptionsByFilters(e.getEventType(),
                                 e.getEquipmentReference()), e)
                                 .start()
-                ).map(e -> e);
+                ).cast(Event.class);
             default:
                 return Mono.error(new IllegalStateException("Unexpected value: " + event.getEventType()));
         }
