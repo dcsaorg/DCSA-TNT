@@ -7,7 +7,9 @@ import org.dcsa.core.model.AuditBase;
 import org.dcsa.core.model.GetId;
 import org.dcsa.tnt.model.enums.EventClassifierCode;
 import org.dcsa.tnt.model.enums.EventType;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -43,6 +45,11 @@ public class Event extends AuditBase implements GetId<UUID> {
     @Column("event_date_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private OffsetDateTime eventDateTime;
+
+    @Column("event_created_date_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @CreatedDate
+    private OffsetDateTime eventCreatedDateTime;
 
     @JsonProperty("eventClassifierCode")
     @Column("event_classifier_code")

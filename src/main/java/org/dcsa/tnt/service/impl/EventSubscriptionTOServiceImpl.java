@@ -1,12 +1,14 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.core.service.impl.BaseServiceImpl;
 import org.dcsa.core.util.MappingUtils;
 import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.base.AbstractEventSubscription;
 import org.dcsa.tnt.model.enums.EventType;
+import org.dcsa.tnt.model.transferobjects.EventSubscriptionSecretUpdateTO;
 import org.dcsa.tnt.model.transferobjects.EventSubscriptionTO;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
 import org.dcsa.tnt.service.EventSubscriptionService;
@@ -52,11 +54,31 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
 
     @Override
     public Mono<EventSubscriptionTO> update(EventSubscriptionTO eventSubscriptionTO) {
+        if (eventSubscriptionTO.getSecret() != null) {
+            return Mono.error(new UpdateException("Please omit the \"secret\" attribute.  If you want to change the"
+                    + " secret, please use the dedicated secret endpoint"
+                    + " (\"PUT .../event-subscriptions/" + eventSubscriptionTO.getSubscriptionID() + "/secret\")."));
+        }
         return eventSubscriptionRepository.deleteEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
                 .thenReturn(eventSubscriptionTO)
                 .map(subscriptionTO -> MappingUtils.instanceFrom(subscriptionTO, EventSubscription::new, AbstractEventSubscription.class))
+                .flatMap(updated ->
+                    eventSubscriptionService.findById(updated.getSubscriptionID())
+                            .map(original -> {
+                              updated.setSecret(original.getSecret());
+                              updated.copyInternalFieldsFrom(original);
+                              return updated;
+                            })
+                )
                 .flatMap(eventSubscriptionService::update)
                 .flatMap(ignored -> createEventTypes(eventSubscriptionTO));
+    }
+
+    public Mono<Void> updateSecret(UUID subscriptionID, EventSubscriptionSecretUpdateTO eventSubscriptionSecretUpdateTO) {
+        return eventSubscriptionService.findById(subscriptionID)
+                .doOnNext(eventSubscription -> eventSubscription.setSecret(eventSubscriptionSecretUpdateTO.getSecret()))
+                .flatMap(eventSubscriptionService::update)
+                .then();
     }
 
     @Override

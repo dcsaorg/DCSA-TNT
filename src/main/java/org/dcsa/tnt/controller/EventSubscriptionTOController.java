@@ -16,6 +16,7 @@ import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.extendedrequest.ExtendedParameters;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.tnt.model.EventSubscription;
+import org.dcsa.tnt.model.transferobjects.EventSubscriptionSecretUpdateTO;
 import org.dcsa.tnt.model.transferobjects.EventSubscriptionTO;
 import org.dcsa.tnt.service.EventSubscriptionTOService;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
@@ -108,6 +109,12 @@ public class EventSubscriptionTOController extends BaseController<EventSubscript
             return Mono.error(new UpdateException("Id in url does not match id in body"));
         }
         return eventSubscriptionTOService.update(eventSubscriptionTO);
+    }
+
+    @PutMapping("{id}/secret")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> updateSecret(@PathVariable UUID id, @Valid @RequestBody EventSubscriptionSecretUpdateTO eventSubscriptionSecretUpdateTO) {
+        return eventSubscriptionTOService.updateSecret(id, eventSubscriptionSecretUpdateTO);
     }
 
     @DeleteMapping()
