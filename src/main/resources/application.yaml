@@ -62,5 +62,5 @@ server:
 
 logging:
   level:
-    dk: DEBUG
+    org.dcsa: DEBUG
 

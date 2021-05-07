@@ -15,10 +15,10 @@ import java.util.UUID;
 
 public interface EventSubscriptionRepository extends ExtendedRepository<EventSubscription, UUID> {
 
-    @Query("SELECT callback_url FROM event_subscription es"
+    @Query("SELECT es.* FROM event_subscription es"
             + "  JOIN event_subscription_event_types eset ON (es.subscription_id = eset.subscription_id)"
             + " WHERE eset.event_type = :eventType AND (:equipmentReference IS NULL or es.equipment_reference = :equipmentReference)")
-    Flux<String> findSubscriptionsByFilters(@Param("eventType") EventType eventType, @Param("equipmentReference") String equipmentReference);
+    Flux<EventSubscription> findSubscriptionsByFilters(@Param("eventType") EventType eventType, @Param("equipmentReference") String equipmentReference);
 
     @Modifying
     @Query("INSERT INTO event_subscription_event_types (subscription_id, event_type)"
