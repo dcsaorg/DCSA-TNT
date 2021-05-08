@@ -57,7 +57,7 @@ jobs:
       with:
         repository: dcsaorg/DCSA-API-Validator
         ref: master
-        token: ${{ secrets.read_repo_pat }}
+        token: ${{ secrets.REPO_ACCESS_PAT }}
 
     - name: Run testsuite
       run: mvn -B package --file pom.xml

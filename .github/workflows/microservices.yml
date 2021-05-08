@@ -26,7 +26,7 @@ jobs:
       with:
         repository: dcsaorg/DCSA-API-Validator
         ref: master
-        token: ${{ secrets.read_repo_pat }}
+        token: ${{ secrets.REPO_ACCESS_PAT }}
     - name: Run API validator
       run: mvn test
       env:
