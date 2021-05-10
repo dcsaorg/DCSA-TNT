@@ -27,7 +27,7 @@ public interface EventSubscriptionRepository extends ExtendedRepository<EventSub
 
     @Query("SELECT event_type FROM event_subscription_event_types"
             + " WHERE subscription_id = :subscriptionID")
-    Flux<EventType> findEventTypesForSubscription(UUID subscriptionID);
+    Flux<String> findEventTypesForSubscription(UUID subscriptionID);
 
 
     @Modifying
