@@ -95,6 +95,7 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
                 .map(eventSubscription -> MappingUtils.instanceFrom(eventSubscription, EventSubscriptionTO::new, AbstractEventSubscription.class))
                 .flatMap(eventSubscriptionTO ->
                         eventSubscriptionRepository.findEventTypesForSubscription(eventSubscriptionTO.getId())
+                        .map(EventType::valueOf)
                         .collectList()
                         .doOnNext(eventSubscriptionTO::setEventType)
                         .thenReturn(eventSubscriptionTO)
