@@ -26,6 +26,10 @@ public class AbstractEventSubscription extends AuditBase {
     @Column("booking_reference")
     private String bookingReference;
 
+    @JsonProperty("billOfLadingNumber")
+    @Column("bill_of_lading_number")
+    private String billOfLadingNumber;
+
     @JsonProperty("equipmentReference")
     @Column("equipment_reference")
     private String equipmentReference;
