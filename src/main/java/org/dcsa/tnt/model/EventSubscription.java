@@ -15,7 +15,7 @@ import java.util.UUID;
 public class EventSubscription extends AbstractEventSubscription {
 
     @Column("retry_count")
-    private Long retryCount;
+    private Long retryCount = 0L;
 
     @Column("retry_after")
     private OffsetDateTime retryAfter;
