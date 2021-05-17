@@ -62,3 +62,4 @@ jobs:
         OAuthTokenUri: https://dcsa.eu.auth0.com/oauth/token
         API_ROOT_URI: http://localhost:9090/v2
         CALLBACK_URI: http://172.17.0.1:4567
+        DCSA_API_VALIDATOR_MAY_USE_POST_EVENTS_ENDPOINT: true
