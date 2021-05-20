@@ -31,7 +31,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = TransportEvent.class, name="TRANSPORT"),
         @JsonSubTypes.Type(value = ShipmentEvent.class, name="SHIPMENT")
 })
-public class Event extends AuditBase {
+public class Event extends AuditBase implements Notification {
 
     @Id
     @Column("event_id")
