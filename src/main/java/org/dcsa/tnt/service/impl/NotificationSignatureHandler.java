@@ -288,7 +288,9 @@ public class NotificationSignatureHandler {
                                             break;
                                     }
                                     if (!respectRetryAfter || nextAttempt == null) {
-                                        nextAttempt = computeNextDelay(eventSubscriptionState);
+                                        long delay = computeNextDelay(eventSubscriptionState);
+                                        eventSubscriptionState.setAccumulatedRetryDelay(delay);
+                                        nextAttempt = OffsetDateTime.now().plusSeconds(delay);
                                     }
                                     eventSubscriptionState.setRetryAfter(nextAttempt);
                                     log.debug("Notification for " + callbackUrl + " failed, it replied with: "
@@ -321,7 +323,7 @@ public class NotificationSignatureHandler {
         return parsedDateTime;
     }
 
-    private OffsetDateTime computeNextDelay(EventSubscriptionState eventSubscriptionState) {
+    private long computeNextDelay(EventSubscriptionState eventSubscriptionState) {
         Long delaySeconds = eventSubscriptionState.getAccumulatedRetryDelay();
         long limit = notificationServiceConfig.getMaxRetryAfterDelay().toSeconds();
         if (delaySeconds == null) {
@@ -332,8 +334,7 @@ public class NotificationSignatureHandler {
         if (delaySeconds >= limit) {
             delaySeconds = limit;
         }
-        eventSubscriptionState.setAccumulatedRetryDelay(delaySeconds);
-        return OffsetDateTime.now().plusSeconds(delaySeconds);
+        return delaySeconds;
     }
 
     @Getter
