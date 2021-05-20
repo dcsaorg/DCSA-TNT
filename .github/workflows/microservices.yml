@@ -33,7 +33,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-Information-Model
-        ref: new-subscription-model
+        ref: master
         path: DCSA-Information-Model
 
     - name: Run the TNT microservice plus database
@@ -43,7 +43,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-API-Validator
-        ref: update-tnt-tests
+        ref: master
         token: ${{ secrets.REPO_ACCESS_PAT }}
         path: DCSA-API-Validator
 
