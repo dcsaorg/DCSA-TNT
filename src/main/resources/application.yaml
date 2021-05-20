@@ -43,6 +43,10 @@ spring:
   webflux:
     base-path: /v2
 
+dcsa:
+  specification:
+    version: 2.1.0
+
 auth0:
   audience: localhost
   enabled: true

@@ -31,6 +31,9 @@ public class NotificationServiceConfig {
 
     private SignatureMethod defaultSignatureMethod;
 
+    @Value("${dcsa.specification.version:N/A}")
+    private String apiSpecificationVersion;
+
     @Autowired
     void initializeDefaultSignatureMethod(@Value("${dcsa.EventNotificationService.defaultSignatureMethod:sha256}") String defaultSignatureMethod) {
         Optional<SignatureMethod> signatureMethodOptional = SignatureMethod.byTag(defaultSignatureMethod);
