@@ -39,6 +39,7 @@ public class NotificationSignatureHandler {
 
     private static final String SIGNATURE_HEADER_NAME = "Notification-Signature";
     private static final String SUBSCRIPTION_ID_HEADER_NAME = "Subscription-ID";
+    private static final String API_VERSION_HEADER_NAME = "API-Version";
     private static final Map<SignatureMethod, SignatureFunction> SIGNATURE_FUNCTION_MAP = new HashMap<>();
 
     static {
@@ -205,6 +206,7 @@ public class NotificationSignatureHandler {
                             .uri(uri)
                             .header(SIGNATURE_HEADER_NAME, signatureHeaderValue)
                             .header(SUBSCRIPTION_ID_HEADER_NAME, String.valueOf(eventSubscriptionState.getSubscriptionID()))
+                            .header(API_VERSION_HEADER_NAME, notificationServiceConfig.getApiSpecificationVersion())
                             .bodyValue(bundleSerialized)
                             .exchangeToMono(clientResponse -> {
                                 HttpStatus httpStatus = clientResponse.statusCode();
