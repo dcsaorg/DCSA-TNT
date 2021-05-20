@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.EventSubscriptionState;
+import org.dcsa.tnt.model.Notification;
 import org.dcsa.tnt.model.enums.SignatureMethod;
 import org.dcsa.tnt.service.impl.config.NotificationServiceConfig;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -141,7 +141,7 @@ public class NotificationSignatureHandler {
     }
 
     public <T extends EventSubscriptionState> Mono<T> emitNotifications(T eventSubscriptionState,
-                                                                        Flux<? extends Event> events) {
+                                                                        Flux<? extends Notification> notifications) {
         int bundleSize = eventSubscriptionState.getLastBundleSize() != null
                 ? eventSubscriptionState.getLastBundleSize()
                 : notificationServiceConfig.getDefaultBundleSize();
@@ -166,8 +166,8 @@ public class NotificationSignatureHandler {
                 // TODO: Set time outs
                 .defaultHeader("Content-Type", "application/json")
                 .build();
-        log.info("Extracting up to " + bundleSize + " events to submit to " + eventSubscriptionState.getCallbackUrl());
-        return events.limitRequest(bundleSize)
+        log.info("Extracting up to " + bundleSize + " notifications to submit to " + eventSubscriptionState.getCallbackUrl());
+        return notifications.limitRequest(bundleSize)
                 .collectList()
                 .flatMap(notificationBundle -> {
                     if (notificationBundle.isEmpty()) {
@@ -178,10 +178,10 @@ public class NotificationSignatureHandler {
                     byte[] bundleSerialized;
                     log.info("Submitting " + notificationBundle.size() + " notification(s) to subscription " + eventSubscriptionState.getCallbackUrl());
 
-                    for (Event event : notificationBundle) {
-                        OffsetDateTime eventCreatedDateTime = event.getEventCreatedDateTime();
+                    for (Notification notification : notificationBundle) {
+                        OffsetDateTime eventCreatedDateTime = notification.getEventCreatedDateTime();
                         if (earliest != null && eventCreatedDateTime.isBefore(earliest)) {
-                            throw new IllegalArgumentException("Events must be sorted by eventCreatedDateTime but was not!");
+                            throw new IllegalArgumentException("Notifications must be sorted by eventCreatedDateTime but was not!");
                         }
                         earliest = eventCreatedDateTime;
                     }
