@@ -11,6 +11,7 @@ import org.dcsa.tnt.model.Notification;
 import org.dcsa.tnt.model.enums.SignatureMethod;
 import org.dcsa.tnt.service.impl.config.NotificationServiceConfig;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -206,16 +207,16 @@ public class NotificationSignatureHandler {
                             .header(SUBSCRIPTION_ID_HEADER_NAME, String.valueOf(eventSubscriptionState.getSubscriptionID()))
                             .bodyValue(bundleSerialized)
                             .exchangeToMono(clientResponse -> {
-                                int responseCode = clientResponse.rawStatusCode();
+                                HttpStatus httpStatus = clientResponse.statusCode();
                                 String statusMessage;
-                                if (responseCode >= 200 && responseCode < 300) {
+                                if (httpStatus.is2xxSuccessful()) {
                                     eventSubscriptionState.resetFailureState();
                                     eventSubscriptionState.setLastEventID(latestUUID);
                                     eventSubscriptionState.setLastEventDateCreatedDateTime(lastEventCreatedDateTime);
                                     statusMessage = "Success. Sent " + notificationBundle.size()  + " notification(s), response code "
-                                            + responseCode;
+                                            + httpStatus.value();
                                     log.debug("Notification sent to " + callbackUrl + ", it replied with: "
-                                            + responseCode + " (status: " + statusMessage + ")");
+                                            + httpStatus.value() + " (status: " + statusMessage + ")");
                                 } else {
                                     ClientResponse.Headers headers = clientResponse.headers();
                                     List<String> retryAfterHeader = headers.header("Retry-After");
@@ -229,8 +230,8 @@ public class NotificationSignatureHandler {
                                     } else if (!retryAfterHeader.isEmpty()) {
                                         log.debug(callbackUrl + " returned multiple Retry-After headers; ignoring them all");
                                     }
-                                    switch (responseCode) {
-                                        case 413: // Payload too large
+                                    switch (httpStatus) {
+                                        case PAYLOAD_TOO_LARGE:
                                             eventSubscriptionState.setLastBundleSize(Math.max(bundleSize / 2, 1));
                                             respectRetryAfter = true;
                                             // On a Payload too large, we retry "immediately" if we can reduce the size
@@ -244,7 +245,7 @@ public class NotificationSignatureHandler {
                                                 statusMessage = "Payload was too large (HTTP 429); retrying later (delay requested by subscriber)";
                                             }
                                             break;
-                                        case 503:
+                                        case SERVICE_UNAVAILABLE:
                                             respectRetryAfter = true;
                                             if (delayRequestedBySubscriber) {
                                                 statusMessage = "Subscriber was unavailable (HTTP 503) and provided a valid Retry-After header";
@@ -253,7 +254,7 @@ public class NotificationSignatureHandler {
                                                         + " Using back off strategy for delay";
                                             }
                                             break;
-                                        case 429:
+                                        case TOO_MANY_REQUESTS:
                                             respectRetryAfter = true;
                                             if (delayRequestedBySubscriber) {
                                                 statusMessage = "Subscriber found us too persistent (HTTP 429) and provided a Valid Retry-After header.";
@@ -262,28 +263,28 @@ public class NotificationSignatureHandler {
                                                         + " Using back off strategy for delay";
                                             }
                                             break;
-                                        case 301:
-                                        case 302:
-                                        case 307:
-                                        case 308:
-                                            statusMessage = "Subscriber responded with a redirection (HTTP " + responseCode + "), but we do not support redirects. Subscriber should update their subscription instead";
+                                        case MOVED_PERMANENTLY:
+                                        case MOVED_TEMPORARILY:
+                                        case TEMPORARY_REDIRECT:
+                                        case PERMANENT_REDIRECT:
+                                            statusMessage = "Subscriber responded with a redirection (HTTP " + httpStatus.value() + "), but we do not support redirects. Subscriber should update their subscription instead";
                                             break;
-                                        case 400:
-                                            statusMessage = "Subscriber rejected the response as malformed (HTTP " + responseCode + "). Could be a bug at subscriber or in client";
+                                        case BAD_REQUEST:
+                                            statusMessage = "Subscriber rejected the response as malformed (HTTP " + httpStatus.value() + "). Could be a bug at subscriber or in client";
                                             break;
-                                        case 401:
+                                        case UNAUTHORIZED:
                                             statusMessage = "Subscriber rejected the payload due to missing / invalid Authentication (HTTP 401).  Might need a Secret reset";
                                             break;
-                                        case 403:
+                                        case FORBIDDEN:
                                             statusMessage = "Subscriber rejected the payload (HTTP 403)";
                                             break;
                                         default:
-                                            if (responseCode < 400) {
-                                                statusMessage = "Subscriber responded with cache code or an unknown redirection code (HTTP " + responseCode + ")!?";
-                                            } else if (responseCode < 500) {
-                                                statusMessage = "Subscriber rejected message suggesting a client error (HTTP " + responseCode + ")";
+                                            if (httpStatus.is3xxRedirection()) {
+                                                statusMessage = "Subscriber responded with cache code or an unknown redirection code (HTTP " + httpStatus.value() + ")!?";
+                                            } else if (httpStatus.is4xxClientError()) {
+                                                statusMessage = "Subscriber rejected message suggesting a client error (HTTP " + httpStatus.value() + ")";
                                             } else {
-                                                statusMessage = "Subscriber was unavailable (HTTP " + responseCode + ")";
+                                                statusMessage = "Subscriber was unavailable (HTTP " + httpStatus.value() + ")";
                                             }
                                             break;
                                     }
@@ -294,7 +295,7 @@ public class NotificationSignatureHandler {
                                     }
                                     eventSubscriptionState.setRetryAfter(nextAttempt);
                                     log.debug("Notification for " + callbackUrl + " failed, it replied with: "
-                                            + responseCode + ": Will retry after " + nextAttempt + " (status: "
+                                            + httpStatus.value() + ": Will retry after " + nextAttempt + " (status: "
                                             + statusMessage + ")");
                                 }
                                 eventSubscriptionState.setLastStatusMessage(statusMessage);
