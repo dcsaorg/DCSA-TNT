@@ -174,7 +174,7 @@ public class NotificationSignatureHandler {
                         return Mono.just(eventSubscriptionState);
                     }
                     OffsetDateTime earliest = eventSubscriptionState.getLastEventDateCreatedDateTime();
-                    UUID latestUUID = notificationBundle.get(notificationBundle.size() - 1).getId();
+                    UUID latestUUID = notificationBundle.get(notificationBundle.size() - 1).getEventID();
                     byte[] bundleSerialized;
                     log.info("Submitting " + notificationBundle.size() + " notification(s) to subscription " + eventSubscriptionState.getCallbackUrl());
 
