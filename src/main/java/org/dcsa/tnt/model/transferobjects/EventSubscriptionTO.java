@@ -2,8 +2,8 @@ package org.dcsa.tnt.model.transferobjects;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.dcsa.core.events.model.enums.EventType;
 import org.dcsa.tnt.model.base.AbstractEventSubscription;
-import org.dcsa.tnt.model.enums.EventType;
 
 import java.util.List;
 

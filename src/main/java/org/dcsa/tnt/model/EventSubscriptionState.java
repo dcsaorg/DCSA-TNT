@@ -24,12 +24,6 @@ public interface EventSubscriptionState {
     Integer getLastBundleSize();
     void setLastBundleSize(Integer lastBundleSize);
 
-    UUID getLastEventID();
-    void setLastEventID(UUID lastEventID);
-
-    OffsetDateTime getLastEventDateCreatedDateTime();
-    void setLastEventDateCreatedDateTime(OffsetDateTime lastEventDateCreatedDateTime);
-
     String getLastStatusMessage();
     void setLastStatusMessage(String lastStatusMessage);
 

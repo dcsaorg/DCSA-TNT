@@ -1,9 +1,9 @@
 package org.dcsa.tnt.repository;
 
+import org.dcsa.core.events.model.enums.EventType;
 import org.dcsa.core.repository.ExtendedRepository;
 import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.EventSubscriptionEventType;
-import org.dcsa.tnt.model.enums.EventType;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;

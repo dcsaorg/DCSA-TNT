@@ -12,7 +12,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 @SpringBootApplication
 @ComponentScan("org.dcsa")
-@EnableR2dbcRepositories(repositoryBaseClass = ExtendedRepositoryImpl.class)
+@EnableR2dbcRepositories(basePackages = {"org.dcsa"}, repositoryBaseClass = ExtendedRepositoryImpl.class)
 public class Application {
 
 	@Bean

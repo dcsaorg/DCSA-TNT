@@ -1,7 +1,7 @@
 package org.dcsa.tnt.model;
 
 import lombok.Data;
-import org.dcsa.tnt.model.enums.EventType;
+import org.dcsa.core.events.model.enums.EventType;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 

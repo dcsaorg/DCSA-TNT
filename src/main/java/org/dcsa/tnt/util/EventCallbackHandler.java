@@ -1,10 +1,10 @@
 package org.dcsa.tnt.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dcsa.tnt.model.EquipmentEvent;
-import org.dcsa.tnt.model.Event;
-import org.dcsa.tnt.model.ShipmentEvent;
-import org.dcsa.tnt.model.TransportEvent;
+import org.dcsa.core.events.model.EquipmentEvent;
+import org.dcsa.core.events.model.Event;
+import org.dcsa.core.events.model.ShipmentEvent;
+import org.dcsa.core.events.model.TransportEvent;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

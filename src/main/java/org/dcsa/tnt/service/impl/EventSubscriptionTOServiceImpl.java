@@ -1,13 +1,13 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dcsa.core.events.model.enums.EventType;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.core.service.impl.BaseServiceImpl;
 import org.dcsa.core.util.MappingUtils;
 import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.base.AbstractEventSubscription;
-import org.dcsa.tnt.model.enums.EventType;
 import org.dcsa.tnt.model.transferobjects.EventSubscriptionSecretUpdateTO;
 import org.dcsa.tnt.model.transferobjects.EventSubscriptionTO;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
