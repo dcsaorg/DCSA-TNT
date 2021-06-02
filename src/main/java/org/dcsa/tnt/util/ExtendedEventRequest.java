@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
-    private static final String TRANSPORT_DOCUMENT_ID_JSON_NAME = "transportDocumentID";
+    private static final String TRANSPORT_DOCUMENT_REFERENCE_JSON_NAME = "transportDocumentReference";
 
     private static final String SHIPMENT_TABLE_NAME = "shipment";
     private static final String SHIPMENT_TABLE_ID_COLUMN_NAME = "id";
@@ -49,9 +49,9 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
 
     private static final String TRANSPORT_DOCUMENT_TABLE_NAME = "transport_document";
     private static final String TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME = "shipping_instruction_id";
-    private static final String TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME = "id";
+    private static final String TRANSPORT_DOCUMENT_TABLE_TRANSPORT_DOCUMENT_REFERENCE_COLUMN_NAME = "transport_document_reference";
 
-    private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_ID_JSON_NAME);
+    private static final Set<String> JSON_FIELDS_REQUIRING_DISTINCT = Set.of(TRANSPORT_DOCUMENT_REFERENCE_JSON_NAME);
 
     private static final String EVENT_TYPE_FIELD_NAME;
     private static final Map<String, Constructor<? extends Event>> NAME2CONSTRUCTOR;
@@ -159,9 +159,9 @@ public class ExtendedEventRequest extends ExtendedRequest<Event> {
                     .chainJoin(transportDocumentTable)
                     .onEqualsThen(SHIPPING_INSTRUCTION_ID_COLUMN_NAME, TRANSPORT_DOCUMENT_TABLE_SHIPPING_INSTRUCTION_ID_COLUMN_NAME)
                     .registerQueryField(
-                            SqlIdentifier.unquoted(TRANSPORT_DOCUMENT_TABLE_ID_COLUMN_NAME),
-                            TRANSPORT_DOCUMENT_ID_JSON_NAME,
-                            UUID.class
+                            SqlIdentifier.unquoted(TRANSPORT_DOCUMENT_TABLE_TRANSPORT_DOCUMENT_REFERENCE_COLUMN_NAME),
+                            TRANSPORT_DOCUMENT_REFERENCE_JSON_NAME,
+                            String.class
                     );
         }
         return builder;

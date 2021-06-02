@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.dcsa.core.exception.CreateException;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
-import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.Notification;
 import org.dcsa.tnt.model.enums.SignatureMethod;

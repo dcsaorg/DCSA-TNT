@@ -1,7 +1,6 @@
 package org.dcsa.tnt.service;
 
 import org.dcsa.core.service.ExtendedBaseService;
-import org.dcsa.tnt.model.Event;
 import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.Notification;
 import reactor.core.publisher.Flux;
