@@ -7,7 +7,6 @@ import org.dcsa.core.model.AuditBase;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data

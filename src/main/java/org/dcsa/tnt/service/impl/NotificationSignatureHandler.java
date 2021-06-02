@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.dcsa.core.events.model.Message;
 import org.dcsa.tnt.model.EventSubscriptionState;
-import org.dcsa.tnt.model.Notification;
 import org.dcsa.tnt.model.enums.SignatureMethod;
 import org.dcsa.tnt.service.impl.config.NotificationServiceConfig;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -30,7 +30,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -143,7 +146,7 @@ public class NotificationSignatureHandler {
     }
 
     public <T extends EventSubscriptionState> Mono<T> emitNotifications(T eventSubscriptionState,
-                                                                        Flux<? extends Notification> notifications) {
+                                                                        Flux<? extends Message> notifications) {
         int bundleSize = eventSubscriptionState.getLastBundleSize() != null
                 ? eventSubscriptionState.getLastBundleSize()
                 : notificationServiceConfig.getDefaultBundleSize();
@@ -175,24 +178,14 @@ public class NotificationSignatureHandler {
                     if (notificationBundle.isEmpty()) {
                         return Mono.just(eventSubscriptionState);
                     }
-                    OffsetDateTime earliest = eventSubscriptionState.getLastEventDateCreatedDateTime();
-                    UUID latestUUID = notificationBundle.get(notificationBundle.size() - 1).getEventID();
                     byte[] bundleSerialized;
                     log.info("Submitting " + notificationBundle.size() + " notification(s) to subscription " + eventSubscriptionState.getCallbackUrl());
 
-                    for (Notification notification : notificationBundle) {
-                        OffsetDateTime eventCreatedDateTime = notification.getEventCreatedDateTime();
-                        if (earliest != null && eventCreatedDateTime.isBefore(earliest)) {
-                            throw new IllegalArgumentException("Notifications must be sorted by eventCreatedDateTime but was not!");
-                        }
-                        earliest = eventCreatedDateTime;
-                    }
                     try {
                         bundleSerialized = objectMapper.writeValueAsBytes(notificationBundle);
                     } catch (JsonProcessingException e) {
                         throw new IllegalArgumentException("Cannot serialize events", e);
                     }
-                    final OffsetDateTime lastEventCreatedDateTime = earliest;
                     final String signatureHeaderValue;
                     try {
                         signatureHeaderValue = signatureFunction.computeSignatureString(
@@ -213,8 +206,6 @@ public class NotificationSignatureHandler {
                                 String statusMessage;
                                 if (httpStatus.is2xxSuccessful()) {
                                     eventSubscriptionState.resetFailureState();
-                                    eventSubscriptionState.setLastEventID(latestUUID);
-                                    eventSubscriptionState.setLastEventDateCreatedDateTime(lastEventCreatedDateTime);
                                     statusMessage = "Success. Sent " + notificationBundle.size()  + " notification(s), response code "
                                             + httpStatus.value();
                                     log.debug("Notification sent to " + callbackUrl + ", it replied with: "

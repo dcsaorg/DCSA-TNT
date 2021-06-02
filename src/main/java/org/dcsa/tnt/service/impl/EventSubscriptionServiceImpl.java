@@ -1,11 +1,11 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dcsa.core.events.model.Message;
 import org.dcsa.core.exception.CreateException;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
 import org.dcsa.tnt.model.EventSubscription;
-import org.dcsa.tnt.model.Notification;
 import org.dcsa.tnt.model.enums.SignatureMethod;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
 import org.dcsa.tnt.service.EventSubscriptionService;
@@ -88,7 +88,7 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
 
     @Override
     public Mono<EventSubscription> emitNotification(EventSubscription eventSubscription,
-                                                    Flux<? extends Notification> notifications) {
+                                                    Flux<? extends Message> notifications) {
         return notificationSignatureHandler.emitNotifications(eventSubscription, notifications)
                 .flatMap(this::save);
     }
