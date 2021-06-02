@@ -15,15 +15,12 @@ import java.util.UUID;
 @JsonTypeName("TRANSPORT")
 public class TransportEvent extends Event {
 
-    @JsonProperty("delayReasonCode")
     @Column("delay_reason_code")
     private String delayReasonCode;
 
-    @JsonProperty("vesselScheduleChangeRemark")
-    @Column("vessel_schedule_change_remark")
-    private String vesselScheduleChangeRemark;
+    @Column("change_remark")
+    private String changeRemark;
 
-    @JsonProperty("transportCallID")
     @Column("transport_call_id")
-    private UUID transportCallID;
+    private String transportCallID;
 }

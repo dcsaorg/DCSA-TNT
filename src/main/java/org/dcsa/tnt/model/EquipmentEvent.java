@@ -24,8 +24,7 @@ public class EquipmentEvent extends Event {
     @Column("empty_indicator_code")
     private EmptyIndicatorCode emptyIndicatorCode;
 
-    @JsonProperty("transportCallID")
     @Column("transport_call_id")
-    private UUID transportCallID;
+    private String transportCallID;
 
 }
