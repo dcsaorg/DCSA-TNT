@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public interface EventSubscriptionService extends ExtendedBaseService<EventSubscription, UUID> {
     Mono<EventSubscription> emitMessage(EventSubscription eventSubscription,
-                                        Flux<? extends Message> notifications);
+                                        Flux<? extends Message> messages);
 }

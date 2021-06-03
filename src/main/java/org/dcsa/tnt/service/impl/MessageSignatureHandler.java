@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dcsa.core.events.model.Message;
 import org.dcsa.tnt.model.EventSubscriptionState;
 import org.dcsa.tnt.model.enums.SignatureMethod;
-import org.dcsa.tnt.service.impl.config.NotificationServiceConfig;
+import org.dcsa.tnt.service.impl.config.MessageServiceConfig;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -38,7 +38,7 @@ import java.util.Objects;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotificationSignatureHandler {
+public class MessageSignatureHandler {
 
     private static final String SIGNATURE_HEADER_NAME = "Notification-Signature";
     private static final String SUBSCRIPTION_ID_HEADER_NAME = "Subscription-ID";
@@ -54,7 +54,7 @@ public class NotificationSignatureHandler {
         SIGNATURE_FUNCTION_MAP.put(signatureFunction.getSignatureMethod(), signatureFunction);
     }
 
-    private final NotificationServiceConfig notificationServiceConfig;
+    private final MessageServiceConfig messageServiceConfig;
 
     private final ObjectMapper objectMapper;
 
@@ -146,10 +146,10 @@ public class NotificationSignatureHandler {
     }
 
     public <T extends EventSubscriptionState> Mono<T> emitMessage(T eventSubscriptionState,
-                                                                  Flux<? extends Message> notifications) {
+                                                                  Flux<? extends Message> messages) {
         int bundleSize = eventSubscriptionState.getLastBundleSize() != null
                 ? eventSubscriptionState.getLastBundleSize()
-                : notificationServiceConfig.getDefaultBundleSize();
+                : messageServiceConfig.getDefaultBundleSize();
         URI uri;
         String callbackUrl = eventSubscriptionState.getCallbackUrl();
         try {
@@ -171,18 +171,18 @@ public class NotificationSignatureHandler {
                 // TODO: Set time outs
                 .defaultHeader("Content-Type", "application/json")
                 .build();
-        log.info("Extracting up to " + bundleSize + " notifications to submit to " + eventSubscriptionState.getCallbackUrl());
-        return notifications.limitRequest(bundleSize)
+        log.info("Extracting up to " + bundleSize + " messages to submit to " + eventSubscriptionState.getCallbackUrl());
+        return messages.limitRequest(bundleSize)
                 .collectList()
-                .flatMap(notificationBundle -> {
-                    if (notificationBundle.isEmpty()) {
+                .flatMap(messageBundle -> {
+                    if (messageBundle.isEmpty()) {
                         return Mono.just(eventSubscriptionState);
                     }
                     byte[] bundleSerialized;
-                    log.info("Submitting " + notificationBundle.size() + " notification(s) to subscription " + eventSubscriptionState.getCallbackUrl());
+                    log.info("Submitting " + messageBundle.size() + " message(s) to subscription " + eventSubscriptionState.getCallbackUrl());
 
                     try {
-                        bundleSerialized = objectMapper.writeValueAsBytes(notificationBundle);
+                        bundleSerialized = objectMapper.writeValueAsBytes(messageBundle);
                     } catch (JsonProcessingException e) {
                         throw new IllegalArgumentException("Cannot serialize events", e);
                     }
@@ -199,16 +199,16 @@ public class NotificationSignatureHandler {
                             .uri(uri)
                             .header(SIGNATURE_HEADER_NAME, signatureHeaderValue)
                             .header(SUBSCRIPTION_ID_HEADER_NAME, String.valueOf(eventSubscriptionState.getSubscriptionID()))
-                            .header(API_VERSION_HEADER_NAME, notificationServiceConfig.getApiSpecificationVersion())
+                            .header(API_VERSION_HEADER_NAME, messageServiceConfig.getApiSpecificationVersion())
                             .bodyValue(bundleSerialized)
                             .exchangeToMono(clientResponse -> {
                                 HttpStatus httpStatus = clientResponse.statusCode();
                                 String statusMessage;
                                 if (httpStatus.is2xxSuccessful()) {
                                     eventSubscriptionState.resetFailureState();
-                                    statusMessage = "Success. Sent " + notificationBundle.size()  + " notification(s), response code "
+                                    statusMessage = "Success. Sent " + messageBundle.size()  + " message(s), response code "
                                             + httpStatus.value();
-                                    log.debug("Notification sent to " + callbackUrl + ", it replied with: "
+                                    log.debug("Message sent to " + callbackUrl + ", it replied with: "
                                             + httpStatus.value() + " (status: " + statusMessage + ")");
                                 } else {
                                     ClientResponse.Headers headers = clientResponse.headers();
@@ -287,7 +287,7 @@ public class NotificationSignatureHandler {
                                         nextAttempt = OffsetDateTime.now().plusSeconds(delay);
                                     }
                                     eventSubscriptionState.setRetryAfter(nextAttempt);
-                                    log.debug("Notification for " + callbackUrl + " failed, it replied with: "
+                                    log.debug("Message for " + callbackUrl + " failed, it replied with: "
                                             + httpStatus.value() + ": Will retry after " + nextAttempt + " (status: "
                                             + statusMessage + ")");
                                 }
@@ -319,9 +319,9 @@ public class NotificationSignatureHandler {
 
     private long computeNextDelay(EventSubscriptionState eventSubscriptionState) {
         Long delaySeconds = eventSubscriptionState.getAccumulatedRetryDelay();
-        long limit = notificationServiceConfig.getMaxRetryAfterDelay().toSeconds();
+        long limit = messageServiceConfig.getMaxRetryAfterDelay().toSeconds();
         if (delaySeconds == null) {
-            delaySeconds = notificationServiceConfig.getMinRetryAfterDelay().toSeconds();
+            delaySeconds = messageServiceConfig.getMinRetryAfterDelay().toSeconds();
         } else {
             delaySeconds *= 2;
         }
