@@ -145,8 +145,8 @@ public class NotificationSignatureHandler {
                 });
     }
 
-    public <T extends EventSubscriptionState> Mono<T> emitNotifications(T eventSubscriptionState,
-                                                                        Flux<? extends Message> notifications) {
+    public <T extends EventSubscriptionState> Mono<T> emitMessage(T eventSubscriptionState,
+                                                                  Flux<? extends Message> notifications) {
         int bundleSize = eventSubscriptionState.getLastBundleSize() != null
                 ? eventSubscriptionState.getLastBundleSize()
                 : notificationServiceConfig.getDefaultBundleSize();

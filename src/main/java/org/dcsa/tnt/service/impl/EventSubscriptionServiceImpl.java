@@ -87,9 +87,9 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
 
 
     @Override
-    public Mono<EventSubscription> emitNotification(EventSubscription eventSubscription,
-                                                    Flux<? extends Message> notifications) {
-        return notificationSignatureHandler.emitNotifications(eventSubscription, notifications)
+    public Mono<EventSubscription> emitMessage(EventSubscription eventSubscription,
+                                               Flux<? extends Message> notifications) {
+        return notificationSignatureHandler.emitMessage(eventSubscription, notifications)
                 .flatMap(this::save);
     }
 }
