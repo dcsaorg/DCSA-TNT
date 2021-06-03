@@ -47,7 +47,7 @@ public class EventCallbackHandler extends Thread {
             try {
                 uri = new URI(callbackUrl);
             } catch (URISyntaxException e) {
-                log.warn("Could not parse URI \"" + callbackUrl + "\", skipping notification. Error: "
+                log.warn("Could not parse URI \"" + callbackUrl + "\", skipping message. Error: "
                         + e.getLocalizedMessage());
                 return Mono.empty();
             }
@@ -57,13 +57,13 @@ public class EventCallbackHandler extends Thread {
                     .retrieve()
                     .toBodilessEntity()
                     .doOnSuccess(success -> {
-                        log.debug("Notification sent to " + callbackUrl + ", it replied with: "
+                        log.debug("Message sent to " + callbackUrl + ", it replied with: "
                                 + success.getStatusCode().toString());
                     })
-                    // The "onErrorResume" is important to ensure we do not stop sending notifications
+                    // The "onErrorResume" is important to ensure we do not stop sending messages
                     // simply because there are issues with one recipient.
                     .onErrorResume(error -> {
-                        log.warn("Error during notification to " + callbackUrl + " " + error.getMessage());
+                        log.warn("Error during message to " + callbackUrl + " " + error.getMessage());
                         return Mono.empty();
                     });
         })

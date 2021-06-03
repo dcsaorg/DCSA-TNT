@@ -53,15 +53,15 @@ public class EventServiceImpl extends GenericEventServiceImpl implements EventSe
         private final ReactiveTransactionManager transactionManager;
         private final EventSubscriptionService eventSubscriptionService;
         private final Supplier<Flux<EventSubscription>> eventSubscriptionSupplier;
-        private final Event notification;
+        private final Event message;
 
         public void run() {
-            List<Event> notifications = Collections.singletonList(notification);
+            List<Event> messages = Collections.singletonList(message);
             TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
             try {
                 eventSubscriptionSupplier.get().concatMap(eventSubscriptionState ->
                         // We want to commit each subscription independently to limit the consequences of a
-                        transactionalOperator.transactional(eventSubscriptionService.emitMessage(eventSubscriptionState, Flux.fromIterable(notifications)))
+                        transactionalOperator.transactional(eventSubscriptionService.emitMessage(eventSubscriptionState, Flux.fromIterable(messages)))
                 )
                 .count()
                 .block();

@@ -9,7 +9,7 @@ import org.dcsa.tnt.model.EventSubscription;
 import org.dcsa.tnt.model.enums.SignatureMethod;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
 import org.dcsa.tnt.service.EventSubscriptionService;
-import org.dcsa.tnt.service.impl.config.NotificationServiceConfig;
+import org.dcsa.tnt.service.impl.config.MessageServiceConfig;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,8 +22,8 @@ import java.util.UUID;
 @Service
 public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventSubscriptionRepository, EventSubscription, UUID> implements EventSubscriptionService {
     private final EventSubscriptionRepository eventSubscriptionRepository;
-    private final NotificationServiceConfig notificationServiceConfig;
-    private final NotificationSignatureHandler notificationSignatureHandler;
+    private final MessageServiceConfig messageServiceConfig;
+    private final MessageSignatureHandler messageSignatureHandler;
 
 
     @Override
@@ -36,7 +36,7 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
         byte[] secret = eventSubscription.getSecret();
         SignatureMethod signatureMethod;
         if (eventSubscription.getSignatureMethod() == null) {
-            signatureMethod = notificationServiceConfig.getDefaultSignatureMethod();
+            signatureMethod = messageServiceConfig.getDefaultSignatureMethod();
             eventSubscription.setSignatureMethod(signatureMethod);
         } else {
             signatureMethod = eventSubscription.getSignatureMethod();
@@ -88,8 +88,8 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
 
     @Override
     public Mono<EventSubscription> emitMessage(EventSubscription eventSubscription,
-                                               Flux<? extends Message> notifications) {
-        return notificationSignatureHandler.emitMessage(eventSubscription, notifications)
+                                               Flux<? extends Message> messages) {
+        return messageSignatureHandler.emitMessage(eventSubscription, messages)
                 .flatMap(this::save);
     }
 }
