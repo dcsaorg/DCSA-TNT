@@ -9,6 +9,6 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 public interface EventSubscriptionService extends ExtendedBaseService<EventSubscription, UUID> {
-    Mono<EventSubscription> emitNotification(EventSubscription eventSubscription,
-                                             Flux<? extends Message> notifications);
+    Mono<EventSubscription> emitMessage(EventSubscription eventSubscription,
+                                        Flux<? extends Message> notifications);
 }

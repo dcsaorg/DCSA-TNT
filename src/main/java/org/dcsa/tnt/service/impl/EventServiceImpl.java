@@ -61,7 +61,7 @@ public class EventServiceImpl extends GenericEventServiceImpl implements EventSe
             try {
                 eventSubscriptionSupplier.get().concatMap(eventSubscriptionState ->
                         // We want to commit each subscription independently to limit the consequences of a
-                        transactionalOperator.transactional(eventSubscriptionService.emitNotification(eventSubscriptionState, Flux.fromIterable(notifications)))
+                        transactionalOperator.transactional(eventSubscriptionService.emitMessage(eventSubscriptionState, Flux.fromIterable(notifications)))
                 )
                 .count()
                 .block();
