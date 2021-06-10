@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<springdoc.version>1.4.2</springdoc.version>
         <groovy.version>3.0.2</groovy.version>
 		<dcsa.version>0.8.2-SNAPSHOT</dcsa.version>
 		<dcsa.events.version>0.0.1-SNAPSHOT</dcsa.events.version>
@@ -42,11 +41,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-webflux-ui</artifactId>
-			<version>${springdoc.version}</version>
 		</dependency>
 <!-- Security -->
 		<dependency>
