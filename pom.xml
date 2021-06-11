@@ -20,7 +20,8 @@
         <groovy.version>3.0.2</groovy.version>
 		<dcsa.version>0.8.2-SNAPSHOT</dcsa.version>
 		<dcsa.events.version>0.0.1-SNAPSHOT</dcsa.events.version>
-		<dcsa.tag/>
+		<dcsa.core.tag/>
+		<dcsa.event.tag/>
 		<dcsa.artifacttype/>
 	</properties>
 
@@ -69,13 +70,13 @@
 		<dependency>
 			<groupId>org.dcsa</groupId>
 			<artifactId>dcsa_core</artifactId>
-			<version>${dcsa.version}${dcsa.tag}${dcsa.artifacttype}</version>
+			<version>${dcsa.version}${dcsa.core.tag}${dcsa.artifacttype}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.dcsa</groupId>
 			<artifactId>dcsa_event_core</artifactId>
-			<version>${dcsa.events.version}${dcsa.tag}${dcsa.artifacttype}</version>
+			<version>${dcsa.events.version}${dcsa.event.tag}${dcsa.artifacttype}</version>
 		</dependency>
 
 		<dependency>
