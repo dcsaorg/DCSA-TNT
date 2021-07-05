@@ -1,0 +1,3 @@
+[submodule "DCSA-Information-Model"]
+	path = DCSA-Information-Model
+	url = https://github.com/dcsaorg/DCSA-Information-Model.git
