@@ -9,6 +9,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         path: DCSA-TNT
+        submodules: recursive
     - name: Set up Java JDK
       uses: actions/setup-java@v1
       with:
@@ -29,13 +30,6 @@ jobs:
     - name: Build API
       run: cd DCSA-TNT && mvn package -DskipTests -X #Need to skip the tests as they depend on a running DB
 
-    - name: Checkout IM
-      uses: actions/checkout@v2
-      with:
-        repository: dcsaorg/DCSA-Information-Model
-        ref: master
-        path: DCSA-Information-Model
-
     - name: Run the TNT microservice plus database
       run: cd DCSA-TNT && docker-compose -f docker-compose.yml up -d -V
 
@@ -43,7 +37,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: dcsaorg/DCSA-API-Validator
-        ref: master
+        ref: tnt-tests
         token: ${{ secrets.REPO_ACCESS_PAT }}
         path: DCSA-API-Validator
 

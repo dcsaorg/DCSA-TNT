@@ -15,6 +15,6 @@ services:
         environment:
             POSTGRES_PASSWORD: "change_this_password"
         build:
-            ../DCSA-Information-Model/datamodel/
+            DCSA-Information-Model/datamodel/
         ports:
             - 5432:5432
