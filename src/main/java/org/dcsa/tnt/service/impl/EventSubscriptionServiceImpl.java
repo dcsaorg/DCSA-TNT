@@ -2,6 +2,7 @@ package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.dcsa.core.events.model.Message;
+import org.dcsa.core.util.ValidationUtils;
 import org.dcsa.core.exception.CreateException;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -65,16 +68,23 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
                         + signatureMethod.getMaxKeyLength() + " bytes long (when deserialized)"));
             }
         }
-        return checkCallbackUrl(eventSubscription);
+        return checkEventSubscription(eventSubscription);
     }
 
     @Override
     protected Mono<EventSubscription> preUpdateHook(EventSubscription original, EventSubscription update) {
-        return checkCallbackUrl(update);
+        return checkEventSubscription(update);
     }
 
-    protected Mono<EventSubscription> checkCallbackUrl(EventSubscription eventSubscription) {
-        // Ensure that the callback url at least looks valid.
+    protected Mono<EventSubscription> checkEventSubscription(EventSubscription eventSubscription) {
+        String vessel = eventSubscription.getVesselIMONumber();
+        if (vessel != null){
+                try{
+                    ValidationUtils.validateVesselIMONumber(vessel);
+                } catch (Exception e){
+                    return Mono.error(new UpdateException(e.getLocalizedMessage()));
+                }
+        }
         try {
             new URI(eventSubscription.getCallbackUrl());
         } catch (URISyntaxException e) {
