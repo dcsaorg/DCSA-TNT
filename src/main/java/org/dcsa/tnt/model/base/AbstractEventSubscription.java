@@ -68,6 +68,9 @@ public class AbstractEventSubscription extends AuditBase {
     @Column("transport_call_id")
     private String transportCallID;
 
+    @Column("schedule_id")
+    private String scheduleID;
+
     @Column("secret")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     // Jackson encodes this in base64 by default
