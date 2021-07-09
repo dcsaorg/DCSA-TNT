@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+import org.dcsa.core.util.ValidationUtils;
 
 @RequiredArgsConstructor
 @Service
@@ -65,15 +66,23 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
                         + signatureMethod.getMaxKeyLength() + " bytes long (when deserialized)"));
             }
         }
-        return checkCallbackUrl(eventSubscription);
+        return checkEventSubscription(eventSubscription);
     }
 
     @Override
     protected Mono<EventSubscription> preUpdateHook(EventSubscription original, EventSubscription update) {
-        return checkCallbackUrl(update);
+        return checkEventSubscription(update);
     }
 
-    protected Mono<EventSubscription> checkCallbackUrl(EventSubscription eventSubscription) {
+    protected Mono<EventSubscription> checkEventSubscription(EventSubscription eventSubscription) {
+        String vessel = eventSubscription.getVesselIMONumber();
+        if (vessel != null){
+            try{
+                ValidationUtils.validateVesselIMONumber(vessel);
+            } catch (Exception e){
+                return Mono.error(new UpdateException(e.getLocalizedMessage()));
+            }
+        }
         // Ensure that the callback url at least looks valid.
         try {
             new URI(eventSubscription.getCallbackUrl());
@@ -82,8 +91,6 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
         }
         return Mono.just(eventSubscription);
     }
-
-
 
 
     @Override

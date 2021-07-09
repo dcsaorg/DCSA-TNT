@@ -36,7 +36,7 @@ public interface EventSubscriptionRepository extends ExtendedRepository<EventSub
 
     @Query("SELECT event_subscription_event_types.* FROM event_subscription_event_types"
             + " WHERE subscription_id IN (:subscriptionIDs)"
-            + " ORDER BY event_subscription_id, event_type"
+            + " ORDER BY subscription_id, event_type"
     )
     Flux<EventSubscriptionEventType> findEventTypesForSubscriptionIDIn(List<UUID> subscriptionIDs);
 }
