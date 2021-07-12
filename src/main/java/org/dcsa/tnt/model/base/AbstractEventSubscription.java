@@ -32,17 +32,11 @@ public class AbstractEventSubscription extends AuditBase {
     @NotEmpty
     private String callbackUrl;
 
-
-    @Column("booking_reference")
-    private String bookingReference;
-
     @Column("carrier_booking_reference")
     private String carrierBookingReference;
 
-
     @Column("equipment_reference")
     private String equipmentReference;
-
 
     @Column("shipment_event_type_code")
     private String shipmentEventTypeCode;
