@@ -1,15 +1,17 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.core.events.model.Message;
+import org.dcsa.core.events.model.Event;
+import org.dcsa.core.events.service.impl.MessageSignatureHandler;
 import org.dcsa.core.exception.CreateException;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
+import org.dcsa.core.util.ValidationUtils;
 import org.dcsa.tnt.model.EventSubscription;
-import org.dcsa.tnt.model.enums.SignatureMethod;
+import org.dcsa.core.events.model.enums.SignatureMethod;
 import org.dcsa.tnt.repository.EventSubscriptionRepository;
 import org.dcsa.tnt.service.EventSubscriptionService;
-import org.dcsa.tnt.service.impl.config.MessageServiceConfig;
+import org.dcsa.core.events.config.MessageServiceConfig;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,14 +19,12 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
-import org.dcsa.core.util.ValidationUtils;
 
 @RequiredArgsConstructor
 @Service
 public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventSubscriptionRepository, EventSubscription, UUID> implements EventSubscriptionService {
     private final EventSubscriptionRepository eventSubscriptionRepository;
     private final MessageServiceConfig messageServiceConfig;
-    private final MessageSignatureHandler messageSignatureHandler;
 
 
     @Override
@@ -92,11 +92,9 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
         return Mono.just(eventSubscription);
     }
 
-
     @Override
-    public Mono<EventSubscription> emitMessage(EventSubscription eventSubscription,
-                                               Flux<? extends Message> messages) {
-        return messageSignatureHandler.emitMessage(eventSubscription, messages)
-                .flatMap(this::save);
+    public Flux<EventSubscription> findSubscriptionsFor(Event event) {
+        // FIXME: Implement as a part of DDT-111
+        return Flux.empty();
     }
 }
