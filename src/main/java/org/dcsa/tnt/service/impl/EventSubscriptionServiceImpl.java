@@ -1,8 +1,14 @@
 package org.dcsa.tnt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.dcsa.core.events.model.EquipmentEvent;
 import org.dcsa.core.events.model.Event;
-import org.dcsa.core.events.service.impl.MessageSignatureHandler;
+import org.dcsa.core.events.model.ShipmentEvent;
+import org.dcsa.core.events.model.TransportEvent;
+import org.dcsa.core.events.model.enums.DocumentReferenceType;
+import org.dcsa.core.events.model.enums.TransportEventTypeCode;
+import org.dcsa.core.events.model.transferobjects.DocumentReferenceTO;
+import org.dcsa.core.events.repository.TransportCallRepository;
 import org.dcsa.core.exception.CreateException;
 import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
@@ -18,13 +24,16 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventSubscriptionRepository, EventSubscription, UUID> implements EventSubscriptionService {
     private final EventSubscriptionRepository eventSubscriptionRepository;
     private final MessageServiceConfig messageServiceConfig;
+    private final TransportCallRepository transportCallRepository;
 
 
     @Override
@@ -94,7 +103,65 @@ public class EventSubscriptionServiceImpl extends ExtendedBaseServiceImpl<EventS
 
     @Override
     public Flux<EventSubscription> findSubscriptionsFor(Event event) {
-        // FIXME: Implement as a part of DDT-111
+        switch (event.getEventType()){
+            case EQUIPMENT:
+                return findSubscriptionsFor((EquipmentEvent) event);
+            case SHIPMENT:
+                return findSubscriptionsFor((ShipmentEvent) event);
+            case TRANSPORT:
+                return findSubscriptionsFor((TransportEvent) event);
+        }
+        throw new IllegalArgumentException("Unsupported event type.");
+    }
+
+    private Flux<EventSubscription> findSubscriptionsFor(EquipmentEvent equipmentEvent) {
+        // TODO: find values and call findByEquipmentEventFields
         return Flux.empty();
+    }
+
+    private Flux<EventSubscription> findSubscriptionsFor(ShipmentEvent shipmentEvent) {
+        // TODO: find values and call findByShipmentEventFields
+        return Flux.empty();
+    }
+
+    private Flux<EventSubscription> findSubscriptionsFor(TransportEvent transportEvent) {
+        Mono<List<String>> carrierVoyageNumbers = transportCallRepository
+                .findCarrierVoyageNumbersByTransportCallID(transportEvent.getTransportCallID())
+                .collectList();
+        Mono<List<String>> carrierServiceCodes = transportCallRepository
+                .findCarrierServiceCodesByTransportCallID(transportEvent.getTransportCallID())
+                .collectList();
+
+        TransportEventTypeCode transportEventTypeCode = transportEvent.getTransportEventTypeCode();
+        String vesselIMONumber = transportEvent.getTransportCall().getVessel().getVesselIMONumber();
+        String transportCallID = transportEvent.getTransportCallID();
+
+        List<DocumentReferenceTO> documentReferences = transportEvent.getDocumentReferences();
+        List<String> carrierBookingReferences = documentReferences.stream()
+                .filter(documentReferenceTO -> documentReferenceTO.getDocumentReferenceType() == DocumentReferenceType.BKG)
+                .map(DocumentReferenceTO::getDocumentReferenceValue)
+                .collect(Collectors.toList());
+        List<String> transportDocumentReferences = documentReferences.stream()
+                .filter(documentReferenceTO -> documentReferenceTO.getDocumentReferenceType() == DocumentReferenceType.TRD)
+                .map(DocumentReferenceTO::getDocumentReferenceValue)
+                .collect(Collectors.toList());
+
+        Mono<List<String>> transportDocumentTypeCodes = Flux.fromIterable(transportDocumentReferences)
+                .flatMap(transportCallRepository::findTransportDocumentTypeCodeByTransportDocumentReference)
+                .collectList();
+
+        return Mono.zip(carrierVoyageNumbers, carrierServiceCodes, transportDocumentTypeCodes).flatMapMany(vnScTc -> {
+            List<String> voyageNumbers = vnScTc.getT1();
+            List<String> serviceCodes = vnScTc.getT2();
+            List<String> documentTypeCodes = vnScTc.getT3();
+
+            return eventSubscriptionRepository.findByTransportEventFields(
+                    voyageNumbers, serviceCodes,
+                    transportEventTypeCode, vesselIMONumber, transportCallID,
+                    carrierBookingReferences, transportDocumentReferences,
+                    documentTypeCodes,
+                    transportEvent.getEventType()
+            );
+        });
     }
 }
