@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dcsa.core.events.model.PendingMessage;
 import org.dcsa.core.events.repository.PendingEventRepository;
+import org.dcsa.core.events.service.GenericEventService;
 import org.dcsa.core.events.service.impl.MessageSignatureHandler;
 import org.dcsa.core.service.impl.ExtendedBaseServiceImpl;
-import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.service.EventSubscriptionService;
 import org.dcsa.tnt.service.PendingEventService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +28,7 @@ public class PendingEventServiceImpl extends ExtendedBaseServiceImpl<PendingEven
 
     private final PendingEventRepository pendingEventRepository;
     private final ReactiveTransactionManager transactionManager;
-    private final EventService eventService;
+    private final GenericEventService eventService;
     private final EventSubscriptionService eventSubscriptionService;
     private final MessageSignatureHandler messageSignatureHandler;
 
