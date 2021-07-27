@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Table("event_subscription")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class EventSubscription extends AbstractEventSubscription implements EventSubscriptionState {
+public class  EventSubscription extends AbstractEventSubscription implements EventSubscriptionState {
 
     @Column("retry_count")
     private Long retryCount = 0L;

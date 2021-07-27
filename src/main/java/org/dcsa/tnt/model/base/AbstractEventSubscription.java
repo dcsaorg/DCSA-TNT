@@ -3,6 +3,7 @@ package org.dcsa.tnt.model.base;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.dcsa.core.events.model.enums.EquipmentEventTypeCode;
 import org.dcsa.core.model.AuditBase;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -37,6 +38,9 @@ public class AbstractEventSubscription extends AuditBase {
 
     @Column("equipment_reference")
     private String equipmentReference;
+
+    @Column("equipment_event_type_code")
+    private EquipmentEventTypeCode equipmentEventTypeCode;
 
     @Column("shipment_event_type_code")
     private String shipmentEventTypeCode;
