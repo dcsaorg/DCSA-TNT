@@ -30,17 +30,10 @@ public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTE
 
     @Autowired
     private PendingEventRepository pendingEventRepository;
-    @Autowired
-    private EventRepository eventRepository;
 
     @Override
     public Class<Event> getModelClass() {
         return Event.class;
-    }
-
-    @Override
-    public EventRepository getRepository() {
-        return eventRepository;
     }
 
     @Override
