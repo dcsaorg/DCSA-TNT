@@ -28,13 +28,7 @@ import java.util.UUID;
 @Service
 public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTEventService {
 
-    @Autowired
-    private PendingEventRepository pendingEventRepository;
-
-    @Override
-    public Class<Event> getModelClass() {
-        return Event.class;
-    }
+    private final PendingEventRepository pendingEventRepository;
 
     @Override
     public Mono<Event> create(Event event) {
