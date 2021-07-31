@@ -7,7 +7,6 @@ import org.dcsa.core.events.model.enums.ShipmentEventTypeCode;
 import org.dcsa.core.events.model.enums.TransportDocumentTypeCode;
 import org.dcsa.core.events.model.enums.TransportEventTypeCode;
 import org.dcsa.core.events.util.ExtendedGenericEventRequest;
-import org.dcsa.core.exception.GetException;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.tnt.service.TNTEventService;
 import org.springframework.beans.factory.annotation.Qualifier;
