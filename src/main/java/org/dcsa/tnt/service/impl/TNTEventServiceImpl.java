@@ -47,7 +47,7 @@ public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTE
                 case SHIPMENT:
                     return shipmentEventService.loadRelatedEntities((ShipmentEvent) event);
                 default:
-                    return Mono.just(event);
+                    return Mono.empty();
             }
         });
     }
