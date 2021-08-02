@@ -49,7 +49,6 @@ public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTE
                 default:
                     return Mono.empty();
             }
-            }
         });
     }
 
