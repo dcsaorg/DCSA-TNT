@@ -3,12 +3,14 @@ package org.dcsa.tnt.controller;
 import org.dcsa.core.events.model.Event;
 import org.dcsa.core.events.model.enums.EventClassifierCode;
 import org.dcsa.core.events.model.enums.EventType;
+import org.dcsa.core.events.service.GenericEventService;
 import org.dcsa.core.extendedrequest.ExtendedParameters;
-import org.dcsa.tnt.service.EventService;
+import org.dcsa.tnt.service.TNTEventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,7 +32,8 @@ class EventControllerTest {
 
   @Autowired WebTestClient webTestClient;
 
-  @MockBean EventService eventService;
+  @MockBean
+  @Qualifier("TNTEventServiceImpl") TNTEventService eventService;
 
   @MockBean ExtendedParameters extendedParameters;
 
