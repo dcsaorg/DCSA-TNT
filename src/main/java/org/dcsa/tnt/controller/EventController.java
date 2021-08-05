@@ -59,7 +59,7 @@ public class EventController extends AbstractEventController<TNTEventService, Ev
                 Map<String, List<String>> p = new HashMap<>(params);
                 // Add the eventType parameter (if it is missing) in order to limit the resultset
                 // to *only* SHIPMENT, TRANSPORT and EQUIPMENT events
-                p.putIfAbsent("eventType", List.of("SHIPMENT","TRANSPORT","EQUIPMENT"));
+                p.putIfAbsent("eventType", List.of("SHIPMENT,TRANSPORT,EQUIPMENT"));
                 super.parseParameter(p);
             }
         };
