@@ -2,10 +2,7 @@ package org.dcsa.tnt.controller;
 
 import org.dcsa.core.events.controller.AbstractEventController;
 import org.dcsa.core.events.model.Event;
-import org.dcsa.core.events.model.enums.EquipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.ShipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.TransportDocumentTypeCode;
-import org.dcsa.core.events.model.enums.TransportEventTypeCode;
+import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.events.util.ExtendedGenericEventRequest;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.core.validator.EnumSubset;
@@ -26,6 +23,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -50,7 +50,19 @@ public class EventController extends AbstractEventController<TNTEventService, Ev
 
     @Override
     protected ExtendedRequest<Event> newExtendedRequest() {
-        return new ExtendedGenericEventRequest(extendedParameters, r2dbcDialect);
+        return new ExtendedGenericEventRequest(extendedParameters, r2dbcDialect) {
+            @Override
+            public void parseParameter(Map<String, List<String>> params) {
+                Map<String, List<String>> p = new HashMap<>(params);
+                // Add the eventType parameter (if it is missing) in order to limit the resultset
+                // to *only* SHIPMENT, TRANSPORT and EQUIPMENT events
+                p.putIfAbsent("eventType", List.of(
+                        EventType.SHIPMENT.name() + "," +
+                        EventType.TRANSPORT.name() + "," +
+                        EventType.EQUIPMENT.name()));
+                super.parseParameter(p);
+            }
+        };
     }
 
   @GetMapping
