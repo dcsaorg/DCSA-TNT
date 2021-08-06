@@ -2,10 +2,7 @@ package org.dcsa.tnt.controller;
 
 import org.dcsa.core.events.controller.AbstractEventController;
 import org.dcsa.core.events.model.Event;
-import org.dcsa.core.events.model.enums.EquipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.ShipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.TransportDocumentTypeCode;
-import org.dcsa.core.events.model.enums.TransportEventTypeCode;
+import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.events.util.ExtendedGenericEventRequest;
 import org.dcsa.core.extendedrequest.ExtendedRequest;
 import org.dcsa.core.validator.EnumSubset;
@@ -59,7 +56,10 @@ public class EventController extends AbstractEventController<TNTEventService, Ev
                 Map<String, List<String>> p = new HashMap<>(params);
                 // Add the eventType parameter (if it is missing) in order to limit the resultset
                 // to *only* SHIPMENT, TRANSPORT and EQUIPMENT events
-                p.putIfAbsent("eventType", List.of("SHIPMENT,TRANSPORT,EQUIPMENT"));
+                p.putIfAbsent("eventType", List.of(
+                        EventType.SHIPMENT.name() + "," +
+                        EventType.TRANSPORT.name() + "," +
+                        EventType.EQUIPMENT.name()));
                 super.parseParameter(p);
             }
         };
