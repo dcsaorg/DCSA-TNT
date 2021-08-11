@@ -67,6 +67,8 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
                                 .map(original -> {
                                     updated.setSecret(original.getSecret());
                                     updated.copyInternalFieldsFrom(original);
+
+                                    // If the callbackUrl has not changed, meaning it is null, we use the original url.
                                     if (updated.getCallbackUrl() == null) {
                                         updated.setCallbackUrl(original.getCallbackUrl());
                                         eventSubscriptionTO.setCallbackUrl(updated.getCallbackUrl());
