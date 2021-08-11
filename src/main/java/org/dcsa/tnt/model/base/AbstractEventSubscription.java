@@ -8,8 +8,6 @@ import org.dcsa.core.model.AuditBase;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
@@ -29,8 +27,6 @@ public class AbstractEventSubscription extends AuditBase {
     private UUID subscriptionID;
 
     @Column("callback_url")
-    @NotNull
-    @NotEmpty
     private String callbackUrl;
 
     @Column("carrier_booking_reference")

@@ -63,12 +63,16 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
                 .thenReturn(eventSubscriptionTO)
                 .map(subscriptionTO -> MappingUtils.instanceFrom(subscriptionTO, EventSubscription::new, AbstractEventSubscription.class))
                 .flatMap(updated ->
-                    eventSubscriptionService.findById(updated.getSubscriptionID())
-                            .map(original -> {
-                              updated.setSecret(original.getSecret());
-                              updated.copyInternalFieldsFrom(original);
-                              return updated;
-                            })
+                        eventSubscriptionService.findById(updated.getSubscriptionID())
+                                .map(original -> {
+                                    updated.setSecret(original.getSecret());
+                                    updated.copyInternalFieldsFrom(original);
+                                    if (updated.getCallbackUrl() == null) {
+                                        updated.setCallbackUrl(original.getCallbackUrl());
+                                        eventSubscriptionTO.setCallbackUrl(updated.getCallbackUrl());
+                                    }
+                                    return updated;
+                                })
                 )
                 .flatMap(eventSubscriptionService::update)
                 .flatMap(ignored -> createEventTypes(eventSubscriptionTO));
@@ -117,10 +121,10 @@ public class EventSubscriptionTOServiceImpl extends BaseServiceImpl<EventSubscri
                 .map(eventSubscription -> MappingUtils.instanceFrom(eventSubscription, EventSubscriptionTO::new, AbstractEventSubscription.class))
                 .flatMap(eventSubscriptionTO ->
                         eventSubscriptionRepository.findEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
-                        .map(EventType::valueOf)
-                        .collectList()
-                        .doOnNext(eventSubscriptionTO::setEventType)
-                        .thenReturn(eventSubscriptionTO)
+                                .map(EventType::valueOf)
+                                .collectList()
+                                .doOnNext(eventSubscriptionTO::setEventType)
+                                .thenReturn(eventSubscriptionTO)
                 );
     }
 
