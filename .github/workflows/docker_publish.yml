@@ -51,16 +51,9 @@ jobs:
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # Build and push Docker image
-      # https://github.com/marketplace/actions/docker-build-push-action
-      - name: Build and push Docker image
-        uses: mr-smithers-excellent/docker-build-push@v5
-        with:          
-          image: image-name
-          registry: env.REGISTRY             
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.secrets.GHCR_TOKEN }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      # build
+      - name: Build Docker image        
+        run:          
+          docker build .
+          ls -la
+      
