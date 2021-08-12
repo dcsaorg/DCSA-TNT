@@ -51,12 +51,14 @@ jobs:
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: print context
+        run: echo "$GITHUB_CONTEXT"
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:          
-          image: github.repository
+          image: dcsa-tnt
           registry: ghcr.io             
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
