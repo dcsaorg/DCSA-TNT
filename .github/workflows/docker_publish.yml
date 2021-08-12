@@ -53,7 +53,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       # build
       - name: Build Docker image        
-        run:          
+        run: |         
           docker build .
           ls -la
       
