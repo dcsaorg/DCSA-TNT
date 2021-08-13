@@ -33,7 +33,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-         
+        
+      - name: maven build
+        run: mvn package
+        
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
