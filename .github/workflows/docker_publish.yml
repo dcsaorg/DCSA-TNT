@@ -51,8 +51,8 @@ jobs:
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:          
-          image: ${{ env.IMAGE_NAME }}
+          image: dcsa-tnt
           registry: ghcr.io            
-          githubOrg: dcsa
+          githubOrg: dcsaorg
           username: flinkemike
           password: ${{ secrets.GITHUB_TOKEN }}
