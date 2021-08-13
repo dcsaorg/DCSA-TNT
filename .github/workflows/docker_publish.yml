@@ -52,7 +52,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: print context
-        run: echo "$GITHUB_CONTEXT"
+        run: |
+          echo "$GITHUB_CONTEXT"
+          echo "$github.actor"          
+          echo "$github.event_name"
+          echo "$github.repository"
+          
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
