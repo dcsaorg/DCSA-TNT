@@ -51,7 +51,7 @@ jobs:
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:          
-          image: env.IMAGE_NAME
+          image: $env.IMAGE_NAME
           registry: ghcr.io            
           githubOrg: dcsa
           username: flinkemike
