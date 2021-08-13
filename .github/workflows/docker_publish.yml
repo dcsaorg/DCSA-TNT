@@ -8,7 +8,7 @@ name: Docker
 on:
   push:
     branches:
-      - master
+      - DDT-160-push-image-to-ghcr
     
 env:
   # Use docker.io for Docker Hub if empty
@@ -49,6 +49,6 @@ jobs:
           image: dcsa-tnt
           registry: ghcr.io            
           githubOrg: dcsaorg
-          username: flinkemike
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           addLatest: ${{ true }}
