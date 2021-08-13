@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: [ DDT-160-push-image-to-ghcr ]
+    branches: [ master ]
 
     
 env:
