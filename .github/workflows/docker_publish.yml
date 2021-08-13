@@ -51,4 +51,3 @@ jobs:
           githubOrg: dcsaorg
           username: flinkemike
           password: ${{ secrets.GITHUB_TOKEN }}
-          addLatest: Y
