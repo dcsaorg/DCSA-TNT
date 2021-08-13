@@ -7,9 +7,8 @@ name: Docker
 
 on:
   push:
-    branches: [ master ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    branches: [ DDT-160-push-image-to-ghcr ]
+
     
 env:
   # Use docker.io for Docker Hub if empty
