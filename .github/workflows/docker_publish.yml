@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: maven build
-        run: mvn package
+        run: mvn -B package --file pom.xml
         
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
