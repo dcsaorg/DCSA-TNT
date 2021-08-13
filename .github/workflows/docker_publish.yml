@@ -43,12 +43,15 @@ jobs:
       - name: maven build
         run: mvn -B package --file pom.xml
         
+      - name: print context
+        run: echo "$GITHUB_CONTEXT"
+        
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:          
-          image: dcsa-tnt
+          image: env.IMAGE_NAME
           registry: ghcr.io            
           githubOrg: dcsa
           username: flinkemike
