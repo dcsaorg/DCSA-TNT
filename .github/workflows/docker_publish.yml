@@ -6,15 +6,10 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '33 3 * * *'
   push:
-    branches: [ master ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
-  pull_request:
-    branches: [ master ]
-
+    branches:
+      - master
+    
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
@@ -33,35 +28,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      # Login against a Docker registry except on PR
-      # https://github.com/docker/login-action
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v12
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
+          servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
+        
+      - name: maven build
+        run: mvn -B package --file pom.xml
+        
+      - name: print context
+        run: echo "$GITHUB_CONTEXT"
+        
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:          
-          image: image-name
-          registry: env.REGISTRY             
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.secrets.GHCR_TOKEN }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}      
-	  
-      
+          image: dcsa-tnt
+          registry: ghcr.io            
+          githubOrg: dcsaorg
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          addLatest: ${{ true }}
