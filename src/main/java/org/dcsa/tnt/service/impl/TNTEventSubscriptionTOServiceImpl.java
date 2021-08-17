@@ -19,19 +19,17 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
 public class TNTEventSubscriptionTOServiceImpl
     extends EventSubscriptionTOServiceImpl<TNTEventSubscriptionTO, EventSubscriptionService> {
 
-  private static final String ALL_EVENT_TYPES =
+  private static final String ALL_ALLOWED_EVENT_TYPES =
       EventType.SHIPMENT.name()
           + ","
           + EventType.TRANSPORT.name()
@@ -115,7 +113,7 @@ public class TNTEventSubscriptionTOServiceImpl
     String eventTypes;
 
     if (!StringUtils.hasLength(eventSubscriptionTO.getEventType())) {
-      eventTypes = ALL_EVENT_TYPES;
+      eventTypes = ALL_ALLOWED_EVENT_TYPES;
       eventSubscriptionTO.setEventType(eventTypes);
     } else {
       eventTypes = eventSubscriptionTO.getEventType();
@@ -128,14 +126,6 @@ public class TNTEventSubscriptionTOServiceImpl
         .then(Mono.just(eventSubscriptionTO));
   }
 
-  private final Function<String, List<EventType>> stringToEventTypeList =
-      s -> {
-        if (s.contains(",")) {
-          return Arrays.stream(s.split(",")).map(EventType::valueOf).collect(Collectors.toList());
-        } else {
-          return Stream.of(s).map(EventType::valueOf).collect(Collectors.toList());
-        }
-      };
 
   private Mono<Void> createShipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
     String shipmentEventTypeCode = eventSubscriptionTO.getShipmentEventTypeCode();

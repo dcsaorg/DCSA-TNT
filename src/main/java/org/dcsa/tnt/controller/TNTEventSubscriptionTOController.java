@@ -26,9 +26,4 @@ public class TNTEventSubscriptionTOController
   public EventSubscriptionTOService<TNTEventSubscriptionTO> getService() {
     return eventSubscriptionTOService;
   }
-
-  @Override
-  public String getType() {
-    return "EventSubscription";
-  }
 }
