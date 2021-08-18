@@ -49,7 +49,7 @@ dcsa:
 
 auth0:
   audience: localhost
-  enabled: true
+  enabled: false
 
 springdoc:
   api-docs:
@@ -67,4 +67,14 @@ server:
 logging:
   level:
     org.dcsa: DEBUG
+    
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
 
