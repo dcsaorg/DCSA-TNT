@@ -49,7 +49,7 @@ dcsa:
 
 auth0:
   audience: localhost
-  enabled: false
+  enabled: true
 
 springdoc:
   api-docs:
