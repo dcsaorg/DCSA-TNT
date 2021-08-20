@@ -7,7 +7,6 @@ import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.events.repository.EventSubscriptionRepository;
 import org.dcsa.core.events.service.EventSubscriptionService;
 import org.dcsa.core.events.service.impl.EventSubscriptionTOServiceImpl;
-import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.util.MappingUtils;
 import org.dcsa.tnt.model.transferobjects.TNTEventSubscriptionTO;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,18 @@ public class TNTEventSubscriptionTOServiceImpl
 
   private static final List<EventType> ALL_ALLOWED_EVENT_TYPES =
       List.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
+
+  private static final List<TransportDocumentTypeCode> ALL_TRANSPORT_DOCUMENT_TYPES =
+      List.of(TransportDocumentTypeCode.values());
+
+  private static final List<ShipmentEventTypeCode> ALL_SHIPMENT_EVENT_TYPES =
+      List.of(ShipmentEventTypeCode.values());
+
+  private static final List<TransportEventTypeCode> ALL_TRANSPORT_EVENT_TYPES =
+      List.of(TransportEventTypeCode.values());
+
+  private static final List<EquipmentEventTypeCode> ALL_EQUIPMENT_EVENT_TYPES =
+      List.of(EquipmentEventTypeCode.values());
 
   private final EventSubscriptionService eventSubscriptionService;
   private final EventSubscriptionRepository eventSubscriptionRepository;
@@ -74,15 +85,6 @@ public class TNTEventSubscriptionTOServiceImpl
 
   @Override
   public Mono<TNTEventSubscriptionTO> update(TNTEventSubscriptionTO eventSubscriptionTO) {
-    if (eventSubscriptionTO.getSecret() != null) {
-      return Mono.error(
-          new UpdateException(
-              "Please omit the \"secret\" attribute.  If you want to change the"
-                  + " secret, please use the dedicated secret endpoint"
-                  + " (\"PUT .../event-subscriptions/"
-                  + eventSubscriptionTO.getSubscriptionID()
-                  + "/secret\")."));
-    }
     return eventSubscriptionRepository
         .deleteEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
         .thenReturn(eventSubscriptionTO)
@@ -123,7 +125,9 @@ public class TNTEventSubscriptionTOServiceImpl
 
   private Mono<Void> createTransportDocumentEventTypes(TNTEventSubscriptionTO eventSubscriptionTO) {
 
-    if (null == eventSubscriptionTO.getTransportDocumentTypeCode()) return Mono.empty().then();
+    if (null == eventSubscriptionTO.getTransportDocumentTypeCode()) {
+      eventSubscriptionTO.setTransportDocumentTypeCode(ALL_TRANSPORT_DOCUMENT_TYPES);
+    }
 
     List<TransportDocumentTypeCode> transportDocumentTypeCodes =
         eventSubscriptionTO.getTransportDocumentTypeCode();
@@ -137,7 +141,9 @@ public class TNTEventSubscriptionTOServiceImpl
 
   private Mono<Void> createShipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
 
-    if (null == eventSubscriptionTO.getShipmentEventTypeCode()) return Mono.empty().then();
+    if (null == eventSubscriptionTO.getShipmentEventTypeCode()) {
+      eventSubscriptionTO.setShipmentEventTypeCode(ALL_SHIPMENT_EVENT_TYPES);
+    }
 
     List<ShipmentEventTypeCode> shipmentEventTypeCode =
         eventSubscriptionTO.getShipmentEventTypeCode();
@@ -152,7 +158,9 @@ public class TNTEventSubscriptionTOServiceImpl
 
   private Mono<Void> createTransportEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
 
-    if (null == eventSubscriptionTO.getTransportEventTypeCode()) return Mono.empty().then();
+    if (null == eventSubscriptionTO.getTransportEventTypeCode()) {
+      eventSubscriptionTO.setTransportEventTypeCode(ALL_TRANSPORT_EVENT_TYPES);
+    }
 
     List<TransportEventTypeCode> transportEventTypeCode =
         eventSubscriptionTO.getTransportEventTypeCode();
@@ -166,7 +174,9 @@ public class TNTEventSubscriptionTOServiceImpl
 
   private Mono<Void> createEquipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
 
-    if (null == eventSubscriptionTO.getEquipmentEventTypeCode()) return Mono.empty().then();
+    if (null == eventSubscriptionTO.getEquipmentEventTypeCode()) {
+      eventSubscriptionTO.setEquipmentEventTypeCode(ALL_EQUIPMENT_EVENT_TYPES);
+    }
 
     List<EquipmentEventTypeCode> equipmentEventTypeCode =
         eventSubscriptionTO.getEquipmentEventTypeCode();

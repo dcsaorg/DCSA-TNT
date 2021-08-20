@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.dcsa.core.events.model.base.AbstractEventSubscription;
 import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.validator.EnumSubset;
+import org.dcsa.core.validator.ValidationGroups;
 
 import java.util.List;
 
@@ -12,7 +13,12 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class TNTEventSubscriptionTO extends AbstractEventSubscription {
 
-  @EnumSubset(anyOf = {"SHIPMENT", "TRANSPORT", "EQUIPMENT"})
+  @EnumSubset(
+      anyOf = {"SHIPMENT", "TRANSPORT", "EQUIPMENT"},
+      groups = {
+        ValidationGroups.Create.class,
+        ValidationGroups.Update.class,
+      })
   private List<EventType> eventType;
 
   private List<ShipmentEventTypeCode> shipmentEventTypeCode;
