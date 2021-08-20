@@ -3,10 +3,7 @@ package org.dcsa.tnt.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.core.events.model.EventSubscription;
 import org.dcsa.core.events.model.base.AbstractEventSubscription;
-import org.dcsa.core.events.model.enums.EquipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.EventType;
-import org.dcsa.core.events.model.enums.ShipmentEventTypeCode;
-import org.dcsa.core.events.model.enums.TransportEventTypeCode;
+import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.events.repository.EventSubscriptionRepository;
 import org.dcsa.core.events.service.EventSubscriptionService;
 import org.dcsa.core.events.service.impl.EventSubscriptionTOServiceImpl;
@@ -14,11 +11,12 @@ import org.dcsa.core.exception.UpdateException;
 import org.dcsa.core.util.MappingUtils;
 import org.dcsa.tnt.model.transferobjects.TNTEventSubscriptionTO;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -29,12 +27,8 @@ import java.util.stream.Collectors;
 public class TNTEventSubscriptionTOServiceImpl
     extends EventSubscriptionTOServiceImpl<TNTEventSubscriptionTO, EventSubscriptionService> {
 
-  private static final String ALL_ALLOWED_EVENT_TYPES =
-      EventType.SHIPMENT.name()
-          + ","
-          + EventType.TRANSPORT.name()
-          + ","
-          + EventType.EQUIPMENT.name();
+  private static final List<EventType> ALL_ALLOWED_EVENT_TYPES =
+      List.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
 
   private final EventSubscriptionService eventSubscriptionService;
   private final EventSubscriptionRepository eventSubscriptionRepository;
@@ -52,6 +46,7 @@ public class TNTEventSubscriptionTOServiceImpl
             eventSubscription -> {
               eventSubscriptionTO.setSubscriptionID(eventSubscription.getSubscriptionID());
               return createEventTypes(eventSubscriptionTO)
+                  .then(createTransportDocumentEventTypes(eventSubscriptionTO))
                   .then(createShipmentEventType(eventSubscriptionTO))
                   .then(createTransportEventType(eventSubscriptionTO))
                   .then(createEquipmentEventType(eventSubscriptionTO))
@@ -73,7 +68,6 @@ public class TNTEventSubscriptionTOServiceImpl
             eventSubscription.setCarrierVoyageNumber(esTo.getCarrierVoyageNumber());
             eventSubscription.setVesselIMONumber(esTo.getVesselIMONumber());
             eventSubscription.setTransportDocumentReference(esTo.getTransportDocumentReference());
-            eventSubscription.setTransportDocumentTypeCode(esTo.getTransportDocumentTypeCode());
             eventSubscription.setTransportCallID(esTo.getTransportCallID());
             return eventSubscription;
           };
@@ -110,15 +104,16 @@ public class TNTEventSubscriptionTOServiceImpl
   private Mono<TNTEventSubscriptionTO> createEventTypes(
       TNTEventSubscriptionTO eventSubscriptionTO) {
 
-    String eventTypes;
+    List<EventType> eventTypes;
 
-    if (!StringUtils.hasLength(eventSubscriptionTO.getEventType())) {
+    if (CollectionUtils.isEmpty(eventSubscriptionTO.getEventType())) {
       eventTypes = ALL_ALLOWED_EVENT_TYPES;
       eventSubscriptionTO.setEventType(eventTypes);
     } else {
       eventTypes = eventSubscriptionTO.getEventType();
     }
-    return Flux.fromIterable(stringToEventTypeList.apply(eventTypes))
+
+    return Flux.fromIterable(eventTypes)
         .concatMap(
             eventType ->
                 eventSubscriptionRepository.insertEventTypeForSubscription(
@@ -126,59 +121,62 @@ public class TNTEventSubscriptionTOServiceImpl
         .then(Mono.just(eventSubscriptionTO));
   }
 
+  private Mono<Void> createTransportDocumentEventTypes(TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getTransportDocumentTypeCode()) return Mono.empty().then();
+
+    List<TransportDocumentTypeCode> transportDocumentTypeCodes =
+        eventSubscriptionTO.getTransportDocumentTypeCode();
+    return Flux.fromIterable(transportDocumentTypeCodes)
+        .flatMap(
+            td ->
+                eventSubscriptionRepository.insertTransportDocumentEventTypeForSubscription(
+                    eventSubscriptionTO.getSubscriptionID(), td))
+        .then();
+  }
 
   private Mono<Void> createShipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-    String shipmentEventTypeCode = eventSubscriptionTO.getShipmentEventTypeCode();
-    if (StringUtils.hasLength(shipmentEventTypeCode) && shipmentEventTypeCode.contains(",")) {
-      return Flux.fromIterable(
-              Arrays.stream(shipmentEventTypeCode.split(",")).collect(Collectors.toList()))
-          .flatMap(
-              s ->
-                  eventSubscriptionRepository.insertShipmentEventTypeForSubscription(
-                      eventSubscriptionTO.getSubscriptionID(), ShipmentEventTypeCode.valueOf(s)))
-          .then();
-    } else if (StringUtils.hasLength(shipmentEventTypeCode)) {
-      return eventSubscriptionRepository.insertShipmentEventTypeForSubscription(
-          eventSubscriptionTO.getSubscriptionID(),
-          ShipmentEventTypeCode.valueOf(shipmentEventTypeCode));
-    }
-    return Mono.empty();
+
+    if (null == eventSubscriptionTO.getShipmentEventTypeCode()) return Mono.empty().then();
+
+    List<ShipmentEventTypeCode> shipmentEventTypeCode =
+        eventSubscriptionTO.getShipmentEventTypeCode();
+
+    return Flux.fromIterable(shipmentEventTypeCode)
+        .flatMap(
+            s ->
+                eventSubscriptionRepository.insertShipmentEventTypeForSubscription(
+                    eventSubscriptionTO.getSubscriptionID(), s))
+        .then();
   }
 
   private Mono<Void> createTransportEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-    String transportEventTypeCode = eventSubscriptionTO.getTransportEventTypeCode();
-    if (StringUtils.hasLength(transportEventTypeCode) && transportEventTypeCode.contains(",")) {
-      return Flux.fromIterable(
-              Arrays.stream(transportEventTypeCode.split(",")).collect(Collectors.toList()))
-          .flatMap(
-              e ->
-                  eventSubscriptionRepository.insertTransportEventTypeForSubscription(
-                      eventSubscriptionTO.getSubscriptionID(), TransportEventTypeCode.valueOf(e)))
-          .then();
-    } else if (StringUtils.hasLength(transportEventTypeCode)) {
-      return eventSubscriptionRepository.insertTransportEventTypeForSubscription(
-          eventSubscriptionTO.getSubscriptionID(),
-          TransportEventTypeCode.valueOf(transportEventTypeCode));
-    }
-    return Mono.empty();
+
+    if (null == eventSubscriptionTO.getTransportEventTypeCode()) return Mono.empty().then();
+
+    List<TransportEventTypeCode> transportEventTypeCode =
+        eventSubscriptionTO.getTransportEventTypeCode();
+    return Flux.fromIterable(transportEventTypeCode)
+        .flatMap(
+            t ->
+                eventSubscriptionRepository.insertTransportEventTypeForSubscription(
+                    eventSubscriptionTO.getSubscriptionID(), t))
+        .then();
   }
 
   private Mono<Void> createEquipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-    String equipmentEventTypeCode = eventSubscriptionTO.getEquipmentEventTypeCode();
-    if (StringUtils.hasLength(equipmentEventTypeCode) && equipmentEventTypeCode.contains(",")) {
-      return Flux.fromIterable(
-              Arrays.stream(equipmentEventTypeCode.split(",")).collect(Collectors.toList()))
-          .flatMap(
-              s ->
-                  eventSubscriptionRepository.insertEquipmentEventTypeForSubscription(
-                      eventSubscriptionTO.getSubscriptionID(), EquipmentEventTypeCode.valueOf(s)))
-          .then();
-    } else if (StringUtils.hasLength(equipmentEventTypeCode)) {
-      return eventSubscriptionRepository.insertEquipmentEventTypeForSubscription(
-          eventSubscriptionTO.getSubscriptionID(),
-          EquipmentEventTypeCode.valueOf(equipmentEventTypeCode));
-    }
-    return Mono.empty();
+
+    if (null == eventSubscriptionTO.getEquipmentEventTypeCode()) return Mono.empty().then();
+
+    List<EquipmentEventTypeCode> equipmentEventTypeCode =
+        eventSubscriptionTO.getEquipmentEventTypeCode();
+
+    return Flux.fromIterable(equipmentEventTypeCode)
+        .flatMap(
+            e ->
+                eventSubscriptionRepository.insertEquipmentEventTypeForSubscription(
+                    eventSubscriptionTO.getSubscriptionID(), e))
+        .then();
   }
 
   @Override
@@ -190,33 +188,41 @@ public class TNTEventSubscriptionTOServiceImpl
             eventSubscriptionTO ->
                 eventSubscriptionRepository
                     .findEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
-                    .map(event -> EventType.valueOf(event).name())
+                    .map(EventType::valueOf)
                     .collectList()
-                    .doOnNext(events -> eventSubscriptionTO.setEventType(String.join(",", events)))
+                    .doOnNext(eventSubscriptionTO::setEventType)
                     .thenReturn(eventSubscriptionTO))
         .flatMap(
             esTo ->
                 eventSubscriptionRepository
-                    .findShipmentEventTypesForSubscriptionID(esTo.getSubscriptionID())
-                    .map(se -> ShipmentEventTypeCode.valueOf(se).name())
+                    .findTransportDocumentEventTypesForSubscription(esTo.getSubscriptionID())
+                    .map(TransportDocumentTypeCode::valueOf)
                     .collectList()
-                    .doOnNext(events -> esTo.setShipmentEventTypeCode(String.join(",", events)))
+                    .doOnNext(esTo::setTransportDocumentTypeCode)
+                    .thenReturn(esTo))
+        .flatMap(
+            esTo ->
+                eventSubscriptionRepository
+                    .findShipmentEventTypesForSubscriptionID(esTo.getSubscriptionID())
+                    .map(ShipmentEventTypeCode::valueOf)
+                    .collectList()
+                    .doOnNext(esTo::setShipmentEventTypeCode)
                     .thenReturn(esTo))
         .flatMap(
             esTo ->
                 eventSubscriptionRepository
                     .findTransportEventTypesForSubscriptionID(esTo.getSubscriptionID())
-                    .map(se -> TransportEventTypeCode.valueOf(se).name())
+                    .map(TransportEventTypeCode::valueOf)
                     .collectList()
-                    .doOnNext(events -> esTo.setTransportEventTypeCode(String.join(",", events)))
+                    .doOnNext(esTo::setTransportEventTypeCode)
                     .thenReturn(esTo))
         .flatMap(
             esTo ->
                 eventSubscriptionRepository
                     .findEquipmentEventTypesForSubscriptionID(esTo.getSubscriptionID())
-                    .map(se -> EquipmentEventTypeCode.valueOf(se).name())
+                    .map(EquipmentEventTypeCode::valueOf)
                     .collectList()
-                    .doOnNext(events -> esTo.setEquipmentEventTypeCode(String.join(",", events)))
+                    .doOnNext(esTo::setEquipmentEventTypeCode)
                     .thenReturn(esTo));
   }
 
@@ -242,17 +248,31 @@ public class TNTEventSubscriptionTOServiceImpl
                         TNTEventSubscriptionTO subscriptionTO =
                             id2subscription.get(eventSubscriptionEventType.getSubscriptionID());
                         assert subscriptionTO != null;
-                        if (!StringUtils.hasLength(subscriptionTO.getEventType())) {
-                          subscriptionTO.setEventType(
-                              eventSubscriptionEventType.getEventType().name());
-                        } else if (StringUtils.hasLength(subscriptionTO.getEventType())
-                            && !subscriptionTO.getEventType().endsWith(",")) {
-                          subscriptionTO.setEventType(
-                              subscriptionTO
-                                  .getEventType()
-                                  .concat(",")
-                                  .concat(eventSubscriptionEventType.getEventType().name()));
+                        if (CollectionUtils.isEmpty(subscriptionTO.getEventType())) {
+                          subscriptionTO.setEventType(new ArrayList<>());
                         }
+                        subscriptionTO
+                            .getEventType()
+                            .add(eventSubscriptionEventType.getEventType());
+                      })
+                  .thenMany(Flux.fromIterable(eventSubscriptionList))
+                  .map(AbstractEventSubscription::getSubscriptionID)
+                  .buffer(MappingUtils.SQL_LIST_BUFFER_SIZE)
+                  .concatMap(
+                      eventSubscriptionRepository
+                          ::findTransportDocumentEventTypesForSubscriptionIDIn)
+                  .doOnNext(
+                      esTransportDocumentEventType -> {
+                        TNTEventSubscriptionTO subscriptionTO =
+                            id2subscription.get(esTransportDocumentEventType.getSubscriptionID());
+                        assert subscriptionTO != null;
+                        if (CollectionUtils.isEmpty(
+                            subscriptionTO.getTransportDocumentTypeCode())) {
+                          subscriptionTO.setTransportDocumentTypeCode(new ArrayList<>());
+                        }
+                        subscriptionTO
+                            .getTransportDocumentTypeCode()
+                            .add(esTransportDocumentEventType.getTransportDocumentTypeCode());
                       })
                   .thenMany(Flux.fromIterable(eventSubscriptionList))
                   .map(AbstractEventSubscription::getSubscriptionID)
@@ -263,17 +283,12 @@ public class TNTEventSubscriptionTOServiceImpl
                         TNTEventSubscriptionTO subscriptionTO =
                             id2subscription.get(esShipmentEventType.getSubscriptionID());
                         assert subscriptionTO != null;
-                        if (!StringUtils.hasLength(subscriptionTO.getShipmentEventTypeCode())) {
-                          subscriptionTO.setShipmentEventTypeCode(
-                              esShipmentEventType.getShipmentEventTypeCode().name());
-                        } else if (StringUtils.hasLength(subscriptionTO.getShipmentEventTypeCode())
-                            && !subscriptionTO.getShipmentEventTypeCode().endsWith(",")) {
-                          subscriptionTO.setShipmentEventTypeCode(
-                              subscriptionTO
-                                  .getShipmentEventTypeCode()
-                                  .concat(",")
-                                  .concat(esShipmentEventType.getShipmentEventTypeCode().name()));
+                        if (CollectionUtils.isEmpty(subscriptionTO.getShipmentEventTypeCode())) {
+                          subscriptionTO.setShipmentEventTypeCode(new ArrayList<>());
                         }
+                        subscriptionTO
+                            .getShipmentEventTypeCode()
+                            .add(esShipmentEventType.getShipmentEventTypeCode());
                       })
                   .thenMany(Flux.fromIterable(eventSubscriptionList))
                   .map(AbstractEventSubscription::getSubscriptionID)
@@ -285,17 +300,12 @@ public class TNTEventSubscriptionTOServiceImpl
                         TNTEventSubscriptionTO subscriptionTO =
                             id2subscription.get(esTransportEventType.getSubscriptionID());
                         assert subscriptionTO != null;
-                        if (!StringUtils.hasLength(subscriptionTO.getTransportEventTypeCode())) {
-                          subscriptionTO.setTransportEventTypeCode(
-                              esTransportEventType.getTransportEventTypeCode().name());
-                        } else if (StringUtils.hasLength(subscriptionTO.getTransportEventTypeCode())
-                            && !subscriptionTO.getTransportEventTypeCode().endsWith(",")) {
-                          subscriptionTO.setTransportEventTypeCode(
-                              subscriptionTO
-                                  .getTransportEventTypeCode()
-                                  .concat(",")
-                                  .concat(esTransportEventType.getTransportEventTypeCode().name()));
+                        if (CollectionUtils.isEmpty(subscriptionTO.getTransportEventTypeCode())) {
+                          subscriptionTO.setTransportEventTypeCode(new ArrayList<>());
                         }
+                        subscriptionTO
+                            .getTransportEventTypeCode()
+                            .add(esTransportEventType.getTransportEventTypeCode());
                       })
                   .thenMany(Flux.fromIterable(eventSubscriptionList))
                   .map(AbstractEventSubscription::getSubscriptionID)
@@ -307,17 +317,12 @@ public class TNTEventSubscriptionTOServiceImpl
                         TNTEventSubscriptionTO subscriptionTO =
                             id2subscription.get(esEquipmentEventType.getSubscriptionID());
                         assert subscriptionTO != null;
-                        if (!StringUtils.hasLength(subscriptionTO.getEquipmentEventTypeCode())) {
-                          subscriptionTO.setEquipmentEventTypeCode(
-                              esEquipmentEventType.getEquipmentEventTypeCode().name());
-                        } else if (StringUtils.hasLength(subscriptionTO.getEquipmentEventTypeCode())
-                            && !subscriptionTO.getEquipmentEventTypeCode().endsWith(",")) {
-                          subscriptionTO.setEquipmentEventTypeCode(
-                              subscriptionTO
-                                  .getEquipmentEventTypeCode()
-                                  .concat(",")
-                                  .concat(esEquipmentEventType.getEquipmentEventTypeCode().name()));
+                        if (CollectionUtils.isEmpty(subscriptionTO.getEquipmentEventTypeCode())) {
+                          subscriptionTO.setEquipmentEventTypeCode(new ArrayList<>());
                         }
+                        subscriptionTO
+                            .getEquipmentEventTypeCode()
+                            .add(esEquipmentEventType.getEquipmentEventTypeCode());
                       })
                   .thenMany(Flux.fromIterable(eventSubscriptionList));
             });
@@ -336,7 +341,6 @@ public class TNTEventSubscriptionTOServiceImpl
             eventSubscriptionTo.setCarrierVoyageNumber(es.getCarrierVoyageNumber());
             eventSubscriptionTo.setVesselIMONumber(es.getVesselIMONumber());
             eventSubscriptionTo.setTransportDocumentReference(es.getTransportDocumentReference());
-            eventSubscriptionTo.setTransportDocumentTypeCode(es.getTransportDocumentTypeCode());
             eventSubscriptionTo.setTransportCallID(es.getTransportCallID());
             return eventSubscriptionTo;
           };

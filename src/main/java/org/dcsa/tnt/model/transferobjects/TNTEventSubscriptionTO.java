@@ -3,25 +3,27 @@ package org.dcsa.tnt.model.transferobjects;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dcsa.core.events.model.base.AbstractEventSubscription;
+import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.validator.EnumSubset;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class TNTEventSubscriptionTO extends AbstractEventSubscription {
 
-  // API Spec uses singular even though it is a list
   @EnumSubset(anyOf = {"SHIPMENT", "TRANSPORT", "EQUIPMENT"})
-  private String eventType;
+  private List<EventType> eventType;
 
-  private String shipmentEventTypeCode;
+  private List<ShipmentEventTypeCode> shipmentEventTypeCode;
 
   private String carrierBookingReference;
 
   private String transportDocumentReference;
 
-  private String transportDocumentTypeCode;
+  private List<TransportDocumentTypeCode> transportDocumentTypeCode;
 
-  private String transportEventTypeCode;
+  private List<TransportEventTypeCode> transportEventTypeCode;
 
   private String transportCallID;
 
@@ -31,7 +33,7 @@ public class TNTEventSubscriptionTO extends AbstractEventSubscription {
 
   private String carrierServiceCode;
 
-  private String equipmentEventTypeCode;
+  private List<EquipmentEventTypeCode> equipmentEventTypeCode;
 
   private String equipmentReference;
 }
