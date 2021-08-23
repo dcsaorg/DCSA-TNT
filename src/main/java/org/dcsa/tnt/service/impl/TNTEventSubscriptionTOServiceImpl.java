@@ -14,32 +14,14 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class TNTEventSubscriptionTOServiceImpl
-    extends EventSubscriptionTOServiceImpl<TNTEventSubscriptionTO, EventSubscriptionService> {
-
-  private static final List<EventType> ALL_ALLOWED_EVENT_TYPES =
-      List.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
-
-  private static final List<TransportDocumentTypeCode> ALL_TRANSPORT_DOCUMENT_TYPES =
-      List.of(TransportDocumentTypeCode.values());
-
-  private static final List<ShipmentEventTypeCode> ALL_SHIPMENT_EVENT_TYPES =
-      List.of(ShipmentEventTypeCode.values());
-
-  private static final List<TransportEventTypeCode> ALL_TRANSPORT_EVENT_TYPES =
-      List.of(TransportEventTypeCode.values());
-
-  private static final List<EquipmentEventTypeCode> ALL_EQUIPMENT_EVENT_TYPES =
-      List.of(EquipmentEventTypeCode.values());
+    extends EventSubscriptionTOServiceImpl<TNTEventSubscriptionTO, EventSubscriptionService, EventSubscriptionRepository> {
 
   private final EventSubscriptionService eventSubscriptionService;
   private final EventSubscriptionRepository eventSubscriptionRepository;
@@ -49,10 +31,126 @@ public class TNTEventSubscriptionTOServiceImpl
     return this.eventSubscriptionService;
   }
 
+    @Override
+    protected EventSubscriptionRepository getRepository() {
+        return this.eventSubscriptionRepository;
+    }
+
+    @Override
+  protected List<EventType> getAllowedEventTypes() {
+    return List.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
+  }
+
+  // ToDo : replace this with mapstruct
   @Override
+  protected Function<TNTEventSubscriptionTO, EventSubscription>
+      eventSubscriptionTOToEventSubscription() {
+    return esTo -> {
+      EventSubscription eventSubscription = new EventSubscription();
+      eventSubscription.setSubscriptionID(esTo.getSubscriptionID());
+      eventSubscription.setCallbackUrl(esTo.getCallbackUrl());
+      eventSubscription.setSecret(esTo.getSecret());
+      eventSubscription.setCarrierBookingReference(esTo.getCarrierBookingReference());
+      eventSubscription.setEquipmentReference(esTo.getEquipmentReference());
+      eventSubscription.setCarrierServiceCode(esTo.getCarrierServiceCode());
+      eventSubscription.setCarrierVoyageNumber(esTo.getCarrierVoyageNumber());
+      eventSubscription.setVesselIMONumber(esTo.getVesselIMONumber());
+      eventSubscription.setTransportDocumentReference(esTo.getTransportDocumentReference());
+      eventSubscription.setTransportCallID(esTo.getTransportCallID());
+      return eventSubscription;
+    };
+  }
+
+  // ToDo : replace this with mapstruct
+  protected Function<EventSubscription, TNTEventSubscriptionTO>
+      eventSubscriptionToEventSubscriptionTo() {
+    return es -> {
+      TNTEventSubscriptionTO eventSubscriptionTo = new TNTEventSubscriptionTO();
+      eventSubscriptionTo.setSubscriptionID(es.getSubscriptionID());
+      eventSubscriptionTo.setCallbackUrl(es.getCallbackUrl());
+      eventSubscriptionTo.setCarrierBookingReference(es.getCarrierBookingReference());
+      eventSubscriptionTo.setEquipmentReference(es.getEquipmentReference());
+      eventSubscriptionTo.setCarrierServiceCode(es.getCarrierServiceCode());
+      eventSubscriptionTo.setCarrierVoyageNumber(es.getCarrierVoyageNumber());
+      eventSubscriptionTo.setVesselIMONumber(es.getVesselIMONumber());
+      eventSubscriptionTo.setTransportDocumentReference(es.getTransportDocumentReference());
+      eventSubscriptionTo.setTransportCallID(es.getTransportCallID());
+      return eventSubscriptionTo;
+    };
+  }
+
+  @Override
+  protected List<EventType> getEventTypesForTo(TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getEventType()
+        || eventSubscriptionTO.getEventType().isEmpty()) {
+      eventSubscriptionTO.setEventType(getAllowedEventTypes());
+    }
+
+    return eventSubscriptionTO.getEventType();
+  }
+
+  @Override
+  protected List<TransportDocumentTypeCode> getTransportDocumentTypesForTo(
+      TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getTransportDocumentTypeCode()
+        || eventSubscriptionTO.getTransportDocumentTypeCode().isEmpty()) {
+      eventSubscriptionTO.setTransportDocumentTypeCode(ALL_TRANSPORT_DOCUMENT_TYPES);
+    }
+
+    return eventSubscriptionTO.getTransportDocumentTypeCode();
+  }
+
+  @Override
+  protected List<ShipmentEventTypeCode> getShipmentEventTypeCodesForTo(
+      TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getShipmentEventTypeCode()
+        || eventSubscriptionTO.getShipmentEventTypeCode().isEmpty()) {
+      eventSubscriptionTO.setShipmentEventTypeCode(ALL_SHIPMENT_EVENT_TYPES);
+    }
+
+    return eventSubscriptionTO.getShipmentEventTypeCode();
+  }
+
+  @Override
+  protected List<TransportEventTypeCode> getTransportEventTypeCodesForTo(
+      TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getTransportEventTypeCode()
+        || eventSubscriptionTO.getTransportEventTypeCode().isEmpty()) {
+      eventSubscriptionTO.setTransportEventTypeCode(ALL_TRANSPORT_EVENT_TYPES);
+    }
+
+    return eventSubscriptionTO.getTransportEventTypeCode();
+  }
+
+  @Override
+  protected List<EquipmentEventTypeCode> getEquipmentEventTypeCodesForTo(
+      TNTEventSubscriptionTO eventSubscriptionTO) {
+
+    if (null == eventSubscriptionTO.getEquipmentEventTypeCode()
+        || eventSubscriptionTO.getEquipmentEventTypeCode().isEmpty()) {
+      eventSubscriptionTO.setEquipmentEventTypeCode(ALL_EQUIPMENT_EVENT_TYPES);
+    }
+
+    return eventSubscriptionTO.getEquipmentEventTypeCode();
+  }
+
+  @Override
+  protected List<OperationsEventTypeCode> getOperationsEventTypeCodesForTo(
+      TNTEventSubscriptionTO eventSubscriptionTO) {
+    // we don't  need operations event type code for TNT event subscriptions
+    return Collections.emptyList();
+  }
+
+    @Override
   public Mono<TNTEventSubscriptionTO> create(TNTEventSubscriptionTO eventSubscriptionTO) {
-    return eventSubscriptionService
-        .create(eventSubscriptionTOToEventSubscription.apply(eventSubscriptionTO))
+    return validateCreateRequest(eventSubscriptionTO)
+        .then(
+            eventSubscriptionService.create(
+                eventSubscriptionTOToEventSubscription().apply(eventSubscriptionTO)))
         .flatMap(
             eventSubscription -> {
               eventSubscriptionTO.setSubscriptionID(eventSubscription.getSubscriptionID());
@@ -65,30 +163,14 @@ public class TNTEventSubscriptionTOServiceImpl
             });
   }
 
-  // ToDo : replace this with mapstruct
-  private final Function<TNTEventSubscriptionTO, EventSubscription>
-      eventSubscriptionTOToEventSubscription =
-          esTo -> {
-            EventSubscription eventSubscription = new EventSubscription();
-            eventSubscription.setSubscriptionID(esTo.getSubscriptionID());
-            eventSubscription.setCallbackUrl(esTo.getCallbackUrl());
-            eventSubscription.setSecret(esTo.getSecret());
-            eventSubscription.setCarrierBookingReference(esTo.getCarrierBookingReference());
-            eventSubscription.setEquipmentReference(esTo.getEquipmentReference());
-            eventSubscription.setCarrierServiceCode(esTo.getCarrierServiceCode());
-            eventSubscription.setCarrierVoyageNumber(esTo.getCarrierVoyageNumber());
-            eventSubscription.setVesselIMONumber(esTo.getVesselIMONumber());
-            eventSubscription.setTransportDocumentReference(esTo.getTransportDocumentReference());
-            eventSubscription.setTransportCallID(esTo.getTransportCallID());
-            return eventSubscription;
-          };
-
   @Override
   public Mono<TNTEventSubscriptionTO> update(TNTEventSubscriptionTO eventSubscriptionTO) {
-    return eventSubscriptionRepository
-        .deleteEventTypesForSubscription(eventSubscriptionTO.getSubscriptionID())
+    return validateUpdateRequest(eventSubscriptionTO)
+        .then(
+            eventSubscriptionRepository.deleteEventTypesForSubscription(
+                eventSubscriptionTO.getSubscriptionID()))
         .thenReturn(eventSubscriptionTO)
-        .map(eventSubscriptionTOToEventSubscription)
+        .map(eventSubscriptionTOToEventSubscription())
         .flatMap(
             updated ->
                 eventSubscriptionService
@@ -103,97 +185,12 @@ public class TNTEventSubscriptionTOServiceImpl
         .flatMap(ignored -> createEventTypes(eventSubscriptionTO));
   }
 
-  private Mono<TNTEventSubscriptionTO> createEventTypes(
-      TNTEventSubscriptionTO eventSubscriptionTO) {
-
-    List<EventType> eventTypes;
-
-    if (CollectionUtils.isEmpty(eventSubscriptionTO.getEventType())) {
-      eventTypes = ALL_ALLOWED_EVENT_TYPES;
-      eventSubscriptionTO.setEventType(eventTypes);
-    } else {
-      eventTypes = eventSubscriptionTO.getEventType();
-    }
-
-    return Flux.fromIterable(eventTypes)
-        .concatMap(
-            eventType ->
-                eventSubscriptionRepository.insertEventTypeForSubscription(
-                    eventSubscriptionTO.getSubscriptionID(), eventType))
-        .then(Mono.just(eventSubscriptionTO));
-  }
-
-  private Mono<Void> createTransportDocumentEventTypes(TNTEventSubscriptionTO eventSubscriptionTO) {
-
-    if (null == eventSubscriptionTO.getTransportDocumentTypeCode()) {
-      eventSubscriptionTO.setTransportDocumentTypeCode(ALL_TRANSPORT_DOCUMENT_TYPES);
-    }
-
-    List<TransportDocumentTypeCode> transportDocumentTypeCodes =
-        eventSubscriptionTO.getTransportDocumentTypeCode();
-    return Flux.fromIterable(transportDocumentTypeCodes)
-        .flatMap(
-            td ->
-                eventSubscriptionRepository.insertTransportDocumentEventTypeForSubscription(
-                    eventSubscriptionTO.getSubscriptionID(), td))
-        .then();
-  }
-
-  private Mono<Void> createShipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-
-    if (null == eventSubscriptionTO.getShipmentEventTypeCode()) {
-      eventSubscriptionTO.setShipmentEventTypeCode(ALL_SHIPMENT_EVENT_TYPES);
-    }
-
-    List<ShipmentEventTypeCode> shipmentEventTypeCode =
-        eventSubscriptionTO.getShipmentEventTypeCode();
-
-    return Flux.fromIterable(shipmentEventTypeCode)
-        .flatMap(
-            s ->
-                eventSubscriptionRepository.insertShipmentEventTypeForSubscription(
-                    eventSubscriptionTO.getSubscriptionID(), s))
-        .then();
-  }
-
-  private Mono<Void> createTransportEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-
-    if (null == eventSubscriptionTO.getTransportEventTypeCode()) {
-      eventSubscriptionTO.setTransportEventTypeCode(ALL_TRANSPORT_EVENT_TYPES);
-    }
-
-    List<TransportEventTypeCode> transportEventTypeCode =
-        eventSubscriptionTO.getTransportEventTypeCode();
-    return Flux.fromIterable(transportEventTypeCode)
-        .flatMap(
-            t ->
-                eventSubscriptionRepository.insertTransportEventTypeForSubscription(
-                    eventSubscriptionTO.getSubscriptionID(), t))
-        .then();
-  }
-
-  private Mono<Void> createEquipmentEventType(TNTEventSubscriptionTO eventSubscriptionTO) {
-
-    if (null == eventSubscriptionTO.getEquipmentEventTypeCode()) {
-      eventSubscriptionTO.setEquipmentEventTypeCode(ALL_EQUIPMENT_EVENT_TYPES);
-    }
-
-    List<EquipmentEventTypeCode> equipmentEventTypeCode =
-        eventSubscriptionTO.getEquipmentEventTypeCode();
-
-    return Flux.fromIterable(equipmentEventTypeCode)
-        .flatMap(
-            e ->
-                eventSubscriptionRepository.insertEquipmentEventTypeForSubscription(
-                    eventSubscriptionTO.getSubscriptionID(), e))
-        .then();
-  }
 
   @Override
   protected Mono<TNTEventSubscriptionTO> mapSingleD2TO(
       Mono<EventSubscription> eventSubscriptionMono) {
     return eventSubscriptionMono
-        .map(eventSubscriptionToEventSubscriptionTo)
+        .map(eventSubscriptionToEventSubscriptionTo())
         .flatMap(
             eventSubscriptionTO ->
                 eventSubscriptionRepository
@@ -240,7 +237,7 @@ public class TNTEventSubscriptionTOServiceImpl
   protected Flux<TNTEventSubscriptionTO> mapManyD2TO(
       Flux<EventSubscription> eventSubscriptionFlux) {
     return eventSubscriptionFlux
-        .map(eventSubscriptionToEventSubscriptionTo)
+        .map(eventSubscriptionToEventSubscriptionTo())
         .collectList()
         .flatMapMany(
             eventSubscriptionList -> {
@@ -338,20 +335,4 @@ public class TNTEventSubscriptionTOServiceImpl
             });
   }
 
-  // ToDo : replace this with mapstruct
-  private final Function<EventSubscription, TNTEventSubscriptionTO>
-      eventSubscriptionToEventSubscriptionTo =
-          es -> {
-            TNTEventSubscriptionTO eventSubscriptionTo = new TNTEventSubscriptionTO();
-            eventSubscriptionTo.setSubscriptionID(es.getSubscriptionID());
-            eventSubscriptionTo.setCallbackUrl(es.getCallbackUrl());
-            eventSubscriptionTo.setCarrierBookingReference(es.getCarrierBookingReference());
-            eventSubscriptionTo.setEquipmentReference(es.getEquipmentReference());
-            eventSubscriptionTo.setCarrierServiceCode(es.getCarrierServiceCode());
-            eventSubscriptionTo.setCarrierVoyageNumber(es.getCarrierVoyageNumber());
-            eventSubscriptionTo.setVesselIMONumber(es.getVesselIMONumber());
-            eventSubscriptionTo.setTransportDocumentReference(es.getTransportDocumentReference());
-            eventSubscriptionTo.setTransportCallID(es.getTransportCallID());
-            return eventSubscriptionTo;
-          };
 }

@@ -19,7 +19,7 @@
 		<java.version>11</java.version>
         <groovy.version>3.0.2</groovy.version>
 		<dcsa.version>0.8.10</dcsa.version>
-		<dcsa.events.version>0.0.13</dcsa.events.version>
+		<dcsa.events.version>0.0.14</dcsa.events.version>
 		<dcsa.core.tag/>
 		<dcsa.event.tag/>
 		<dcsa.artifacttype>-SNAPSHOT</dcsa.artifacttype>
