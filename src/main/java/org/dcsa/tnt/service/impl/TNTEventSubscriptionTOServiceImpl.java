@@ -141,11 +141,11 @@ public class TNTEventSubscriptionTOServiceImpl
   @Override
   protected List<OperationsEventTypeCode> getOperationsEventTypeCodesForTo(
       TNTEventSubscriptionTO eventSubscriptionTO) {
-    // we don't  need operations event type code for TNT event subscriptions
-    return Collections.emptyList();
+    // we don't need OperationsEventTypeCode for TNT event subscriptions
+    throw new UnsupportedOperationException();
   }
 
-    @Override
+  @Override
   public Mono<TNTEventSubscriptionTO> create(TNTEventSubscriptionTO eventSubscriptionTO) {
     return validateCreateRequest(eventSubscriptionTO)
         .then(
