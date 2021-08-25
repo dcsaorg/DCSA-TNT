@@ -36,10 +36,6 @@
 			<artifactId>dcsa_event_core</artifactId>
 			<version>${dcsa.events.version}${dcsa.event.tag}${dcsa.artifacttype}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId> 
-			<artifactId>spring-boot-starter-actuator</artifactId> 
-		</dependency>
 	</dependencies>	
 
 	<build>
