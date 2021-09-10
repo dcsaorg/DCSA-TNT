@@ -2,8 +2,10 @@
 
 Building and running manually/locally
 -------------------------------------
+**[RECOMMENDED]**
+Setup a Github Personal Access Token as mentioned [here](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#how-to-use-dcsa-core-packages), then skip to **step 3**.
 
-**Note:** If you have your Github Personal Access Token setup as mentioned [here](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#how-to-use-dcsa-core-packages), skip to step 3.
+If you would like to build required DCSA packages individually, begin with step 1.
 
 1) Build **DCSA-Core** as described in [DCSA-Core/README.md](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#to-build-manually-run), then
 
@@ -11,7 +13,8 @@ Building and running manually/locally
 
 3) Clone **DCSA-TNT** (with ``--recurse-submodules`` option.) and Build using, ``mvn package``
 
-4) Initialize your local postgresql database as described in [datamodel/README.md](https://github.com/dcsaorg/DCSA-Information-Model/blob/master/README.md)
+4) Initialize your local postgresql database as described in [datamodel/README.md](https://github.com/dcsaorg/DCSA-Information-Model/blob/master/README.md) \
+   or If you have docker installed, you may skip this step and use the docker-compose command mentioned below to set it up (This will initialize the application along with the database).
 
 5) Run application,
 ```
@@ -27,7 +30,7 @@ OR using **docker-compose**
 docker-compose up -d -V --build
 ```
 
-Check the running application,
+6) Verify if the application is running,
 ```
 curl http://localhost:9090/v2/actuator/health
 ```
