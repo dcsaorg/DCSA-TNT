@@ -3,7 +3,7 @@ services:
     web:
         environment:
             - DB_HOSTNAME=db
-            - AUTH0_ENABLED=false
+            - AUTH0_ENABLED=true
         container_name: dcsa_tnt
         build:
            .
@@ -15,7 +15,7 @@ services:
                 max-size: 200k
 
     db:
-        container_name: dcsa_tnt_db
+        container_name: dcsa_db
         environment:
             POSTGRES_PASSWORD: "change_this_password"
         build:
