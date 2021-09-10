@@ -3,31 +3,29 @@
 Building and running manually/locally
 -------------------------------------
 
-Initialize your local postgresql database as described in datamodel/README.md, then
-```
-export db_hostname=localhost
-export DCSA_Version=0.7.4 #or whatever version is the right one
-```
-If running without auth0, disable it in src/main/resources/application.yaml
+1) Initialize your local postgresql database as described in [datamodel/README.md](https://github.com/dcsaorg/DCSA-Information-Model/blob/master/README.md), then
 
-Then build and run with
-```
-mvn install:install-file -Dfile=../DCSA-Core/target/dcsa_core-$DCSA_Version.jar -DgroupId=org.dcsa -DartifactId=dcsa_core -Dversion=local-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
-mvn spring-boot:run -Ddcsa.version=local-SNAPSHOT
+** If you have your Github Personal Access Token setup as mentioned [here](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md), skip to step 4.
 
+2) Build **DCSA-Core** as described in [DCSA-Core/README.md](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md), then
+
+3) Build **DCSA-Event-Core** as described in [DCSA-Event-Core/README.md](https://github.com/dcsaorg/DCSA-Event-Core/blob/master/README.md), then
+
+4) Build **DCSA-TNT**, ``mvn package``
+
+5) Run application,
+```
+mvn spring-boot:run [options] 
+
+options:
+ -Dspring-boot.run.arguments="--DB_HOSTNAME=localhost:5432 --AUTH0_ENABLED=false --LOG_LEVEL=DEBUG"
 ```
 or using docker-compose
-
 ```
-mvn package -Ddcsa.version=local-SNAPSHOT
-
 docker-compose up -d -V --build
-´´´
-
-Building and running using docker-compose
------------------------------------------
-To build using DCSA-core from GitHub packages
 ```
-mvn package
-docker-compose up -d -V --build
+
+Check the running application,
+```
+curl http://localhost:9090/v2/actuator/health
 ```
