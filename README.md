@@ -1,33 +1,36 @@
 # DCSA TNT 
 
-Building and running manually/locally
+Building and Running the project,
 -------------------------------------
+**[RECOMMENDED]**
+Setup a Github Personal Access Token as mentioned [here](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#how-to-use-dcsa-core-packages), then skip to **step 3**.
 
-Initialize your local postgresql database as described in datamodel/README.md, then
-```
-export db_hostname=localhost
-export DCSA_Version=0.7.4 #or whatever version is the right one
-```
-If running without auth0, disable it in src/main/resources/application.yaml
+If you would like to build required DCSA packages individually, begin with step 1.
 
-Then build and run with
+1) Build **DCSA-Core** as described in [DCSA-Core/README.md](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#to-build-manually-run), then
+
+2) Build **DCSA-Event-Core** as described in [DCSA-Event-Core/README.md](https://github.com/dcsaorg/DCSA-Event-Core/blob/master/README.md#to-build-manually-run), then
+
+3) Clone **DCSA-TNT** (with ``--recurse-submodules`` option.) and Build using, ``mvn package``
+
+4) Initialize your local postgresql database as described in [datamodel/README.md](https://github.com/dcsaorg/DCSA-Information-Model/blob/master/README.md) \
+   or If you have docker installed, you may skip this step and use the docker-compose command mentioned below to set it up (This will initialize the application along with the database).
+
+5) Run application,
 ```
-mvn install:install-file -Dfile=../DCSA-Core/target/dcsa_core-$DCSA_Version.jar -DgroupId=org.dcsa -DartifactId=dcsa_core -Dversion=local-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
-mvn spring-boot:run -Ddcsa.version=local-SNAPSHOT
+mvn spring-boot:run [options] 
+
+options:
+ -Dspring-boot.run.arguments="--DB_HOSTNAME=localhost:5432 --AUTH0_ENABLED=false --LOG_LEVEL=DEBUG"
+```
+
+OR using **docker-compose**
 
 ```
-or using docker-compose
-
-```
-mvn package -Ddcsa.version=local-SNAPSHOT
-
 docker-compose up -d -V --build
-´´´
-
-Building and running using docker-compose
------------------------------------------
-To build using DCSA-core from GitHub packages
 ```
-mvn package
-docker-compose up -d -V --build
+
+6) Verify if the application is running,
+```
+curl http://localhost:9090/v2/actuator/health
 ```

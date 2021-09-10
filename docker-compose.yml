@@ -1,6 +1,10 @@
 version: '3.5'
 services:
-    dcsa-tnt:
+    web:
+        environment:
+            - DB_HOSTNAME=db
+            - AUTH0_ENABLED=true
+        container_name: dcsa_tnt
         build:
            .
         ports:
@@ -10,7 +14,7 @@ services:
                 max-file: '10'
                 max-size: 200k
 
-    dcsa-test-db:
+    db:
         container_name: dcsa_db
         environment:
             POSTGRES_PASSWORD: "change_this_password"
