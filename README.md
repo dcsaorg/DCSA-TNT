@@ -1,6 +1,6 @@
 # DCSA TNT 
 
-Building and running manually/locally
+Building and Running the project,
 -------------------------------------
 **[RECOMMENDED]**
 Setup a Github Personal Access Token as mentioned [here](https://github.com/dcsaorg/DCSA-Core/blob/master/README.md#how-to-use-dcsa-core-packages), then skip to **step 3**.
