@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.dcsa.core.events.model.base.AbstractEventSubscription;
 import org.dcsa.core.events.model.enums.*;
 import org.dcsa.core.validator.EnumSubset;
+import org.dcsa.core.validator.ValidVesselIMONumber;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class TNTEventSubscriptionTO extends AbstractEventSubscription {
 
   private String transportCallID;
 
+  @ValidVesselIMONumber(allowNull = true)
   private String vesselIMONumber;
 
   private String carrierVoyageNumber;

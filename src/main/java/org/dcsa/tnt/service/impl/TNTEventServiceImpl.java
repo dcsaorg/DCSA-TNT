@@ -23,18 +23,21 @@ import java.util.UUID;
 @Service
 public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTEventService {
 
-    private final TransportEventService transportEventService;
-    private final EquipmentEventService equipmentEventService;
-    private final ShipmentEventService shipmentEventService;
-    private final PendingEventRepository pendingEventRepository;
-
-    public TNTEventServiceImpl(TransportEventService transportEventService, EquipmentEventService equipmentEventService, ShipmentEventService shipmentEventService, OperationsEventService operationsEventService, EventRepository eventRepository, PendingEventRepository pendingEventRepository) {
-        super(shipmentEventService, transportEventService, equipmentEventService,operationsEventService, eventRepository);
-        this.transportEventService = transportEventService;
-        this.equipmentEventService = equipmentEventService;
-        this.shipmentEventService = shipmentEventService;
-        this.pendingEventRepository = pendingEventRepository;
-    }
+  public TNTEventServiceImpl(
+      TransportEventService transportEventService,
+      EquipmentEventService equipmentEventService,
+      ShipmentEventService shipmentEventService,
+      OperationsEventService operationsEventService,
+      EventRepository eventRepository,
+      PendingEventRepository pendingEventRepository) {
+    super(
+        shipmentEventService,
+        transportEventService,
+        equipmentEventService,
+        operationsEventService,
+        eventRepository,
+        pendingEventRepository);
+  }
 
     @Override
     public Flux<Event> findAllExtended(ExtendedRequest<Event> extendedRequest) {
