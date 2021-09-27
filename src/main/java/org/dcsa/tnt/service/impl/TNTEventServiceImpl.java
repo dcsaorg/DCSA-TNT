@@ -5,6 +5,7 @@ import org.dcsa.core.events.model.EquipmentEvent;
 import org.dcsa.core.events.model.Event;
 import org.dcsa.core.events.model.ShipmentEvent;
 import org.dcsa.core.events.model.TransportEvent;
+import org.dcsa.core.events.model.enums.EventType;
 import org.dcsa.core.events.repository.EventRepository;
 import org.dcsa.core.events.repository.PendingEventRepository;
 import org.dcsa.core.events.service.*;
@@ -17,11 +18,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
 @Service
 public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTEventService {
+
+  private final Set<EventType> SUPPORTED_EVENT_TYPES = Set.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
 
   public TNTEventServiceImpl(
       TransportEventService transportEventService,
@@ -39,9 +43,15 @@ public class TNTEventServiceImpl extends GenericEventServiceImpl implements TNTE
         pendingEventRepository);
   }
 
+    protected Set<EventType> getSupportedEvents() {
+        return SUPPORTED_EVENT_TYPES;
+    }
+
     @Override
     public Flux<Event> findAllExtended(ExtendedRequest<Event> extendedRequest) {
-        return super.findAllExtended(extendedRequest).concatMap(event -> {
+        return super.findAllExtended(extendedRequest)
+                .filter(e -> SUPPORTED_EVENT_TYPES.contains(e.getEventType()))
+                .concatMap(event -> {
             switch (event.getEventType()) {
                 case TRANSPORT:
                     return transportEventService.loadRelatedEntities((TransportEvent) event);

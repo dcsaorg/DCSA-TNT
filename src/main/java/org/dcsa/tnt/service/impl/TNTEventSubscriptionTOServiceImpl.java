@@ -36,8 +36,8 @@ public class TNTEventSubscriptionTOServiceImpl
         return this.eventSubscriptionRepository;
     }
 
-    @Override
-  protected List<EventType> getAllowedEventTypes() {
+  @Override
+  public List<EventType> getAllowedEventTypes() {
     return List.of(EventType.SHIPMENT, EventType.TRANSPORT, EventType.EQUIPMENT);
   }
 
