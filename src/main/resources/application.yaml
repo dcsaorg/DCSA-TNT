@@ -47,17 +47,6 @@ dcsa:
   specification:
     version: 2.1.0
 
-auth0:
-  audience: localhost
-  enabled: ${AUTH0_ENABLED:false}
-
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    # swagger-ui custom path
-    path: /docs
-
 server:
   port: 9090
   error:
