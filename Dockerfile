@@ -7,6 +7,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 9090
-ENV DB_HOSTNAME db AUTH0_ENABLED true
+ENV DB_HOSTNAME db
 COPY target/dcsa_tnt-*.jar .
 CMD java -jar dcsa_tnt-*.jar

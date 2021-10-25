@@ -1,6 +1,12 @@
-name: Microservices CI
+name: DCSA-TNT MASTER CI
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -32,6 +38,24 @@ jobs:
 
     - name: Run the TNT microservice plus database
       run: cd DCSA-TNT && docker-compose -f docker-compose.yml up -d -V
+
+    - name: Fetch Backend Status
+      run: |
+        sleep 10
+        echo "::set-output name=STATUS::$(curl -s http://localhost:9090/v2/actuator/health | jq -r '.status')"
+      id: healthcheck
+
+    - name: Confirm microservice status
+      if: ${{ steps.healthcheck.outputs.STATUS == 'UP' }}
+      run: |
+        echo "The DCSA-TNT service is UP."
+
+    - name: Confirm microservice status
+      if: ${{ steps.healthcheck.outputs.STATUS != 'UP' }}
+      uses: actions/github-script@v3
+      with:
+        script: |
+          core.setFailed('The DCSA-TNT service is down.')
 
     - name: Checkout dcsaorg/DCSA-API-Validator
       uses: actions/checkout@v2
