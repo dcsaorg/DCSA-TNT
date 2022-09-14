@@ -6,16 +6,15 @@ name: Docker
 # documentation.
 
 on:
-  push:
-    branches:
-      - master
-    
+  create:
+    tags:
+      - v*
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
 
 jobs:
   build:
@@ -28,26 +27,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+        with:
+          submodules: recursive
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'maven'
+
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v12
         with:
           repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
           servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
-        
+
       - name: maven build
         run: mvn -B package --file pom.xml
-        
-      - name: print context
-        run: echo "$GITHUB_CONTEXT"
-        
+
+
       # Build and push Docker image
       # https://github.com/marketplace/actions/docker-build-push-action
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
-        with:          
+        with:
           image: dcsa-tnt
-          registry: ghcr.io            
+          registry: ghcr.io
           githubOrg: dcsaorg
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}

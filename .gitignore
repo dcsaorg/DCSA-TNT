@@ -21,6 +21,8 @@ target/
 *.iml
 *.ipr
 
+/out
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -32,3 +34,5 @@ build/
 ### VS Code ###
 .vscode/
 
+mvnw
+mvnw.cmd

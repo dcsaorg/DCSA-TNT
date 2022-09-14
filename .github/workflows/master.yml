@@ -1,0 +1,70 @@
+name: DCSA-TNT MASTER CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: DCSA-TNT
+          submodules: recursive
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'maven'
+
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v12
+        with:
+          repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
+          servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
+
+      - name: Build TNT
+        run: cd DCSA-TNT && mvn clean -U -B package -Ddcsa.artifacttype=-SNAPSHOT
+
+      - name: Build and run the microservices
+        run: cd DCSA-TNT && docker-compose -f docker-compose.yml up -d -V --build
+
+      - name: Fetch Backend Status
+        run: |
+          sleep 10
+          status=$(curl -s http://localhost:9090/v2/actuator/health | jq -r '.status')
+          retries=12
+
+          while [[ "$status" != "UP" ]] && [[ $retries -gt 0 ]]; do
+            echo "Status is '$status' - waiting 5 secs ($retries retries left)"
+            sleep 5
+            retries=$((retries - 1))
+            status=$(curl -s http://localhost:9090/v2/actuator/health | jq -r '.status')
+          done
+
+          echo "Final status is '$status'"
+          if [[ "$status" != "UP" ]]; then
+            curl -v http://localhost:9090/v2/actuator/health || :
+            docker ps || :
+            docker logs dcsa-tnt_dcsa-tnt_1 || :
+            exit 1
+          fi
+
+          echo "::set-output name=STATUS::$status"
+        id: healthcheck
+
+      - name: Confirm microservice status
+        if: ${{ steps.healthcheck.outputs.STATUS == 'UP' }}
+        run: |
+          echo "The DCSA-TNT service is UP."
+
+      - name: Run Integration Tests
+        run: |
+          cd DCSA-TNT && java -jar tnt-integration-tests/target/dcsa-tnt-integration-tests-with-dependencies.jar

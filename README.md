@@ -1,4 +1,4 @@
-# DCSA TNT 
+# DCSA TNT - Track & Trace
 
 Building and Running the project,
 -------------------------------------
@@ -18,11 +18,11 @@ If you would like to build required DCSA packages individually, begin with step 
 
 5) Run application,
 ```
-mvn spring-boot:run [options] 
+mvn spring-boot:run [options]
 
 options:
- -Dspring-boot.run.arguments="--DB_HOSTNAME=localhost:5432 --AUTH0_ENABLED=false --LOG_LEVEL=DEBUG"
-```
+ -Dspring-boot.run.arguments="--DB_HOSTNAME=localhost:5432 --LOG_LEVEL=DEBUG"
+ ```
 
 OR using **docker-compose**
 
@@ -32,5 +32,5 @@ docker-compose up -d -V --build
 
 6) Verify if the application is running,
 ```
-curl http://localhost:9090/v2/actuator/health
+curl http://localhost:9090/v1/actuator/health
 ```

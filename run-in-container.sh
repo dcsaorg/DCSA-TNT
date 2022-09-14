@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "spring.config.import=/application.yaml" >> dcsa-spring-boot.properties
+echo "spring.config.import=/application.yml" >> dcsa-spring-boot.properties
 
 if [ -f "/config/dcsa-config.yaml" ]; then
   echo "Add /config/dcsa-config.yaml to dcsa-spring-boot.properties"
