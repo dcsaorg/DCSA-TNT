@@ -6,18 +6,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import lombok.Data;
 import org.dcsa.tnt.transferobjects.enums.EventClassifierCode;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @JsonTypeInfo(use = Id.NAME, property = "eventType")
 @JsonSubTypes({
-  @Type(value = AggregatedEquipmentEventTO.class, name = "EQUIPMENT"),
-  @Type(value = AggregatedTransportEventTO.class, name = "TRANSPORT"),
-  @Type(value = AggregatedShipmentEventTO.class, name = "SHIPMENT"),
-  @Type(value = AggregatedOperationsEventTO.class, name = "OPERATIONS")
+  @Type(value = EquipmentEventTO.class, name = "EQUIPMENT"),
+  @Type(value = TransportEventTO.class, name = "TRANSPORT"),
+  @Type(value = ShipmentEventTO.class, name = "SHIPMENT")
 })
 @Data
-public abstract class AggregatedEventTO {
+public abstract class EventTO {
   private UUID eventID;
 
   private OffsetDateTime eventDateTime;
