@@ -10,9 +10,8 @@ public record LocationTO(
   @Size(max = 10) String latitude,
   @Size(max = 11) String longitude,
   @Size(max = 5) String UNLocationCode,
-  @Size(max = 6) String facilityCode,
-  FacilityCodeListProvider facilityCodeListProvider,
-  AddressTO address
+  AddressTO address,
+  FacilityTO facility
 ) {
   @Builder(toBuilder = true) // workaround for intellij issue
   public LocationTO { }
