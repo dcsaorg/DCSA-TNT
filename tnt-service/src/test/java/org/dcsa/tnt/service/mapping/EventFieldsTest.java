@@ -5,9 +5,9 @@ import org.dcsa.skernel.domain.persistence.entity.Carrier;
 import org.dcsa.skernel.domain.persistence.entity.Facility;
 import org.dcsa.skernel.domain.persistence.entity.Location;
 import org.dcsa.skernel.test.helpers.FieldValidator;
-import org.dcsa.tnt.persistence.entity.AggregatedEquipmentEvent;
-import org.dcsa.tnt.persistence.entity.AggregatedShipmentEvent;
-import org.dcsa.tnt.persistence.entity.AggregatedTransportEvent;
+import org.dcsa.tnt.persistence.entity.EquipmentEvent;
+import org.dcsa.tnt.persistence.entity.ShipmentEvent;
+import org.dcsa.tnt.persistence.entity.TransportEvent;
 import org.dcsa.tnt.persistence.entity.Reference;
 import org.dcsa.tnt.persistence.entity.Seal;
 import org.dcsa.tnt.persistence.entity.Service;
@@ -32,21 +32,21 @@ import org.junit.jupiter.api.Test;
 public class EventFieldsTest {
   @Test
   public void testShipmentEventFields() {
-    FieldValidator.assertFieldsAreEqual(AggregatedShipmentEvent.class, ShipmentEventTO.class,
+    FieldValidator.assertFieldsAreEqual(ShipmentEvent.class, ShipmentEventTO.class,
       // Filled out separately
       "references");
   }
 
   @Test
   public void testTransportEventFields() {
-    FieldValidator.assertFieldsAreEqual(AggregatedTransportEvent.class, TransportEventTO.class,
+    FieldValidator.assertFieldsAreEqual(TransportEvent.class, TransportEventTO.class,
       // Filled out separately
       "references", "documentReferences");
   }
 
   @Test
   public void testEquipmentEventFields() {
-    FieldValidator.assertFieldsAreEqual(AggregatedEquipmentEvent.class, EquipmentEventTO.class,
+    FieldValidator.assertFieldsAreEqual(EquipmentEvent.class, EquipmentEventTO.class,
       // Filled out separately
       "references", "documentReferences", "seals");
   }

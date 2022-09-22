@@ -1,9 +1,9 @@
 package org.dcsa.tnt.service;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.tnt.persistence.entity.AggregatedEquipmentEvent;
-import org.dcsa.tnt.persistence.entity.AggregatedShipmentEvent;
-import org.dcsa.tnt.persistence.entity.AggregatedTransportEvent;
+import org.dcsa.tnt.persistence.entity.EquipmentEvent;
+import org.dcsa.tnt.persistence.entity.ShipmentEvent;
+import org.dcsa.tnt.persistence.entity.TransportEvent;
 import org.dcsa.tnt.service.mapping.ReferenceMapper;
 import org.dcsa.tnt.transferobjects.ReferenceTO;
 import org.springframework.stereotype.Service;
@@ -16,17 +16,17 @@ import java.util.List;
 public class ReferenceService {
   private final ReferenceMapper referenceMapper;
 
-  public List<ReferenceTO> findFor(AggregatedShipmentEvent event) {
+  public List<ReferenceTO> findFor(ShipmentEvent event) {
     // TODO
     return Collections.emptyList();
   }
 
-  public List<ReferenceTO> findFor(AggregatedEquipmentEvent event) {
+  public List<ReferenceTO> findFor(EquipmentEvent event) {
     // TODO
     return Collections.emptyList();
   }
 
-  public List<ReferenceTO> findFor(AggregatedTransportEvent event) {
+  public List<ReferenceTO> findFor(TransportEvent event) {
     // TODO
     return Collections.emptyList();
   }

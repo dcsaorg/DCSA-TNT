@@ -8,20 +8,20 @@ import org.dcsa.tnt.persistence.entity.enums.TransportEventTypeCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 @Entity
-@DiscriminatorValue("TRANSPORT")
-public class AggregatedTransportEvent extends AggregatedEvent {
+@Table(name = "transport_event")
+public class TransportEvent extends Event {
   @Enumerated(EnumType.STRING)
   @Column(name = "transport_event_type_code")
   private TransportEventTypeCode transportEventTypeCode;

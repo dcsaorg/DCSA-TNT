@@ -9,14 +9,10 @@ import org.dcsa.tnt.persistence.entity.enums.EventClassifierCode;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -25,11 +21,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "aggregated_events")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "event_type")
-public abstract class AggregatedEvent {
+@MappedSuperclass
+public abstract class Event {
   @Id
   @Column(name = "event_id", nullable = false)
   private UUID eventID;

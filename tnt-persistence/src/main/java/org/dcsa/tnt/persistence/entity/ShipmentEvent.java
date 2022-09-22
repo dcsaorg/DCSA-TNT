@@ -7,18 +7,18 @@ import org.dcsa.tnt.persistence.entity.enums.DocumentTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import java.util.UUID;
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 @Entity
-@DiscriminatorValue("SHIPMENT")
-public class AggregatedShipmentEvent extends AggregatedEvent {
+@Table(name = "shipment_event")
+public class ShipmentEvent extends Event {
   @Enumerated(EnumType.STRING)
   @Column(name = "shipment_event_type_code")
   private ShipmentEventTypeCode shipmentEventTypeCode;

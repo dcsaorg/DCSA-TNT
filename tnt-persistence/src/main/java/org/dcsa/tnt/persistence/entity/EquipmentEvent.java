@@ -10,20 +10,20 @@ import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Getter
 @Setter
 @ToString(callSuper = true)
 @Entity
-@DiscriminatorValue("EQUIPMENT")
-public class AggregatedEquipmentEvent extends AggregatedEvent {
+@Table(name = "equipment_event")
+public class EquipmentEvent extends Event {
   @Enumerated(EnumType.STRING)
   @Column(name = "equipment_event_type_code")
   private EquipmentEventTypeCode equipmentEventTypeCode;

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EventCachingService extends RouteBuilder {
-  private final AggregatedEventService aggregatedEventService;
+  private final EventService eventService;
   private final EventCacheRepository eventCacheRepository;
   private final ObjectMapper objectMapper;
 
@@ -28,7 +28,11 @@ public class EventCachingService extends RouteBuilder {
 
   @SneakyThrows
   public void cacheEvent(EventCacheQueue eventCacheQueue) {
-    EventTO to = aggregatedEventService.findById(eventCacheQueue.getEventID());
+    EventTO to = switch (eventCacheQueue.getEventType()) {
+      case SHIPMENT -> eventService.findShipmentEvent(eventCacheQueue.getEventID());
+      case TRANSPORT -> eventService.findTransportEvent(eventCacheQueue.getEventID());
+      case EQUIPMENT -> eventService.findEquipmentEvent(eventCacheQueue.getEventID());
+    };
     eventCacheRepository.save(EventCache.builder()
         .eventID(to.getEventID())
         .eventType(eventCacheQueue.getEventType())
