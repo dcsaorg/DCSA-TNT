@@ -37,6 +37,14 @@
 			<artifactId>dcsa-shared-kernel-all</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-jpa-starter</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.dcsa.shared-kernel</groupId>
 			<artifactId>dcsa-shared-kernel-test-helpers</artifactId>
 			<scope>test</scope>

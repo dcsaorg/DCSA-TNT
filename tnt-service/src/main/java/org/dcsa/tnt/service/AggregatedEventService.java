@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,11 @@ public class AggregatedEventService {
       .stream()
       .map(this::toDTO)
       .toList();
+  }
+
+  @Transactional
+  public EventTO findById(UUID id) {
+    return aggregatedEventRepository.findById(id).map(this::toDTO).orElseThrow(() -> new RuntimeException("waaa"));
   }
 
   private EventTO toDTO(AggregatedEvent event) {
