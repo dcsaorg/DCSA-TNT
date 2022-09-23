@@ -1,8 +1,8 @@
 package org.dcsa.tnt.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.tnt.service.DummyService;
-import org.dcsa.tnt.transferobjects.UnmappedEventTO;
+import org.dcsa.tnt.service.EventService;
+import org.dcsa.tnt.transferobjects.EventTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,15 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-// TODO: Remove when there is actual implementation
 @RestController
 @RequiredArgsConstructor
-public class DummyController {
-  private final DummyService dummyService;
+public class EventController {
+  private final EventService eventService;
 
-  @GetMapping(path = "/unmapped-events")
+  @GetMapping(path = "/events")
   @ResponseStatus(HttpStatus.OK)
-  public List<UnmappedEventTO> findAll() {
-    return dummyService.findAll();
+  public List<EventTO> findAllEvents() {
+    return eventService.findAll();
   }
 }
