@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
+import org.dcsa.skernel.infrastructure.pagination.Cursor;
+import org.dcsa.skernel.infrastructure.pagination.PagedResult;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent;
 import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.ShipmentEvent;
@@ -12,6 +14,7 @@ import org.dcsa.tnt.persistence.repository.EquipmentEventRepository;
 import org.dcsa.tnt.persistence.repository.EventCacheRepository;
 import org.dcsa.tnt.persistence.repository.ShipmentEventRepository;
 import org.dcsa.tnt.persistence.repository.TransportEventRepository;
+import org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.EventCacheFilters;
 import org.dcsa.tnt.service.mapping.EventMapper;
 import org.dcsa.tnt.transferobjects.EquipmentEventTO;
 import org.dcsa.tnt.transferobjects.EventTO;
@@ -22,6 +25,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
+
+import static org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.withFilters;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +44,10 @@ public class EventService {
   private final SealService sealService;
 
   @Transactional
-  public List<EventTO> findAll() {
-    return eventCacheRepository.findAll().stream()
-      .map(this::deserializeEvent)
-      .toList();
+  public PagedResult<EventTO> findAll(final Cursor cursor, final EventCacheFilters filters) {
+    return new PagedResult<>(
+        eventCacheRepository.findAll(withFilters(filters), cursor.toPageRequest()),
+        this::deserializeEvent);
   }
 
   @SneakyThrows
