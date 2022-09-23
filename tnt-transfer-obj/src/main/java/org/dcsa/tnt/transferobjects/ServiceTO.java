@@ -6,15 +6,10 @@ import java.util.UUID;
 
 public record ServiceTO(
   UUID id,
-
   CarrierTO carrier,
-
   String carrierServiceCode,
-
   String carrierServiceName,
-
   String tradelaneId,
-
   String universalServiceReference
 ) {
   @Builder

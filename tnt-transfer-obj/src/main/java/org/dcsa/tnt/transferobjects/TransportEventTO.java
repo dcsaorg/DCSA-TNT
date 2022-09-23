@@ -10,11 +10,8 @@ import java.util.List;
 @ToString(callSuper = true)
 public class TransportEventTO extends EventTO {
   private TransportEventTypeCode transportEventTypeCode;
-
   private String delayReasonCode;
-
   private String changeRemark;
-
   private TransportCallTO transportCall;
 
   private List<DocumentReferenceTO> documentReferences;

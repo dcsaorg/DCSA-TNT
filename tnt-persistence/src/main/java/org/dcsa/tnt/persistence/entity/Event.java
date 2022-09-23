@@ -1,5 +1,6 @@
 package org.dcsa.tnt.persistence.entity;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @MappedSuperclass
 public abstract class Event {
   @Id

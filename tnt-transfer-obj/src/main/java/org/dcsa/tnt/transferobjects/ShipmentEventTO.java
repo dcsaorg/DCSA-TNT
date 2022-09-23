@@ -12,11 +12,8 @@ import java.util.UUID;
 @ToString(callSuper = true)
 public class ShipmentEventTO extends EventTO {
   private ShipmentEventTypeCode shipmentEventTypeCode;
-
   private DocumentTypeCode documentTypeCode;
-
   private UUID documentID;
-
   private String reason;
 
   private List<ReferenceTO> references;

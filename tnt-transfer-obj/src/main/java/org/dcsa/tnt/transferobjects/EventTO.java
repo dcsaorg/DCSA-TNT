@@ -19,10 +19,7 @@ import java.util.UUID;
 @Data
 public abstract class EventTO {
   private UUID eventID;
-
   private OffsetDateTime eventDateTime;
-
   private OffsetDateTime eventCreatedDateTime;
-
   private EventClassifierCode eventClassifierCode;
 }

@@ -11,13 +11,9 @@ import java.util.List;
 @ToString(callSuper = true)
 public class EquipmentEventTO extends EventTO {
   private EquipmentEventTypeCode equipmentEventTypeCode;
-
   private String equipmentReference;
-
   private EmptyIndicatorCode emptyIndicatorCode;
-
   private TransportCallTO transportCall;
-
   private LocationTO eventLocation;
 
   private List<DocumentReferenceTO> documentReferences;

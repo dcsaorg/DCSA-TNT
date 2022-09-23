@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@Setter(value = AccessLevel.PROTECTED)
+@Setter(AccessLevel.PRIVATE)
 @Getter
 @NoArgsConstructor
 @Entity
