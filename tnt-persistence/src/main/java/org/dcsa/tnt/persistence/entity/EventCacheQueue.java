@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.dcsa.tnt.persistence.entity.enums.EventType;
 
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter(AccessLevel.PRIVATE)

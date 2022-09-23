@@ -26,21 +26,21 @@ public class EventController {
   }
 
   @Profile("test")
-  @GetMapping(path = "/uncached-shipment-events")
+  @GetMapping(path = "/unofficial/uncached-shipment-events")
   @ResponseStatus(HttpStatus.OK)
   public List<ShipmentEventTO> findAllShipmentEvents() {
     return eventService.findAllShipmentEvents();
   }
 
   @Profile("test")
-  @GetMapping(path = "/uncached-transport-events")
+  @GetMapping(path = "/unofficial/uncached-transport-events")
   @ResponseStatus(HttpStatus.OK)
   public List<TransportEventTO> findAllTransportEvents() {
     return eventService.findAllTransportEvents();
   }
 
   @Profile("test")
-  @GetMapping(path = "/uncached-equipment-events")
+  @GetMapping(path = "/unofficial/uncached-equipment-events")
   @ResponseStatus(HttpStatus.OK)
   public List<EquipmentEventTO> findAllEquipmentEvents() {
     return eventService.findAllEquipmentEvents();

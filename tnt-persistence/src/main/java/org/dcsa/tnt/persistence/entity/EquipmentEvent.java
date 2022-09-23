@@ -21,6 +21,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "equipment_event")
 public class EquipmentEvent extends Event {

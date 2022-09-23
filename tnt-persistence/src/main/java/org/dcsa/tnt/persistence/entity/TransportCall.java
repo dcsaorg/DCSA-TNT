@@ -15,7 +15,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-@EqualsAndHashCode
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Setter(value = AccessLevel.PROTECTED)
 @Getter
 @NoArgsConstructor

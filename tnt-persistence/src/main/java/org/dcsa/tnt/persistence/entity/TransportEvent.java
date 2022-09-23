@@ -19,6 +19,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "transport_event")
 public class TransportEvent extends Event {
