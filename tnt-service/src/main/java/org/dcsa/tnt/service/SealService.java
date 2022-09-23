@@ -15,7 +15,7 @@ public class SealService {
   private final SealMapper sealMapper;
 
   public List<SealTO> findFor(EquipmentEvent event) {
-    // TODO
+    // TODO DDT-1233
     return Collections.emptyList();
   }
 }
