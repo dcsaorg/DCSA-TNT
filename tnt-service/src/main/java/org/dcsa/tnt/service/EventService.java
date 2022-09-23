@@ -36,6 +36,7 @@ public class EventService {
 
   @Transactional
   public List<EventTO> findAll() {
+    // TODO DDT-1234
     return Collections.emptyList();
   }
 
