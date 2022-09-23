@@ -1,12 +1,15 @@
 package org.dcsa.tnt.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
-import org.dcsa.skernel.errors.exceptions.NotFoundException;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent;
+import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.ShipmentEvent;
 import org.dcsa.tnt.persistence.entity.TransportEvent;
 import org.dcsa.tnt.persistence.repository.EquipmentEventRepository;
+import org.dcsa.tnt.persistence.repository.EventCacheRepository;
 import org.dcsa.tnt.persistence.repository.ShipmentEventRepository;
 import org.dcsa.tnt.persistence.repository.TransportEventRepository;
 import org.dcsa.tnt.service.mapping.EventMapper;
@@ -17,18 +20,19 @@ import org.dcsa.tnt.transferobjects.TransportEventTO;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
+  private final EventCacheRepository eventCacheRepository;
   private final EquipmentEventRepository equipmentEventRepository;
   private final TransportEventRepository transportEventRepository;
   private final ShipmentEventRepository shipmentEventRepository;
 
   private final EventMapper eventMapper;
+  private final ObjectMapper objectMapper;
 
   private final ReferenceService referenceService;
   private final DocumentReferenceService documentReferenceService;
@@ -36,8 +40,14 @@ public class EventService {
 
   @Transactional
   public List<EventTO> findAll() {
-    // TODO DDT-1234
-    return Collections.emptyList();
+    return eventCacheRepository.findAll().stream()
+      .map(this::deserializeEvent)
+      .toList();
+  }
+
+  @SneakyThrows
+  private EventTO deserializeEvent(EventCache event) {
+    return objectMapper.readValue(event.getContent(), EventTO.class);
   }
 
   @Transactional
