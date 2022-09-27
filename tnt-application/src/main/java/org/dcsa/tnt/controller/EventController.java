@@ -7,7 +7,6 @@ import org.dcsa.skernel.infrastructure.pagination.CursorDefaults;
 import org.dcsa.skernel.infrastructure.pagination.PagedResult;
 import org.dcsa.skernel.infrastructure.pagination.Paginator;
 import org.dcsa.skernel.infrastructure.validation.EnumSubset;
-import org.dcsa.skernel.infrastructure.validation.ValidEnum;
 import org.dcsa.tnt.persistence.entity.EventCache_;
 import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EventType;
@@ -47,8 +46,7 @@ public class EventController {
     String eventType,
 
     @RequestParam(value = "shipmentEventTypeCode", required = false)
-    @ValidEnum(clazz = ShipmentEventTypeCode.class)
-    String shipmentEventTypeCode,
+    ShipmentEventTypeCode shipmentEventTypeCode,
 
     @RequestParam(value = "carrierBookingReference", required = false) @Size(max = 35)
     String carrierBookingReference,
@@ -57,12 +55,10 @@ public class EventController {
     String transportDocumentReference,
 
     @RequestParam(value = "transportDocumentTypeCode", required = false)
-    @ValidEnum(clazz = TransportDocumentTypeCode.class)
-    String transportDocumentTypeCode,
+    TransportDocumentTypeCode transportDocumentTypeCode,
 
     @RequestParam(value = "transportEventTypeCode", required = false)
-    @ValidEnum(clazz = TransportEventTypeCode.class)
-    String transportEventTypeCode,
+    TransportEventTypeCode transportEventTypeCode,
 
     @RequestParam(value = "transportCallID", required = false) @Size(max = 100)
     String transportCallID,
@@ -77,8 +73,7 @@ public class EventController {
     String carrierServiceCode,
 
     @RequestParam(value = "equipmentEventTypeCode", required = false)
-    @ValidEnum(clazz = EquipmentEventTypeCode.class)
-    String equipmentEventTypeCode,
+    EquipmentEventTypeCode equipmentEventTypeCode,
 
     @RequestParam(value = "equipmentReference", required = false) @Size(max = 15)
     String equipmentReference,

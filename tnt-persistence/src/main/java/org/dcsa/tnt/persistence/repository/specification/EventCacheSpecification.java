@@ -3,14 +3,21 @@ package org.dcsa.tnt.persistence.repository.specification;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import org.dcsa.tnt.persistence.entity.EquipmentEvent_;
 import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.EventCache_;
-import org.dcsa.tnt.persistence.entity.TransportCall;
+import org.dcsa.tnt.persistence.entity.Event_;
+import org.dcsa.tnt.persistence.entity.Service_;
+import org.dcsa.tnt.persistence.entity.ShipmentEvent_;
 import org.dcsa.tnt.persistence.entity.TransportCall_;
-import org.dcsa.tnt.persistence.entity.TransportEvent;
 import org.dcsa.tnt.persistence.entity.TransportEvent_;
 import org.dcsa.tnt.persistence.entity.Vessel_;
+import org.dcsa.tnt.persistence.entity.Voyage_;
+import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EventType;
+import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
+import org.dcsa.tnt.persistence.entity.enums.TransportDocumentTypeCode;
+import org.dcsa.tnt.persistence.entity.enums.TransportEventTypeCode;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,16 +32,16 @@ import java.util.List;
 public class EventCacheSpecification {
   public record EventCacheFilters(
     List<EventType> eventType,
-    String shipmentEventTypeCode,
-    String carrierBookingReference,
-    String transportDocumentReference,
-    String transportDocumentTypeCode,
-    String transportEventTypeCode,
+    ShipmentEventTypeCode shipmentEventTypeCode,
+    String carrierBookingReference, // TODO
+    String transportDocumentReference, // TODO
+    TransportDocumentTypeCode transportDocumentTypeCode, // TODO
+    TransportEventTypeCode transportEventTypeCode,
     String transportCallID,
     String vesselIMONumber,
     String carrierVoyageNumber,
     String carrierServiceCode,
-    String equipmentEventTypeCode,
+    EquipmentEventTypeCode equipmentEventTypeCode,
     String equipmentReference
   ) {
     @Builder
@@ -50,11 +57,86 @@ public class EventCacheSpecification {
         predicates.add(root.get(EventCache_.EVENT_TYPE).in(filters.eventType));
       }
 
+      if (filters.shipmentEventTypeCode != null) {
+        predicates.add(
+          builder.equal(
+            jsonPath.of(ShipmentEvent_.SHIPMENT_EVENT_TYPE_CODE),
+            builder.literal(filters.shipmentEventTypeCode.name())
+          )
+        );
+      }
+
+      if (filters.transportEventTypeCode != null) {
+        predicates.add(
+          builder.equal(
+            jsonPath.of(TransportEvent_.TRANSPORT_EVENT_TYPE_CODE),
+            builder.literal(filters.transportEventTypeCode.name())
+          )
+        );
+      }
+
+      if (filters.transportCallID != null) {
+        predicates.add(
+          builder.equal(
+            jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.ID),
+            builder.literal(filters.transportCallID)
+          )
+        );
+      }
+
       if (filters.vesselIMONumber != null) {
         predicates.add(
           builder.equal(
             jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.VESSEL, Vessel_.VESSEL_IM_ONUMBER),
             builder.literal(filters.vesselIMONumber)
+          )
+        );
+      }
+
+      if (filters.carrierVoyageNumber != null) {
+        predicates.add(
+          builder.or(
+            builder.equal(
+              jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.IMPORT_VOYAGE, Voyage_.CARRIER_VOYAGE_NUMBER),
+              builder.literal(filters.carrierVoyageNumber)
+            ),
+            builder.equal(
+              jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.EXPORT_VOYAGE, Voyage_.CARRIER_VOYAGE_NUMBER),
+              builder.literal(filters.carrierVoyageNumber)
+            )
+          )
+        );
+      }
+
+      if (filters.carrierServiceCode != null) {
+        predicates.add(
+          builder.or(
+            builder.equal(
+              jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.IMPORT_VOYAGE, Voyage_.SERVICE, Service_.CARRIER_SERVICE_CODE),
+              builder.literal(filters.carrierServiceCode)
+            ),
+            builder.equal(
+              jsonPath.of(TransportEvent_.TRANSPORT_CALL, TransportCall_.EXPORT_VOYAGE, Voyage_.SERVICE, Service_.CARRIER_SERVICE_CODE),
+              builder.literal(filters.carrierServiceCode)
+            )
+          )
+        );
+      }
+
+      if (filters.equipmentEventTypeCode != null) {
+        predicates.add(
+          builder.equal(
+            jsonPath.of(EquipmentEvent_.EQUIPMENT_EVENT_TYPE_CODE),
+            builder.literal(filters.equipmentEventTypeCode.name())
+          )
+        );
+      }
+
+      if (filters.equipmentReference != null) {
+        predicates.add(
+          builder.equal(
+            jsonPath.of(EquipmentEvent_.EQUIPMENT_REFERENCE),
+            builder.literal(filters.equipmentReference)
           )
         );
       }
@@ -67,11 +149,11 @@ public class EventCacheSpecification {
   private static class JsonPathExpressionBuilder {
     private final Root<EventCache> root;
     private final CriteriaBuilder builder;
-    private final String field;
+    private final String jsonFieldName;
 
     public Expression<String> of(String... jsonPathElements) {
       List<Expression<?>> expressions = new ArrayList<>();
-      expressions.add(root.get(field));
+      expressions.add(root.get(jsonFieldName));
       for (String e : jsonPathElements) {
         expressions.add(builder.literal(e));
       }

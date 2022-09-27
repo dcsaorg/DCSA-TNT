@@ -25,7 +25,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "equipment_event")
-public class EquipmentEvent extends Event {
+public class EquipmentEvent extends Event implements EventWithTransportCall {
   @Enumerated(EnumType.STRING)
   @Column(name = "equipment_event_type_code")
   private EquipmentEventTypeCode equipmentEventTypeCode;
