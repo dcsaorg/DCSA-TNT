@@ -11,7 +11,6 @@ import org.dcsa.tnt.persistence.entity.EventCache_;
 import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EventType;
 import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.enums.TransportDocumentTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.TransportEventTypeCode;
 import org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.EventCacheFilters;
 import org.dcsa.tnt.service.EventService;
@@ -54,9 +53,6 @@ public class EventController {
     @RequestParam(value = "transportDocumentReference", required = false) @Size(max = 20)
     String transportDocumentReference,
 
-    @RequestParam(value = "transportDocumentTypeCode", required = false)
-    TransportDocumentTypeCode transportDocumentTypeCode,
-
     @RequestParam(value = "transportEventTypeCode", required = false)
     TransportEventTypeCode transportEventTypeCode,
 
@@ -96,7 +92,6 @@ public class EventController {
         .shipmentEventTypeCode(shipmentEventTypeCode)
         .carrierBookingReference(carrierBookingReference)
         .transportDocumentReference(transportDocumentReference)
-        .transportDocumentTypeCode(transportDocumentTypeCode)
         .transportEventTypeCode(transportEventTypeCode)
         .transportCallID(transportCallID)
         .vesselIMONumber(vesselIMONumber)

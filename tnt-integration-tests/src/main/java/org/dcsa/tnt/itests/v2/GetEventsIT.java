@@ -122,6 +122,16 @@ public class GetEventsIT {
   }
 
   @Test
+  public void getByCarrierBookingReference() {
+    // TODO https://dcsa.atlassian.net/browse/DDT-1253
+  }
+
+  @Test
+  public void getByTransportDocumentReference() {
+    // TODO https://dcsa.atlassian.net/browse/DDT-1253
+  }
+
+  @Test
   public void getByTransportEventTypeCode() {
     List<EventTO> events =
       given()

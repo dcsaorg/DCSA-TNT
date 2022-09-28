@@ -11,8 +11,14 @@ import org.dcsa.tnt.persistence.entity.EventCacheQueue;
 import org.dcsa.tnt.persistence.entity.EventCacheQueueDead;
 import org.dcsa.tnt.persistence.repository.EventCacheQueueDeadRepository;
 import org.dcsa.tnt.persistence.repository.EventCacheRepository;
+import org.dcsa.tnt.transferobjects.DocumentReferenceTO;
+import org.dcsa.tnt.transferobjects.EquipmentEventTO;
 import org.dcsa.tnt.transferobjects.EventTO;
+import org.dcsa.tnt.transferobjects.TransportEventTO;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,7 +53,24 @@ public class EventCachingService extends RouteBuilder {
         .eventType(eventCacheQueue.getEventType())
         .eventCreatedDateTime(to.getEventCreatedDateTime())
         .content(objectMapper.writeValueAsString(to))
+        .documentReferences(extractDocumentReferences(to))
       .build());
+  }
+
+  private String extractDocumentReferences(EventTO to) {
+    List<DocumentReferenceTO> documentReferences = null;
+    if (to instanceof TransportEventTO) {
+      documentReferences = ((TransportEventTO) to).getDocumentReferences();
+    } else if (to instanceof EquipmentEventTO) {
+      documentReferences = ((EquipmentEventTO) to).getDocumentReferences();
+    }
+    if (documentReferences != null && !documentReferences.isEmpty()) {
+      return documentReferences.stream()
+        .map(dr ->  "|" + dr.documentReferenceType().name() + "=" + dr.documentReferenceValue() + "|")
+        .collect(Collectors.joining())
+      ;
+    }
+    return null;
   }
 
   private void handleFailedEventMessage(Exchange exchange) {

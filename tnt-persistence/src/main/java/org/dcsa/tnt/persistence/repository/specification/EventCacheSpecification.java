@@ -6,17 +6,16 @@ import lombok.experimental.UtilityClass;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent_;
 import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.EventCache_;
-import org.dcsa.tnt.persistence.entity.Event_;
 import org.dcsa.tnt.persistence.entity.Service_;
 import org.dcsa.tnt.persistence.entity.ShipmentEvent_;
 import org.dcsa.tnt.persistence.entity.TransportCall_;
 import org.dcsa.tnt.persistence.entity.TransportEvent_;
 import org.dcsa.tnt.persistence.entity.Vessel_;
 import org.dcsa.tnt.persistence.entity.Voyage_;
+import org.dcsa.tnt.persistence.entity.enums.DocumentTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EventType;
 import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.enums.TransportDocumentTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.TransportEventTypeCode;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -33,9 +32,8 @@ public class EventCacheSpecification {
   public record EventCacheFilters(
     List<EventType> eventType,
     ShipmentEventTypeCode shipmentEventTypeCode,
-    String carrierBookingReference, // TODO
-    String transportDocumentReference, // TODO
-    TransportDocumentTypeCode transportDocumentTypeCode, // TODO
+    String carrierBookingReference,
+    String transportDocumentReference,
     TransportEventTypeCode transportEventTypeCode,
     String transportCallID,
     String vesselIMONumber,
@@ -62,6 +60,30 @@ public class EventCacheSpecification {
           builder.equal(
             jsonPath.of(ShipmentEvent_.SHIPMENT_EVENT_TYPE_CODE),
             builder.literal(filters.shipmentEventTypeCode.name())
+          )
+        );
+      }
+
+      if (filters.carrierBookingReference != null) {
+        predicates.add(
+          builder.like(root.get(EventCache_.DOCUMENT_REFERENCES), "%|BKG=" + filters.carrierBookingReference+ "|%")
+        );
+      }
+
+      if (filters.transportDocumentReference != null) {
+        predicates.add(
+          builder.or(
+            builder.like(root.get(EventCache_.DOCUMENT_REFERENCES), "%|TRD=" + filters.transportDocumentReference + "|%"),
+            builder.and(
+              builder.equal(
+                jsonPath.of(ShipmentEvent_.DOCUMENT_TYPE_CODE),
+                builder.literal(DocumentTypeCode.TRD.name())
+              ),
+              builder.equal(
+                jsonPath.of(ShipmentEvent_.DOCUMENT_ID),
+                builder.literal(filters.transportDocumentReference)
+              )
+            )
           )
         );
       }
