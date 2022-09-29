@@ -42,6 +42,9 @@ public class EventCache {
   @Column(name = "content", columnDefinition = "jsonb", nullable = false)
   private String content;
 
+  @Column(name = "document_references", columnDefinition = "text")
+  private String documentReferences;
+
   @CreatedDate
   @Column(name = "event_created_date_time", nullable = false)
   private OffsetDateTime eventCreatedDateTime;

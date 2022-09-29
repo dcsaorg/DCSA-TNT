@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "transport_event")
-public class TransportEvent extends Event {
+public class TransportEvent extends Event implements EventWithTransportCall {
   @Enumerated(EnumType.STRING)
   @Column(name = "transport_event_type_code")
   private TransportEventTypeCode transportEventTypeCode;

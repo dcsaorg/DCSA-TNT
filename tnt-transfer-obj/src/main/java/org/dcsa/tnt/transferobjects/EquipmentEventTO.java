@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @ToString(callSuper = true)
-public class EquipmentEventTO extends EventTO {
+public class EquipmentEventTO extends EventTO implements EventTOWithTransportCallTO {
   private EquipmentEventTypeCode equipmentEventTypeCode;
   private String equipmentReference;
   private EmptyIndicatorCode emptyIndicatorCode;
