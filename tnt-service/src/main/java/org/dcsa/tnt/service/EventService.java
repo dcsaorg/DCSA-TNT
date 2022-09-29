@@ -96,7 +96,7 @@ public class EventService {
 
   private EquipmentEventTO toDTO(EquipmentEvent event) {
     EquipmentEventTO to = eventMapper.toDTO(event);
-    to.setDocumentReferences(documentReferenceService.findFor(event));
+    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
     to.setReferences(referenceService.findFor(event));
     to.setSeals(sealService.findFor(event));
     return to;
@@ -104,13 +104,14 @@ public class EventService {
 
   private ShipmentEventTO toDTO(ShipmentEvent event) {
     ShipmentEventTO to = eventMapper.toDTO(event);
+    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
     to.setReferences(referenceService.findFor(event));
     return to;
   }
 
   private TransportEventTO toDTO(TransportEvent event) {
     TransportEventTO to = eventMapper.toDTO(event);
-    to.setDocumentReferences(documentReferenceService.findFor(event));
+    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
     to.setReferences(referenceService.findFor(event));
     return to;
   }

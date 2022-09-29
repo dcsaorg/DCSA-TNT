@@ -34,21 +34,21 @@ public class EventFieldsTest {
   public void testShipmentEventFields() {
     FieldValidator.assertFieldsAreEqual(ShipmentEvent.class, ShipmentEventTO.class,
       // Filled out separately
-      "references");
+      "references", "relatedDocumentReferences");
   }
 
   @Test
   public void testTransportEventFields() {
     FieldValidator.assertFieldsAreEqual(TransportEvent.class, TransportEventTO.class,
       // Filled out separately
-      "references", "documentReferences");
+      "references", "relatedDocumentReferences");
   }
 
   @Test
   public void testEquipmentEventFields() {
     FieldValidator.assertFieldsAreEqual(EquipmentEvent.class, EquipmentEventTO.class,
       // Filled out separately
-      "references", "documentReferences", "seals", "utilizedEquipmentID");
+      "references", "relatedDocumentReferences", "seals", "utilizedEquipmentID");
   }
 
   @Test

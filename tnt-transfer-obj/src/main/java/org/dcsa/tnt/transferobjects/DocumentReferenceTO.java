@@ -4,8 +4,8 @@ import lombok.Builder;
 import org.dcsa.tnt.transferobjects.enums.DocumentReferenceType;
 
 public record DocumentReferenceTO (
-  DocumentReferenceType documentReferenceType,
-  String documentReferenceValue
+  DocumentReferenceType type,
+  String value
 ) {
   @Builder
   public DocumentReferenceTO {}
