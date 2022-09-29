@@ -77,9 +77,6 @@ public class EventController {
     @RequestParam(value = "limit", defaultValue = "100", required = false) @Min(1)
     int limit,
 
-    @RequestParam(value = "API-Version", required = false)
-    String apiVersion,
-
     HttpServletRequest request, HttpServletResponse response
   ) {
     Cursor cursor = paginator.parseRequest(
