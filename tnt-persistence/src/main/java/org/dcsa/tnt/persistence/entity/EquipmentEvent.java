@@ -18,6 +18,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Getter
 @Setter(AccessLevel.PRIVATE)
@@ -32,6 +33,9 @@ public class EquipmentEvent extends Event implements EventWithTransportCall {
 
   @Column(name = "equipment_reference")
   private String equipmentReference;
+
+  @Column(name = "utilized_transport_equipment_id")
+  private UUID utilizedEquipmentID;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "empty_indicator_code")
