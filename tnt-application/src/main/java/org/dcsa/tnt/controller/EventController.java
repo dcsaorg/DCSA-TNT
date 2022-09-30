@@ -1,7 +1,6 @@
 package org.dcsa.tnt.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
 import org.dcsa.skernel.infrastructure.pagination.Cursor;
 import org.dcsa.skernel.infrastructure.pagination.CursorDefaults;
 import org.dcsa.skernel.infrastructure.pagination.PagedResult;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +27,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+
+import static org.dcsa.skernel.infrastructure.util.EnumUtil.toEnumList;
+
 
 @Validated
 @RestController
@@ -36,6 +39,12 @@ import java.util.List;
 public class EventController {
   private final EventService eventService;
   private final Paginator paginator;
+
+  @GetMapping(path = "/events/{eventID}")
+  @ResponseStatus(HttpStatus.OK)
+  public EventTO findEvent(@PathVariable("eventID") UUID eventID) {
+    return eventService.findEvent(eventID);
+  }
 
   @GetMapping(path = "/events")
   @ResponseStatus(HttpStatus.OK)
@@ -100,22 +109,5 @@ public class EventController {
 
     paginator.setPageHeaders(request, response, cursor, result);
     return result.content();
-  }
-
-  /**
-   * Splits a comma-separated string and converts each subpart into
-   * an enum.
-   */
-  private <T extends Enum<T>> List<T> toEnumList(String values, Class<T> enumClass) {
-    if (values == null) {
-      return null;
-    }
-    T[] enumValues = enumClass.getEnumConstants();
-    return Arrays.stream(values.split(","))
-      .map(s -> Arrays.stream(enumValues)
-        .filter(v -> v.name().equals(s)).findFirst()
-        .orElseThrow(() -> ConcreteRequestErrorMessageException.invalidInput("'" + s + "' cannot be mapped to " + enumClass.getSimpleName()))
-      )
-      .toList();
   }
 }

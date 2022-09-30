@@ -34,3 +34,9 @@ docker-compose up -d -V --build
 ```
 curl http://localhost:9090/v1/actuator/health
 ```
+
+## Security considerations
+
+This reference implementation does not do any authentication/authorization and should not be used
+in production as is. Using this as is in production would expose data for all parties to all other
+parties with out checking weather they should have access.
