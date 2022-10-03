@@ -14,6 +14,6 @@ public class TransportEventTO extends EventTO implements EventTOWithTransportCal
   private String changeRemark;
   private TransportCallTO transportCall;
 
-  private List<DocumentReferenceTO> documentReferences;
+  private List<DocumentReferenceTO> relatedDocumentReferences;
   private List<ReferenceTO> references;
 }

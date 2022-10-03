@@ -6,6 +6,7 @@ import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
 import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -16,5 +17,6 @@ public class ShipmentEventTO extends EventTO {
   private UUID documentID;
   private String reason;
 
+  private List<DocumentReferenceTO> relatedDocumentReferences;
   private List<ReferenceTO> references;
 }
