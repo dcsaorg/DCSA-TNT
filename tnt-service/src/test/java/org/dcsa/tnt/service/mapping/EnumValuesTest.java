@@ -13,7 +13,7 @@ public class EnumValuesTest {
   }
 
   @Test
-  public void testDocumentReferenceType() {
+  public void testDocumentTypeCode() {
     EnumValidator.assertHaveSameValues(DocumentTypeCode.class, org.dcsa.tnt.transferobjects.enums.DocumentTypeCode.class);
   }
 
@@ -75,5 +75,9 @@ public class EnumValuesTest {
   @Test
   public void testVesselType() {
     EnumValidator.assertHaveSameValues(VesselType.class, org.dcsa.tnt.transferobjects.enums.VesselType.class);
+  }
+  @Test
+  public void testDocumentReferenceType() {
+    EnumValidator.assertHaveSameValues(DocumentReferenceType.class, org.dcsa.tnt.transferobjects.enums.DocumentReferenceType.class);
   }
 }
