@@ -48,7 +48,7 @@ public class EventFieldsTest {
   public void testEquipmentEventFields() {
     FieldValidator.assertFieldsAreEqual(EquipmentEvent.class, EquipmentEventTO.class,
       // Filled out separately
-      "references", "documentReferences", "seals");
+      "references", "documentReferences", "seals", "utilizedEquipmentID");
   }
 
   @Test
