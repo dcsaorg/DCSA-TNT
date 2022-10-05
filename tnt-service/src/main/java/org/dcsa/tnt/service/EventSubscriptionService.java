@@ -24,7 +24,6 @@ import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -87,11 +86,11 @@ public class EventSubscriptionService {
     EventSubscription original = eventSubscriptionRepository.findById(subscriptionID)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No event-subscription found with id = " + subscriptionID));
 
-    updateList(subscriptionID, eventSubscription.getEventTypes(), eventSubscriptionMapper::toDAO, EventSubscriptionEventType::new, eventSubscriptionRepository::deleteEventType, original.getEventTypes());
-    updateList(subscriptionID, eventSubscription.getTransportEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionTransportEventTypeCode::new, eventSubscriptionRepository::deleteTransportEventTypeCode, original.getTransportEventTypeCodes());
-    updateList(subscriptionID, eventSubscription.getShipmentEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionShipmentEventTypeCode::new, eventSubscriptionRepository::deleteShipmentEventTypeCode, original.getShipmentEventTypeCodes());
-    updateList(subscriptionID, eventSubscription.getEquipmentEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionEquipmentEventTypeCode::new, eventSubscriptionRepository::deleteEquipmentEventTypeCode, original.getEquipmentEventTypeCodes());
-    updateList(subscriptionID, eventSubscription.getDocumentTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionDocumentTypeCode::new, eventSubscriptionRepository::deleteDocumentTypeCode, original.getDocumentTypeCodes());
+    updateSet(subscriptionID, eventSubscription.getEventTypes(), eventSubscriptionMapper::toDAO, EventSubscriptionEventType::new, eventSubscriptionRepository::deleteEventType, original.getEventTypes());
+    updateSet(subscriptionID, eventSubscription.getTransportEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionTransportEventTypeCode::new, eventSubscriptionRepository::deleteTransportEventTypeCode, original.getTransportEventTypeCodes());
+    updateSet(subscriptionID, eventSubscription.getShipmentEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionShipmentEventTypeCode::new, eventSubscriptionRepository::deleteShipmentEventTypeCode, original.getShipmentEventTypeCodes());
+    updateSet(subscriptionID, eventSubscription.getEquipmentEventTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionEquipmentEventTypeCode::new, eventSubscriptionRepository::deleteEquipmentEventTypeCode, original.getEquipmentEventTypeCodes());
+    updateSet(subscriptionID, eventSubscription.getDocumentTypeCodes(), eventSubscriptionMapper::toDAO, EventSubscriptionDocumentTypeCode::new, eventSubscriptionRepository::deleteDocumentTypeCode, original.getDocumentTypeCodes());
 
     eventSubscriptionRepository.save(
       original.toBuilder()
@@ -129,7 +128,7 @@ public class EventSubscriptionService {
     }
   }
 
-  private <S extends Enum<S>, T extends Enum<T>, TI extends EventSubscriptionEnumSetItem<T>> void updateList(
+  private <S extends Enum<S>, T extends Enum<T>, TI extends EventSubscriptionEnumSetItem<T>> void updateSet(
     UUID subscriptionId,
     Set<S> newSet,
     Function<S, T> enumMapper,
