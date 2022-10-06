@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 
 public class EnumValuesTest {
   @Test
+  public void testDocumentReferenceType() {
+    EnumValidator.assertHaveSameValues(DocumentReferenceType.class, org.dcsa.tnt.transferobjects.enums.DocumentReferenceType.class);
+  }
+
+  @Test
   public void testDimensionUnit() {
     EnumValidator.assertHaveSameValues(DimensionUnit.class, org.dcsa.tnt.transferobjects.enums.DimensionUnit.class);
   }
@@ -30,6 +35,11 @@ public class EnumValuesTest {
   @Test
   public void testEventClassifierCode() {
     EnumValidator.assertHaveSameValues(EventClassifierCode.class, org.dcsa.tnt.transferobjects.enums.EventClassifierCode.class);
+  }
+
+  @Test
+  public void testEventType() {
+    EnumValidator.assertHaveSameValues(EventType.class, org.dcsa.tnt.transferobjects.enums.EventType.class);
   }
 
   @Test
@@ -75,9 +85,5 @@ public class EnumValuesTest {
   @Test
   public void testVesselType() {
     EnumValidator.assertHaveSameValues(VesselType.class, org.dcsa.tnt.transferobjects.enums.VesselType.class);
-  }
-  @Test
-  public void testDocumentReferenceType() {
-    EnumValidator.assertHaveSameValues(DocumentReferenceType.class, org.dcsa.tnt.transferobjects.enums.DocumentReferenceType.class);
   }
 }

@@ -16,7 +16,12 @@ public enum EquipmentEventTypeCode {
   DROP("The action of delivering the container at customer location."),
   INSP("Identifies that the seal on equipment has been inspected."),
   RSEA("Identifies that the equipment has been resealed after inspection."),
-  RMVD("Identifies that a Seal has been removed from the equipment for inspection.")
+  RMVD("Identifies that a Seal has been removed from the equipment for inspection."),
+  AVPU("Available for Pick-up"),
+  AVDO("Available for Drop-off"),
+  CUSS("Customs Selected for Scan"),
+  CUSI("Customs Selected for Inspection"),
+  CUSR("Customs Released")
   ;
 
   @Getter

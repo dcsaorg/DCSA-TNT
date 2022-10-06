@@ -16,26 +16,24 @@ import java.util.List;
 /**
  * Just for testing.
  */
+@Profile("test")
 @RestController
 @RequiredArgsConstructor
 public class UncachedEventsController {
   private final EventService eventService;
 
-  @Profile("test")
   @GetMapping(path = "/unofficial/uncached-shipment-events")
   @ResponseStatus(HttpStatus.OK)
   public List<ShipmentEventTO> findAllShipmentEvents() {
     return eventService.findAllShipmentEvents();
   }
 
-  @Profile("test")
   @GetMapping(path = "/unofficial/uncached-transport-events")
   @ResponseStatus(HttpStatus.OK)
   public List<TransportEventTO> findAllTransportEvents() {
     return eventService.findAllTransportEvents();
   }
 
-  @Profile("test")
   @GetMapping(path = "/unofficial/uncached-equipment-events")
   @ResponseStatus(HttpStatus.OK)
   public List<EquipmentEventTO> findAllEquipmentEvents() {

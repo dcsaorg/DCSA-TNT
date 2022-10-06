@@ -44,6 +44,13 @@ public class EventService {
   private final SealService sealService;
 
   @Transactional
+  public EventTO findEvent(UUID eventId) {
+    return eventCacheRepository.findById(eventId)
+      .map(this::deserializeEvent)
+      .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No event found with id = " + eventId));
+  }
+
+  @Transactional
   public PagedResult<EventTO> findAll(final Cursor cursor, final EventCacheFilters filters) {
     return new PagedResult<>(
         eventCacheRepository.findAll(withFilters(filters), cursor.toPageRequest()),
