@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @SuperBuilder
@@ -16,6 +17,8 @@ import javax.validation.constraints.NotBlank;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class EventSubscriptionWithSecretTO extends EventSubscriptionTO {
-  @NotBlank
-  private String secret;
+  @NotNull
+  @Size(min = EventSubscriptionSecretTO.MIN_SECRET_SIZE, max = EventSubscriptionSecretTO.MAX_SECRET_SIZE)
+  @ToString.Exclude
+  private byte[] secret;
 }

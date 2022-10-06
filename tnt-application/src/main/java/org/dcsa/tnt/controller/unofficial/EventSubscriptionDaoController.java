@@ -16,12 +16,12 @@ import java.util.UUID;
 /**
  * Just for testing.
  */
+@Profile("test")
 @RestController
 @RequiredArgsConstructor
 public class EventSubscriptionDaoController {
   private final EventSubscriptionRepository eventSubscriptionRepository;
 
-  @Profile("test")
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(path = "/unofficial/event-subscriptions-dao/{subscriptionID}")
   public EventSubscription getSubscription(@PathVariable("subscriptionID") UUID subscriptionID) {

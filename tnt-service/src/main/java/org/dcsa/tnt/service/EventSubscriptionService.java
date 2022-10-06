@@ -110,7 +110,7 @@ public class EventSubscriptionService {
 
   @Transactional
   public void updateSecret(UUID subscriptionID, EventSubscriptionSecretTO eventSubscriptionSecret) {
-    eventSubscriptionRepository.updateSecret(subscriptionID, eventSubscriptionSecret.secret());
+    eventSubscriptionRepository.updateSecret(subscriptionID, eventSubscriptionSecret.getSecret());
   }
 
   private <S extends Enum<S>, T extends Enum<T>, TI extends EventSubscriptionEnumSetItem<T>> void setIfNotEmpty(

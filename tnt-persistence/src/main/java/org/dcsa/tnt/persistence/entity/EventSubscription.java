@@ -65,8 +65,9 @@ public class EventSubscription {
   @Column(name = "un_location_code", length = 5)
   private String UNLocationCode;
 
-  @Column(name = "secret", columnDefinition = "text", nullable = false)
-  private String secret;
+  @ToString.Exclude
+  @Column(name = "secret", columnDefinition = "bytea", nullable = false)
+  private byte[] secret;
 
   @CreatedDate
   @Column(name = "created_date_time", nullable = false)

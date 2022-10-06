@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -120,10 +122,7 @@ public class EventSubscriptionsIT {
 
     given()
       .contentType("application/json")
-      .body(EventSubscriptionSecretTO.builder()
-        .secret(newSecret)
-        .build()
-      )
+      .body(new EventSubscriptionSecretTO(newSecret.getBytes(StandardCharsets.UTF_8)))
       .put("/v2/event-subscriptions/" + created.getSubscriptionID() + "/secret")
       .then()
       .assertThat()
@@ -137,7 +136,7 @@ public class EventSubscriptionsIT {
       .assertThat()
       .statusCode(HttpStatus.OK.value())
       .contentType(ContentType.JSON)
-      .body("secret", equalTo(newSecret))
+      .body("secret", equalTo(Base64.getEncoder().encodeToString(newSecret.getBytes(StandardCharsets.UTF_8))))
     ;
   }
 
@@ -197,7 +196,7 @@ public class EventSubscriptionsIT {
       .documentTypeCodes(documentTypeCodes)
       .transportEventTypeCodes(transportEventTypeCodes)
       .equipmentEventTypeCodes(equipmentEventTypeCodes)
-      .secret(secret)
+      .secret(secret.getBytes(StandardCharsets.UTF_8))
       .build();
   }
 

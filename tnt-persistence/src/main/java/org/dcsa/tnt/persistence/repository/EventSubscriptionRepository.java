@@ -17,7 +17,7 @@ import java.util.UUID;
 public interface EventSubscriptionRepository extends JpaRepository<EventSubscription, UUID> {
   @Modifying
   @Query("UPDATE EventSubscription SET secret = :secret WHERE subscriptionID = :subscriptionID")
-  void updateSecret(UUID subscriptionID, String secret);
+  void updateSecret(UUID subscriptionID, byte[] secret);
 
   @Modifying
   @Query("DELETE FROM EventSubscriptionEventType WHERE pk.subscriptionID = :subscriptionID AND pk.eventType = :eventType")
