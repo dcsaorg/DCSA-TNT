@@ -58,12 +58,7 @@ public class EventCachingService extends RouteBuilder {
   }
 
   private String extractDocumentReferences(EventTO to) {
-    List<DocumentReferenceTO> documentReferences = null;
-    if (to instanceof TransportEventTO) {
-      documentReferences = ((TransportEventTO) to).getRelatedDocumentReferences();
-    } else if (to instanceof EquipmentEventTO) {
-      documentReferences = ((EquipmentEventTO) to).getRelatedDocumentReferences();
-    }
+    List<DocumentReferenceTO> documentReferences = to.getRelatedDocumentReferences();
     if (documentReferences != null && !documentReferences.isEmpty()) {
       return documentReferences.stream()
         .map(dr ->  "|" + dr.type().name() + "=" + dr.value() + "|")

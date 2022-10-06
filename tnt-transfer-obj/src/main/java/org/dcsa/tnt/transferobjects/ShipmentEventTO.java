@@ -17,6 +17,5 @@ public class ShipmentEventTO extends EventTO {
   private UUID documentID;
   private String reason;
 
-  private List<DocumentReferenceTO> relatedDocumentReferences;
   private List<ReferenceTO> references;
 }
