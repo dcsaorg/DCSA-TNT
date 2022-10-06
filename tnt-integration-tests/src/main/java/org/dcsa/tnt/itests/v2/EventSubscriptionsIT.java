@@ -84,7 +84,7 @@ public class EventSubscriptionsIT {
       .carrierExportVoyageNumber("other-car")
       .universalExportVoyageReference("35BQE")
       .carrierServiceCode("csc78")
-      .universalServiceReference("SR56789F")
+      .universalServiceReference("SR00013A")
       .UNLocationCode("locUN")
       .eventTypes(inverseSet(eventTypes, EventType.class))
       .shipmentEventTypeCodes(inverseSet(shipmentEventTypeCodes, ShipmentEventTypeCode.class))
@@ -170,7 +170,7 @@ public class EventSubscriptionsIT {
   private static final String carrierExportVoyageNumber = "test-carrierExportVoyageNumber";
   private static final String universalExportVoyageReference = "12AZN";
   private static final String carrierServiceCode = "csc34";
-  private static final String universalServiceReference = "SR12345Q";
+  private static final String universalServiceReference = "SR00001D";
   private static final String UNLocationCode = "UNLoc";
   private static final String secret = "very secret secret that is so secret";
   private static final Set<EventType> eventTypes = Set.of(EventType.SHIPMENT, EventType.EQUIPMENT);

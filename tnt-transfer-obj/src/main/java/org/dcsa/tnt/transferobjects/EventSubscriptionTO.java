@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.dcsa.skernel.infrastructure.validation.UniversalServiceReference;
 import org.dcsa.skernel.infrastructure.validation.ValidVesselIMONumber;
 import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
 import org.dcsa.tnt.transferobjects.enums.EquipmentEventTypeCode;
@@ -45,7 +46,7 @@ public class EventSubscriptionTO {
   @Size(max = 5)
   private String carrierServiceCode;
 
-  @Pattern(regexp = "SR\\d{5}[A-Z]", message = "Not a valid service reference")
+  @UniversalServiceReference
   private String universalServiceReference;
 
   @Size(max = 5)
