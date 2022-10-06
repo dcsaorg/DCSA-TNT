@@ -172,7 +172,7 @@ public class EventSubscriptionsIT {
   private static final String carrierServiceCode = "csc34";
   private static final String universalServiceReference = "SR12345Q";
   private static final String UNLocationCode = "UNLoc";
-  private static final String secret = "very secret secret";
+  private static final String secret = "very secret secret that is so secret";
   private static final Set<EventType> eventTypes = Set.of(EventType.SHIPMENT, EventType.EQUIPMENT);
   private static final Set<ShipmentEventTypeCode> shipmentEventTypeCodes = Set.of(ShipmentEventTypeCode.RECE, ShipmentEventTypeCode.APPR);
   private static final Set<DocumentTypeCode> documentTypeCodes = Set.of(DocumentTypeCode.ARN, DocumentTypeCode.BKG, DocumentTypeCode.CAS);

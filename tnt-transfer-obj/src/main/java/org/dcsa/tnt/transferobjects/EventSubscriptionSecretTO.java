@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventSubscriptionSecretTO {
-  public static final int MIN_SECRET_SIZE = 8;
-  public static final int MAX_SECRET_SIZE = 1024;
+  public static final int MIN_SECRET_SIZE = 32;
+  public static final int MAX_SECRET_SIZE = 64;
 
   @NotNull
   @Size(min = MIN_SECRET_SIZE, max = MAX_SECRET_SIZE)
