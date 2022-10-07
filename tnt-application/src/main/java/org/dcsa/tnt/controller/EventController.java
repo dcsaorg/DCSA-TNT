@@ -59,7 +59,7 @@ public class EventController {
     @RequestParam(value = "carrierBookingReference", required = false) @Size(max = 35)
     String carrierBookingReference,
 
-    @RequestParam(value = "transportDocumentReference", required = false) @Size(max = 20)
+    @RequestParam(value = "transportDocumentReference", required = false) @Size(max = 36)
     String transportDocumentReference,
 
     @RequestParam(value = "transportEventTypeCode", required = false)

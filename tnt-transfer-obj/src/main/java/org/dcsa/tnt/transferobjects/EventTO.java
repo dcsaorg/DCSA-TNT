@@ -8,6 +8,7 @@ import lombok.Data;
 import org.dcsa.tnt.transferobjects.enums.EventClassifierCode;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @JsonTypeInfo(use = Id.NAME, property = "eventType")
@@ -22,4 +23,5 @@ public abstract class EventTO {
   private OffsetDateTime eventDateTime;
   private OffsetDateTime eventCreatedDateTime;
   private EventClassifierCode eventClassifierCode;
+  private List<DocumentReferenceTO> relatedDocumentReferences;
 }

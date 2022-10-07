@@ -16,7 +16,6 @@ public class EquipmentEventTO extends EventTO implements EventTOWithTransportCal
   private TransportCallTO transportCall;
   private LocationTO eventLocation;
 
-  private List<DocumentReferenceTO> relatedDocumentReferences;
   private List<ReferenceTO> references;
   private List<SealTO> seals;
 }

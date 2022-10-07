@@ -7,6 +7,8 @@ import org.dcsa.tnt.transferobjects.EventTO;
 import org.dcsa.tnt.transferobjects.EventTOWithTransportCallTO;
 import org.dcsa.tnt.transferobjects.ShipmentEventTO;
 import org.dcsa.tnt.transferobjects.TransportEventTO;
+import org.dcsa.tnt.transferobjects.enums.DocumentReferenceType;
+import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
 import org.dcsa.tnt.transferobjects.enums.EquipmentEventTypeCode;
 import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 import org.dcsa.tnt.transferobjects.enums.TransportEventTypeCode;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -123,12 +126,92 @@ public class GetEventsIT {
 
   @Test
   public void getByCarrierBookingReference() {
-    // TODO https://dcsa.atlassian.net/browse/DDT-1253
+    List<EventTO> events =
+      given()
+        .contentType("application/json")
+        .get("/v2/events?carrierBookingReference=cbr-b83765166707812c8ff4")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("size()", greaterThanOrEqualTo(1))
+        .extract()
+        .body()
+        .jsonPath()
+        .getList(".", EventTO.class);
+
+    events.forEach(e -> {
+      assertTrue(e.getRelatedDocumentReferences().stream()
+        .anyMatch(docRef -> docRef.type() == DocumentReferenceType.BKG && "cbr-b83765166707812c8ff4".equals(docRef.value()))
+      );
+    });
   }
 
   @Test
-  public void getByTransportDocumentReference() {
-    // TODO https://dcsa.atlassian.net/browse/DDT-1253
+  public void getByTransportDocumentReferenceRelatedDocuments() {
+    List<EventTO> events =
+      given()
+        .contentType("application/json")
+        .get("/v2/events?transportDocumentReference=2b02401c-b2fb-5009")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("size()", greaterThanOrEqualTo(1))
+        .extract()
+        .body()
+        .jsonPath()
+        .getList(".", EventTO.class);
+
+    events.forEach(e -> {
+      assertTrue(e.getRelatedDocumentReferences().stream()
+        .anyMatch(docRef -> docRef.type() == DocumentReferenceType.TRD && "2b02401c-b2fb-5009".equals(docRef.value()))
+      );
+    });
+  }
+
+  @Test
+  public void getByTransportDocumentReferenceDocumentId() {
+    // Id's are random - so first find a shipment event witht the correct type code.
+    List<ShipmentEventTO> shipmentEvents =
+      given()
+        .contentType("application/json")
+        .get("/v2/events?eventType=SHIPMENT")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("size()", greaterThanOrEqualTo(1))
+        .extract()
+        .body()
+        .jsonPath()
+        .getList(".", ShipmentEventTO.class);
+    UUID documentId = shipmentEvents.stream()
+      .filter(e -> e.getDocumentTypeCode() == DocumentTypeCode.TRD)
+      .findAny()
+      .get().getDocumentID();
+
+    // Now test the search
+    List<EventTO> events =
+      given()
+        .contentType("application/json")
+        .get("/v2/events?transportDocumentReference=" + documentId)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("size()", greaterThanOrEqualTo(1))
+        .extract()
+        .body()
+        .jsonPath()
+        .getList(".", EventTO.class);
+
+    events.forEach(e -> {
+      assertInstanceOf(ShipmentEventTO.class, e);
+      ShipmentEventTO shipmentEvent = (ShipmentEventTO) e;
+      assertEquals(DocumentTypeCode.TRD, shipmentEvent.getDocumentTypeCode());
+      assertEquals(documentId, shipmentEvent.getDocumentID());
+    });
   }
 
   @Test
