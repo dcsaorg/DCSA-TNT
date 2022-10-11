@@ -7,10 +7,9 @@ import org.dcsa.tnt.transferobjects.enums.SealType;
 import java.util.UUID;
 
 public record SealTO(
-  UUID utilizedEquipmentID,
-  String sealNumber,
-  SealSourceCode sealSourceCode,
-  SealType sealType
+  String number, // <-
+  SealSourceCode source,
+  SealType type
 ) {
   @Builder
   public SealTO {}

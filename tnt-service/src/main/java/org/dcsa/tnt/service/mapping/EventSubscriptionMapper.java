@@ -2,15 +2,10 @@ package org.dcsa.tnt.service.mapping;
 
 import org.dcsa.tnt.persistence.entity.EventSubscription;
 import org.dcsa.tnt.persistence.entity.EventSubscriptionDocumentTypeCode;
-import org.dcsa.tnt.persistence.entity.EventSubscriptionDocumentTypeCode.EventSubscriptionDocumentTypeCodePk;
 import org.dcsa.tnt.persistence.entity.EventSubscriptionEquipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.EventSubscriptionEquipmentEventTypeCode.EventSubscriptionEquipmentEventTypeCodePk;
 import org.dcsa.tnt.persistence.entity.EventSubscriptionEventType;
-import org.dcsa.tnt.persistence.entity.EventSubscriptionEventType.EventSubscriptionEventTypePk;
 import org.dcsa.tnt.persistence.entity.EventSubscriptionShipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.EventSubscriptionShipmentEventTypeCode.EventSubscriptionShipmentEventTypeCodePk;
 import org.dcsa.tnt.persistence.entity.EventSubscriptionTransportEventTypeCode;
-import org.dcsa.tnt.persistence.entity.EventSubscriptionTransportEventTypeCode.EventSubscriptionTransportEventTypeCodePk;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithIdTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithSecretTO;
 import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
@@ -20,8 +15,6 @@ import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 import org.dcsa.tnt.transferobjects.enums.TransportEventTypeCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface EventSubscriptionMapper {

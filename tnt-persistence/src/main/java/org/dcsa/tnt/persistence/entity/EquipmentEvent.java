@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.dcsa.skernel.domain.persistence.entity.Location;
+import org.dcsa.skernel.domain.persistence.entity.enums.FacilityTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.EmptyIndicatorCode;
 import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
 
@@ -26,13 +27,16 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "equipment_event")
-public class EquipmentEvent extends Event implements EventWithTransportCall {
+public class EquipmentEvent extends Event {
   @Enumerated(EnumType.STRING)
   @Column(name = "equipment_event_type_code")
   private EquipmentEventTypeCode equipmentEventTypeCode;
 
-  @Column(name = "equipment_reference")
-  private String equipmentReference;
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "equipment_reference")
+  private Equipment equipment;
 
   @Column(name = "utilized_transport_equipment_id")
   private UUID utilizedEquipmentID;
@@ -46,6 +50,13 @@ public class EquipmentEvent extends Event implements EventWithTransportCall {
   @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "transport_call_id")
   private TransportCall transportCall;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "facility_type_code", length = 4, columnDefinition = "bpchar")
+  private FacilityTypeCode facilityTypeCode; // Note restricted to 'BOCR','CLOC','COFS','OFFD','DEPO','INTE','POTE','RAMP'
+
+  @Column(name = "is_transshipment_move")
+  private boolean transshipmentMove;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude

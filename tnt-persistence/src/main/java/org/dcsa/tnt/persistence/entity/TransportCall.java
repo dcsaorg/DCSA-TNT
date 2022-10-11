@@ -24,13 +24,6 @@ import javax.persistence.ManyToOne;
 public class TransportCall extends BaseTransportCall {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @Deprecated
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinColumn(name = "facility_id")
-  private Facility facility;
-
-  @ToString.Exclude
-  @EqualsAndHashCode.Exclude
   @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "vessel_id")
   private Vessel vessel;

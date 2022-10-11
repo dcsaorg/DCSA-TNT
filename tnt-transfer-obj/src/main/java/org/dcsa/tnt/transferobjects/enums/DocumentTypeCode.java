@@ -6,17 +6,22 @@ import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum DocumentTypeCode {
+  CBR("Carrier Booking Request Reference"),
   BKG("Booking"),
   SHI("Shipping Instructions"),
-  VGM("Verified Gross Mass"),
-  SRM("Shipment Release Message"),
   TRD("Transport document"),
+  DEI("Delivery Instructions"),
+  DEO("Delivery Order"),
+  TRO("Transport Order"),
+  CRO("Container Release Order"),
   ARN("Arrival Notice"),
+  VGM("Verified Gross Mass"),
   CAS("Cargo Survey"),
-  CUS("Customs Inspection"),
+  CUC("Customs Clearance"),
   DGD("Dangerous Good Declaration"),
   OOG("Out Of Gauge"),
-  CBR("Carrier Booking Request Reference")
+  CQU("Contract Quotation"),
+  INV("Invoice")
   ;
 
   @Getter

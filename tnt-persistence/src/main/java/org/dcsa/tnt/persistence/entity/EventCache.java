@@ -48,4 +48,7 @@ public class EventCache {
   @CreatedDate
   @Column(name = "event_created_date_time", nullable = false)
   private OffsetDateTime eventCreatedDateTime;
+
+  @Column(name = "event_date_time", nullable = false)
+  private OffsetDateTime eventDateTime;
 }
