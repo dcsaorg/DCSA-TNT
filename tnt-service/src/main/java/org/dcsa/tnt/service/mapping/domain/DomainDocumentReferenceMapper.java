@@ -1,14 +1,13 @@
-package org.dcsa.tnt.service.mapping;
+package org.dcsa.tnt.service.mapping.domain;
 
 import org.dcsa.tnt.persistence.entity.DocumentReference;
-import org.dcsa.tnt.transferobjects.DocumentReferenceTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface DocumentReferenceMapper {
+public interface DomainDocumentReferenceMapper {
   @Mapping(target = "type", source = "documentReferenceType")
   @Mapping(target = "value", source = "documentReferenceValue")
-  DocumentReferenceTO toTO(DocumentReference reference);
+  org.dcsa.tnt.service.domain.DocumentReference toDomain(DocumentReference reference);
 
 }

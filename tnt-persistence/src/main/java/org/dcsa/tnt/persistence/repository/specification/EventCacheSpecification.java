@@ -3,7 +3,10 @@ package org.dcsa.tnt.persistence.repository.specification;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.dcsa.skernel.infrastructure.http.queryparams.ParsedQueryParameter;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent_;
+import org.dcsa.tnt.persistence.entity.Equipment_;
 import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.EventCache_;
 import org.dcsa.tnt.persistence.entity.Service_;
@@ -24,29 +27,39 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @UtilityClass
 public class EventCacheSpecification {
+
   public record EventCacheFilters(
+    List<ParsedQueryParameter<OffsetDateTime>> eventCreatedDateTime,
+    List<ParsedQueryParameter<OffsetDateTime>> eventDateTime,
     List<EventType> eventType,
-    ShipmentEventTypeCode shipmentEventTypeCode,
-    String carrierBookingReference,
-    String transportDocumentReference,
-    TransportEventTypeCode transportEventTypeCode,
-    String transportCallID,
+    List<ShipmentEventTypeCode> shipmentEventTypeCode,
+    List<TransportEventTypeCode> transportEventTypeCode,
+    List<EquipmentEventTypeCode> equipmentEventTypeCode,
+    List<DocumentTypeCode> documentTypeCode,
+    String documentReference,
+    String equipmentReference,
+    String transportCallReference,
     String vesselIMONumber,
-    String carrierVoyageNumber,
+    String carrierExportVoyageNumber,
+    String universalExportVoyageReference,
     String carrierServiceCode,
-    EquipmentEventTypeCode equipmentEventTypeCode,
-    String equipmentReference
+    String universalServiceReference,
+    String UNLocationCode
   ) {
     @Builder
     public EventCacheFilters { }
   }
 
   public static Specification<EventCache> withFilters(final EventCacheFilters filters) {
+    log.debug("Searching based on {}", filters);
+
     return (Root<EventCache> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
       List<Predicate> predicates = new ArrayList<>();
       JsonPathExpressionBuilder jsonPath = new JsonPathExpressionBuilder(root, builder, EventCache_.CONTENT);
@@ -54,6 +67,9 @@ public class EventCacheSpecification {
       if (filters.eventType != null) {
         predicates.add(root.get(EventCache_.EVENT_TYPE).in(filters.eventType));
       }
+
+      /*
+      TODO rewrite/update these filters for 3.0 spec filters
 
       if (filters.shipmentEventTypeCode != null) {
         predicates.add(
@@ -157,11 +173,12 @@ public class EventCacheSpecification {
       if (filters.equipmentReference != null) {
         predicates.add(
           builder.equal(
-            jsonPath.of(EquipmentEvent_.EQUIPMENT_REFERENCE),
+            jsonPath.of(EquipmentEvent_.EQUIPMENT, Equipment_.EQUIPMENT_REFERENCE),
             builder.literal(filters.equipmentReference)
           )
         );
       }
+       */
 
       return builder.and(predicates.toArray(Predicate[]::new));
     };

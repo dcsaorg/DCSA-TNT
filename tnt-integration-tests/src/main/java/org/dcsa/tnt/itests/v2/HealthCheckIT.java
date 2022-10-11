@@ -18,7 +18,7 @@ public class HealthCheckIT {
   public void testHealth() {
     given()
       .contentType("application/json")
-      .get("/v2/actuator/health")
+      .get("/v3/actuator/health")
       .then()
       .assertThat()
       .statusCode(200)

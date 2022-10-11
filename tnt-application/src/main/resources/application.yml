@@ -1,7 +1,7 @@
 
 dcsa:
   specification:
-    version: 2.1.0
+    version: 3.0
 
 camel:
   max-redeliveries: 3
@@ -35,7 +35,7 @@ spring:
 
 server:
   port: 9090
-  servlet.context-path: /v2
+  servlet.context-path: /v3
   error:
     include-binding-errors: on_param
     include-message: always

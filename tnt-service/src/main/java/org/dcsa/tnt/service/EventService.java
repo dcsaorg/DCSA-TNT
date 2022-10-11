@@ -15,16 +15,14 @@ import org.dcsa.tnt.persistence.repository.EventCacheRepository;
 import org.dcsa.tnt.persistence.repository.ShipmentEventRepository;
 import org.dcsa.tnt.persistence.repository.TransportEventRepository;
 import org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.EventCacheFilters;
-import org.dcsa.tnt.service.mapping.EventMapper;
-import org.dcsa.tnt.transferobjects.EquipmentEventTO;
-import org.dcsa.tnt.transferobjects.EventTO;
-import org.dcsa.tnt.transferobjects.ShipmentEventTO;
-import org.dcsa.tnt.transferobjects.TransportEventTO;
+import org.dcsa.tnt.service.domain.Event;
+import org.dcsa.tnt.service.mapping.domain.DomainEventMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.withFilters;
 
@@ -36,7 +34,7 @@ public class EventService {
   private final TransportEventRepository transportEventRepository;
   private final ShipmentEventRepository shipmentEventRepository;
 
-  private final EventMapper eventMapper;
+  private final DomainEventMapper domainEventMapper;
   private final ObjectMapper objectMapper;
 
   private final ReferenceService referenceService;
@@ -44,82 +42,86 @@ public class EventService {
   private final SealService sealService;
 
   @Transactional
-  public EventTO findEvent(UUID eventId) {
+  public <T> T findEvent(UUID eventId, Function<Event, T> toMapper) {
     return eventCacheRepository.findById(eventId)
       .map(this::deserializeEvent)
+      .map(toMapper)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No event found with id = " + eventId));
   }
 
   @Transactional
-  public PagedResult<EventTO> findAll(final Cursor cursor, final EventCacheFilters filters) {
+  public <T> PagedResult<T> findAll(final Cursor cursor, final EventCacheFilters filters, Function<Event, T> toMapper) {
     return new PagedResult<>(
         eventCacheRepository.findAll(withFilters(filters), cursor.toPageRequest()),
-        this::deserializeEvent);
+        event -> toMapper.apply(deserializeEvent(event)));
   }
 
   @SneakyThrows
-  private EventTO deserializeEvent(EventCache event) {
-    return objectMapper.readValue(event.getContent(), EventTO.class);
+  private Event deserializeEvent(EventCache event) {
+    return objectMapper.readValue(event.getContent(), Event.class);
   }
 
   @Transactional
-  public List<ShipmentEventTO> findAllShipmentEvents() {
+  public <T> List<T> findAllShipmentEvents(Function<Event, T> toMapper) {
     return shipmentEventRepository.findAll().stream()
-      .map(this::toDTO)
+      .map(this::toDomain)
+      .map(toMapper)
       .toList();
   }
 
   @Transactional
-  public List<EquipmentEventTO> findAllEquipmentEvents() {
+  public <T> List<T> findAllEquipmentEvents(Function<Event, T> toMapper) {
     return equipmentEventRepository.findAll().stream()
-      .map(this::toDTO)
+      .map(this::toDomain)
+      .map(toMapper)
       .toList();
   }
 
   @Transactional
-  public List<TransportEventTO> findAllTransportEvents() {
+  public <T> List<T> findAllTransportEvents(Function<Event, T> toMapper) {
     return transportEventRepository.findAll().stream()
-      .map(this::toDTO)
+      .map(this::toDomain)
+      .map(toMapper)
       .toList();
   }
 
-  public EquipmentEventTO findEquipmentEvent(UUID eventId) {
+  public org.dcsa.tnt.service.domain.EquipmentEvent findEquipmentEvent(UUID eventId) {
     return equipmentEventRepository.findById(eventId)
-      .map(this::toDTO)
+      .map(this::toDomain)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No EquipmentEvent with id = " + eventId));
   }
 
-  public ShipmentEventTO findShipmentEvent(UUID eventId) {
+  public org.dcsa.tnt.service.domain.ShipmentEvent findShipmentEvent(UUID eventId) {
     return shipmentEventRepository.findById(eventId)
-      .map(this::toDTO)
+      .map(this::toDomain)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No ShipmentEvent with id = " + eventId));
   }
 
-  public TransportEventTO findTransportEvent(UUID eventId) {
+  public org.dcsa.tnt.service.domain.TransportEvent findTransportEvent(UUID eventId) {
     return transportEventRepository.findById(eventId)
-      .map(this::toDTO)
+      .map(this::toDomain)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No TransportEvent with id = " + eventId));
   }
 
-  private EquipmentEventTO toDTO(EquipmentEvent event) {
-    EquipmentEventTO to = eventMapper.toDTO(event);
-    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
-    to.setReferences(referenceService.findFor(event));
-    to.setSeals(sealService.findFor(event));
-    return to;
+  private org.dcsa.tnt.service.domain.EquipmentEvent toDomain(EquipmentEvent event) {
+    org.dcsa.tnt.service.domain.EquipmentEvent equipmentEvent = domainEventMapper.toDomain(event);
+    equipmentEvent.setRelatedDocumentReferences(documentReferenceService.findFor(event));
+    equipmentEvent.setReferences(referenceService.findFor(event));
+    equipmentEvent.setSeals(sealService.findFor(event));
+    return equipmentEvent;
   }
 
-  private ShipmentEventTO toDTO(ShipmentEvent event) {
-    ShipmentEventTO to = eventMapper.toDTO(event);
-    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
-    to.setReferences(referenceService.findFor(event));
-    return to;
+  private org.dcsa.tnt.service.domain.ShipmentEvent toDomain(ShipmentEvent event) {
+    org.dcsa.tnt.service.domain.ShipmentEvent shipmentEvent = domainEventMapper.toDomain(event);
+    shipmentEvent.setRelatedDocumentReferences(documentReferenceService.findFor(event));
+    shipmentEvent.setReferences(referenceService.findFor(event));
+    return shipmentEvent;
   }
 
-  private TransportEventTO toDTO(TransportEvent event) {
-    TransportEventTO to = eventMapper.toDTO(event);
-    to.setRelatedDocumentReferences(documentReferenceService.findFor(event));
-    to.setReferences(referenceService.findFor(event));
-    return to;
+  private org.dcsa.tnt.service.domain.TransportEvent toDomain(TransportEvent event) {
+    org.dcsa.tnt.service.domain.TransportEvent transportEvent = domainEventMapper.toDomain(event);
+    transportEvent.setRelatedDocumentReferences(documentReferenceService.findFor(event));
+    transportEvent.setReferences(referenceService.findFor(event));
+    return transportEvent;
   }
 }

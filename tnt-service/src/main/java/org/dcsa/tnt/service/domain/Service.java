@@ -1,17 +1,17 @@
-package org.dcsa.tnt.transferobjects;
+package org.dcsa.tnt.service.domain;
 
 import lombok.Builder;
 
 import java.util.UUID;
 
-public record ServiceTO(
+public record Service(
   UUID id,
-  CarrierTO carrier,
+  Carrier carrier,
   String carrierServiceCode,
   String carrierServiceName,
   String tradelaneId,
   String universalServiceReference
 ) {
   @Builder
-  public ServiceTO {}
+  public Service {}
 }

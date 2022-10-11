@@ -1,14 +1,17 @@
-package org.dcsa.tnt.transferobjects;
+package org.dcsa.tnt.service.domain;
 
 import lombok.Builder;
 
-public record FacilityTO(
+import java.util.UUID;
+
+public record Facility(
+  UUID id,
   String facilityName,
   String UNLocationCode,
   String facilityBICCode,
   String facilitySMDGCode,
-  LocationTO location
+  Location location
 ) {
   @Builder
-  public FacilityTO { }
+  public Facility { }
 }

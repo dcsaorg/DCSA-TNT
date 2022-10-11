@@ -1,21 +1,25 @@
 package org.dcsa.tnt.transferobjects;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
 import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString(callSuper = true)
-public class ShipmentEventTO extends EventTO {
+@EqualsAndHashCode(callSuper = true)
+public class ShipmentEventPayloadTO extends EventPayloadTO {
   private ShipmentEventTypeCode shipmentEventTypeCode;
   private DocumentTypeCode documentTypeCode;
-  private UUID documentID;
+  private UUID documentReference;
   private String reason;
-
-  private List<ReferenceTO> references;
 }

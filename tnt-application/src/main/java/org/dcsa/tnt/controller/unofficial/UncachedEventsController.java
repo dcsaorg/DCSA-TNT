@@ -2,9 +2,8 @@ package org.dcsa.tnt.controller.unofficial;
 
 import lombok.RequiredArgsConstructor;
 import org.dcsa.tnt.service.EventService;
-import org.dcsa.tnt.transferobjects.EquipmentEventTO;
-import org.dcsa.tnt.transferobjects.ShipmentEventTO;
-import org.dcsa.tnt.transferobjects.TransportEventTO;
+import org.dcsa.tnt.service.mapping.transferobject.EventMapper;
+import org.dcsa.tnt.transferobjects.EventTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,22 +20,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UncachedEventsController {
   private final EventService eventService;
+  private final EventMapper eventMapper;
 
   @GetMapping(path = "/unofficial/uncached-shipment-events")
   @ResponseStatus(HttpStatus.OK)
-  public List<ShipmentEventTO> findAllShipmentEvents() {
-    return eventService.findAllShipmentEvents();
+  public List<EventTO> findAllShipmentEvents() {
+    return eventService.findAllShipmentEvents(eventMapper::toDTO);
   }
 
   @GetMapping(path = "/unofficial/uncached-transport-events")
   @ResponseStatus(HttpStatus.OK)
-  public List<TransportEventTO> findAllTransportEvents() {
-    return eventService.findAllTransportEvents();
+  public List<EventTO> findAllTransportEvents() {
+    return eventService.findAllTransportEvents(eventMapper::toDTO);
   }
 
   @GetMapping(path = "/unofficial/uncached-equipment-events")
   @ResponseStatus(HttpStatus.OK)
-  public List<EquipmentEventTO> findAllEquipmentEvents() {
-    return eventService.findAllEquipmentEvents();
+  public List<EventTO> findAllEquipmentEvents() {
+    return eventService.findAllEquipmentEvents(eventMapper::toDTO);
   }
 }

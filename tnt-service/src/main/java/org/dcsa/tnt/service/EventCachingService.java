@@ -11,10 +11,8 @@ import org.dcsa.tnt.persistence.entity.EventCacheQueue;
 import org.dcsa.tnt.persistence.entity.EventCacheQueueDead;
 import org.dcsa.tnt.persistence.repository.EventCacheQueueDeadRepository;
 import org.dcsa.tnt.persistence.repository.EventCacheRepository;
-import org.dcsa.tnt.transferobjects.DocumentReferenceTO;
-import org.dcsa.tnt.transferobjects.EquipmentEventTO;
-import org.dcsa.tnt.transferobjects.EventTO;
-import org.dcsa.tnt.transferobjects.TransportEventTO;
+import org.dcsa.tnt.service.domain.DocumentReference;
+import org.dcsa.tnt.service.domain.Event;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,22 +41,23 @@ public class EventCachingService extends RouteBuilder {
 
   @SneakyThrows
   public void cacheEvent(EventCacheQueue eventCacheQueue) {
-    EventTO to = switch (eventCacheQueue.getEventType()) {
+    Event domainEvent = switch (eventCacheQueue.getEventType()) {
       case SHIPMENT -> eventService.findShipmentEvent(eventCacheQueue.getEventID());
       case TRANSPORT -> eventService.findTransportEvent(eventCacheQueue.getEventID());
       case EQUIPMENT -> eventService.findEquipmentEvent(eventCacheQueue.getEventID());
     };
     eventCacheRepository.save(EventCache.builder()
-        .eventID(to.getEventID())
+        .eventID(domainEvent.getEventID())
         .eventType(eventCacheQueue.getEventType())
-        .eventCreatedDateTime(to.getEventCreatedDateTime())
-        .content(objectMapper.writeValueAsString(to))
-        .documentReferences(extractDocumentReferences(to))
+        .eventCreatedDateTime(domainEvent.getEventCreatedDateTime())
+        .eventDateTime(domainEvent.getEventDateTime())
+        .content(objectMapper.writeValueAsString(domainEvent))
+        .documentReferences(extractDocumentReferences(domainEvent))
       .build());
   }
 
-  private String extractDocumentReferences(EventTO to) {
-    List<DocumentReferenceTO> documentReferences = to.getRelatedDocumentReferences();
+  private String extractDocumentReferences(Event domainEvent) {
+    List<DocumentReference> documentReferences = domainEvent.getRelatedDocumentReferences();
     if (documentReferences != null && !documentReferences.isEmpty()) {
       return documentReferences.stream()
         .map(dr ->  "|" + dr.type().name() + "=" + dr.value() + "|")
