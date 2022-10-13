@@ -6,23 +6,15 @@ import lombok.Setter;
 import lombok.ToString;
 import org.dcsa.tnt.persistence.entity.enums.ReferenceType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @ToString
 @Entity
+@Table(name = "event_reference") // This is a view
 public class Reference {
-  @Id
-  @GeneratedValue
-  @Column(name = "id", nullable = false)
-  private UUID id;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "reference_type_code", nullable = false)
@@ -31,15 +23,17 @@ public class Reference {
   @Column(name = "reference_value", length = 100, nullable = false)
   private String referenceValue;
 
-  @Column(name = "shipment_id")
-  private UUID shipmentID;
+  @Column(name = "utilized_transport_equipment_id")
+  private UUID utilizedEquipmentID;
 
-  @Column(name = "shipping_instruction_id")
-  private UUID shippingInstructionID;
+  @Column(name = "document_id")
+  private UUID documentID;
 
-  @Column(name = "booking_id")
-  private UUID bookingID;
+  @Column(name = "transport_call_id")
+  private UUID transportCallID;
 
-  @Column(name = "consignment_item_id")
-  private UUID consignmentItemID;
+  @Id // This is not a real ID (just a workaround) - Done to satisfy JPA Entity ID requirement
+  // Note that this is a VIEW -- NOT a schema
+  @Column(name = "link_type")
+  private String linkType;
 }

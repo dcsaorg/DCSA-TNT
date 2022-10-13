@@ -60,7 +60,10 @@ public class EventFieldsTest {
 
   @Test
   public void testReferenceFields() {
-    FieldValidator.assertFieldsAreEqual(Reference.class, org.dcsa.tnt.service.domain.Reference.class);
+    FieldValidator.assertFieldsAreEqual(Reference.class, org.dcsa.tnt.service.domain.Reference.class,
+      // Not mapped
+      "bookingID", "utilizedEquipmentID","transportCallID", "documentID","linkType"
+    );
   }
 
   @Test
