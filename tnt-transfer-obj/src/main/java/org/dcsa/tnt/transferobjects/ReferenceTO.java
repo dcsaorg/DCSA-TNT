@@ -7,11 +7,7 @@ import java.util.UUID;
 
 public record ReferenceTO (
   ReferenceType referenceType,
-  String referenceValue,
-  UUID shipmentID,
-  UUID shippingInstructionID,
-  UUID bookingID,
-  UUID consignmentItemID
+  String referenceValue
 ) {
   @Builder
   public ReferenceTO { }
