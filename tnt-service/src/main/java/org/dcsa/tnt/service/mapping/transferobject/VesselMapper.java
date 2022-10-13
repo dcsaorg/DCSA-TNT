@@ -24,7 +24,7 @@ public class VesselMapper {
         operatorCarrierCode = carrier.nmftaCode();
         operatorCarrierCodeListProvider = OperatorCarrierCodeListProvider.NMFTA;
       } else {
-        throw new IllegalArgumentException("Vessel " + vessel.id() + " has neither smdgCode nor nmftaCode");
+        throw new IllegalArgumentException("Carrier " + carrier.id() + " has neither smdgCode nor nmftaCode");
       }
     }
     return VesselTO.builder()
