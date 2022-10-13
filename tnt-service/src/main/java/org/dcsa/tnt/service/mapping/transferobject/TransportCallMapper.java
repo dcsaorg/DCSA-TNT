@@ -5,7 +5,13 @@ import org.dcsa.tnt.transferobjects.TransportCallTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = LocationMapper.class)
+@Mapper(
+  componentModel = "spring",
+  uses = {
+    LocationMapper.class,
+    VesselMapper.class
+  }
+)
 public interface TransportCallMapper {
   @Mapping(target = "carrierImportVoyageNumber", source = "importVoyage.carrierVoyageNumber")
   @Mapping(target = "carrierExportVoyageNumber", source = "exportVoyage.carrierVoyageNumber")

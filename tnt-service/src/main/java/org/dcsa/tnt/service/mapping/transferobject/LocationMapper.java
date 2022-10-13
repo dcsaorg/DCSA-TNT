@@ -38,8 +38,7 @@ public class LocationMapper {
         facilityCode = facility.facilityBICCode();
         facilityCodeListProvider = FacilityCodeListProvider.BIC;
       } else {
-        log.error("Facility {} has neither SMDG code nor BIC code", facility.id());
-        return null;
+        throw new IllegalArgumentException("Facility " + facility.id()+ " has neither SMDG code nor BIC code");
       }
       return FacilityLocationTO.builder()
         .locationName(location.locationName())
@@ -53,8 +52,7 @@ public class LocationMapper {
         .UNLocationCode(location.UNLocationCode())
         .build();
     } else {
-      log.error("Location {} has neither address, facility nor unLocation", location.id());
-      return null;
+      throw new IllegalArgumentException("Location " + location.id() + " has neither address, facility nor unLocation");
     }
   }
 }
