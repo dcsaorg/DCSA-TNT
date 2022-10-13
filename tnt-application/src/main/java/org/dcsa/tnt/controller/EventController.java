@@ -164,15 +164,15 @@ public class EventController {
         Direction direction = Direction.ASC;
 
         if (!sortableFields.contains(actualSortField)) {
-          throw ConcreteRequestErrorMessageException.invalidInput("Cannot sort on '" + actualSortField + "'");
+          throw ConcreteRequestErrorMessageException.invalidQuery("sort", "Cannot sort on '" + actualSortField + "'");
         }
 
         if (fieldAndDirection.length == 2) {
           direction = Direction.fromOptionalString(fieldAndDirection[1])
-            .orElseThrow(() -> ConcreteRequestErrorMessageException.invalidInput(
-              "'" + fieldAndDirection[1] + "' is not a valid direction"));
+            .orElseThrow(() -> ConcreteRequestErrorMessageException.invalidQuery(
+              "sort", "'" + fieldAndDirection[1] + "' is not a valid direction"));
         } else if (fieldAndDirection.length > 2) {
-          throw ConcreteRequestErrorMessageException.invalidInput("'" + sortField + "' is not valid");
+          throw ConcreteRequestErrorMessageException.invalidQuery("sort", "'" + sortField + "' is not valid");
         }
 
         return new SortBy(direction, actualSortField);
