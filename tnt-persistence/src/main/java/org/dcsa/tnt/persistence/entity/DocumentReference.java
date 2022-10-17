@@ -4,19 +4,21 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.RowId;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @ToString
 @Entity
-@Table(name = "event_document_reference")
+@Table(name = "event_document_reference") // This is a VIEW -- NOT a table
 public class DocumentReference {
+
+  @Id // This ID is added to the view to satisfy JPA primary key requirement
+  @Column(name = "random_id")
+  UUID id;
 
   @Column(name = "transport_call_id")
   private UUID transportCallID;
@@ -24,7 +26,6 @@ public class DocumentReference {
   @Column(name = "document_id")
   private UUID documentID;
 
-  @Id // This is not a real ID (just a workaround) - Done to satisfy JPA Entity ID requirement
   // Note that this is a VIEW -- NOT a schema
   @Column(name = "link_type")
   private String linkType;
