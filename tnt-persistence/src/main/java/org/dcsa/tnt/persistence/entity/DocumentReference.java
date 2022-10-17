@@ -4,9 +4,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.RowId;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
 @Getter
@@ -26,7 +28,6 @@ public class DocumentReference {
   @Column(name = "document_id")
   private UUID documentID;
 
-  // Note that this is a VIEW -- NOT a schema
   @Column(name = "link_type")
   private String linkType;
 
