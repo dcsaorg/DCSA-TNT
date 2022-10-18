@@ -6,8 +6,8 @@ import org.dcsa.tnt.transferobjects.enums.ReferenceType;
 import java.util.UUID;
 
 public record ReferenceTO (
-  ReferenceType referenceType,
-  String referenceValue
+  ReferenceType type,
+  String value
 ) {
   @Builder
   public ReferenceTO { }
