@@ -23,15 +23,18 @@ import java.util.UUID;
 @Table(name = "shipment_event")
 public class ShipmentEvent extends Event {
   @Enumerated(EnumType.STRING)
-  @Column(name = "shipment_event_type_code")
+  @Column(name = "shipment_event_type_code", nullable = false)
   private ShipmentEventTypeCode shipmentEventTypeCode;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "document_type_code")
+  @Column(name = "document_type_code", nullable = false)
   private DocumentTypeCode documentTypeCode;
 
-  @Column(name = "document_id")
+  @Column(name = "document_id", nullable = false)
   private UUID documentID;
+
+  @Column(name = "document_reference", nullable = false)
+  private String documentReference;
 
   @Column(name = "reason", length = 100)
   private String reason;

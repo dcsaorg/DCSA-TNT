@@ -20,6 +20,6 @@ import java.util.UUID;
 public class ShipmentEventPayloadTO extends EventPayloadTO {
   private ShipmentEventTypeCode shipmentEventTypeCode;
   private DocumentTypeCode documentTypeCode;
-  private UUID documentReference;
+  private String documentReference;
   private String reason;
 }

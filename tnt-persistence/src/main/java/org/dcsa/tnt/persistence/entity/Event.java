@@ -28,14 +28,14 @@ public abstract class Event {
   @Column(name = "event_id", nullable = false)
   private UUID eventID;
 
-  @Column(name = "event_date_time")
+  @Column(name = "event_date_time", nullable = false)
   private OffsetDateTime eventDateTime;
 
   @CreatedDate
-  @Column(name = "event_created_date_time")
+  @Column(name = "event_created_date_time", nullable = false)
   private OffsetDateTime eventCreatedDateTime;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "event_classifier_code")
+  @Column(name = "event_classifier_code", nullable = false)
   private EventClassifierCode eventClassifierCode;
 }
