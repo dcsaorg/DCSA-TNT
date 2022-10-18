@@ -1,8 +1,5 @@
 package org.dcsa.tnt.controller;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
 import org.dcsa.skernel.infrastructure.http.queryparams.DCSAQueryParameterParser;
@@ -11,6 +8,7 @@ import org.dcsa.skernel.infrastructure.pagination.Cursor.SortBy;
 import org.dcsa.skernel.infrastructure.pagination.CursorDefaults;
 import org.dcsa.skernel.infrastructure.pagination.PagedResult;
 import org.dcsa.skernel.infrastructure.pagination.Paginator;
+import org.dcsa.skernel.infrastructure.sorting.Sorter;
 import org.dcsa.skernel.infrastructure.validation.EnumSubset;
 import org.dcsa.skernel.infrastructure.validation.UniversalServiceReference;
 import org.dcsa.tnt.persistence.entity.EventCache_;
@@ -52,6 +50,11 @@ import static org.dcsa.skernel.infrastructure.util.EnumUtil.toEnumList;
 @RestController
 @RequiredArgsConstructor
 public class EventController {
+  private final Sorter sortHelper = new Sorter(
+    List.of(new SortBy(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME)),
+    EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME
+  );
+
   private final EventService eventService;
   private final EventMapper eventMapper;
   private final Paginator paginator;
@@ -122,7 +125,7 @@ public class EventController {
 
     HttpServletRequest request, HttpServletResponse response
   ) {
-    Cursor cursor = paginator.parseRequest(request, new CursorDefaults(limit, parseSort(sort)));
+    Cursor cursor = paginator.parseRequest(request, new CursorDefaults(limit, sortHelper.parseSort(sort)));
 
     PagedResult<EventTO> result = eventService.findAll(cursor, EventCacheFilters.builder()
         .eventCreatedDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventCreatedDateTime", OffsetDateTime::parse))
@@ -146,37 +149,5 @@ public class EventController {
 
     paginator.setPageHeaders(request, response, cursor, result);
     return result.content();
-  }
-
-  private final SortBy[] defaultSort = new SortBy[] { new SortBy(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME) };
-  private final Set<String> sortableFields = Set.of(EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME);
-
-  private Cursor.SortBy[] parseSort(String sort) {
-    if (sort == null) {
-      return defaultSort;
-    }
-
-    return Arrays.stream(sort.split(","))
-      .map(String::trim)
-      .map(sortField -> {
-        String[] fieldAndDirection = sortField.split(":");
-        String actualSortField = fieldAndDirection[0];
-        Direction direction = Direction.ASC;
-
-        if (!sortableFields.contains(actualSortField)) {
-          throw ConcreteRequestErrorMessageException.invalidQuery("sort", "Cannot sort on '" + actualSortField + "'");
-        }
-
-        if (fieldAndDirection.length == 2) {
-          direction = Direction.fromOptionalString(fieldAndDirection[1])
-            .orElseThrow(() -> ConcreteRequestErrorMessageException.invalidQuery(
-              "sort", "'" + fieldAndDirection[1] + "' is not a valid direction"));
-        } else if (fieldAndDirection.length > 2) {
-          throw ConcreteRequestErrorMessageException.invalidQuery("sort", "'" + sortField + "' is not valid");
-        }
-
-        return new SortBy(direction, actualSortField);
-      })
-      .toArray(Cursor.SortBy[]::new);
   }
 }
