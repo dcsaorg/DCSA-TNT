@@ -14,7 +14,11 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "event_reference") // This is a view
-public class Reference {
+public class EventReference {
+
+  @Id
+  @Column(name = "view_id")
+  private UUID viewID;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "reference_type_code", nullable = false)
@@ -32,8 +36,6 @@ public class Reference {
   @Column(name = "transport_call_id")
   private UUID transportCallID;
 
-  @Id // This is not a real ID (just a workaround) - Done to satisfy JPA Entity ID requirement
-  // Note that this is a VIEW -- NOT a schema
   @Column(name = "link_type")
   private String linkType;
 }
