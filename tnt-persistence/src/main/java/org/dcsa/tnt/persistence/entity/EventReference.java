@@ -17,7 +17,7 @@ import java.util.UUID;
 public class EventReference {
 
   @Id
-  @Column(name = "view_id")
+  @Column(name = "random_id")
   private UUID viewID;
 
   @Enumerated(EnumType.STRING)

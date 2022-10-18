@@ -9,6 +9,7 @@ import org.dcsa.tnt.service.domain.Reference;
 import org.dcsa.tnt.service.mapping.domain.DomainReferenceMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,6 +28,9 @@ public class ReferenceService {
   }
 
   public List<Reference> findFor(EquipmentEvent event) {
+    if(event.getUtilizedEquipmentID() == null){
+      return Collections.emptyList();
+    }
     return referenceRepository
       .findReferencesByUtilizedEquipmentID(event.getUtilizedEquipmentID())
       .stream()
