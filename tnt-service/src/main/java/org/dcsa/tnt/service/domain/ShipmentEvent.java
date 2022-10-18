@@ -16,6 +16,7 @@ public class ShipmentEvent extends Event {
   private ShipmentEventTypeCode shipmentEventTypeCode;
   private DocumentTypeCode documentTypeCode;
   private UUID documentID;
+  private String documentReference;
   private String reason;
 
   public ShipmentEvent() {
