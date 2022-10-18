@@ -8,7 +8,7 @@ import org.dcsa.skernel.test.helpers.FieldValidator;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent;
 import org.dcsa.tnt.persistence.entity.ShipmentEvent;
 import org.dcsa.tnt.persistence.entity.TransportEvent;
-import org.dcsa.tnt.persistence.entity.Reference;
+import org.dcsa.tnt.persistence.entity.EventReference;
 import org.dcsa.tnt.persistence.entity.Seal;
 import org.dcsa.tnt.persistence.entity.Service;
 import org.dcsa.tnt.persistence.entity.TransportCall;
@@ -60,9 +60,9 @@ public class EventFieldsTest {
 
   @Test
   public void testReferenceFields() {
-    FieldValidator.assertFieldsAreEqual(Reference.class, org.dcsa.tnt.service.domain.Reference.class,
+    FieldValidator.assertFieldsAreEqual(EventReference.class, org.dcsa.tnt.service.domain.Reference.class,
       // Not mapped
-      "bookingID", "utilizedEquipmentID","transportCallID", "documentID","linkType"
+      "bookingID", "utilizedEquipmentID","transportCallID", "documentID","linkType", "viewID"
     );
   }
 
