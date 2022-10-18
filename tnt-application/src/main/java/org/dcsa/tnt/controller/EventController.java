@@ -50,6 +50,11 @@ import static org.dcsa.skernel.infrastructure.util.EnumUtil.toEnumList;
 @RestController
 @RequiredArgsConstructor
 public class EventController {
+  private static final String TNT_EVENT_TYPES = "EQUIPMENT,TRANSPORT,SHIPMENT";
+  private static final List<EventType> TNT_EVENT_TYPE_ENUMS = Arrays.stream(TNT_EVENT_TYPES.split(","))
+    .map(EventType::valueOf)
+    .toList();
+
   private final Sorter sortHelper = new Sorter(
     List.of(new SortBy(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME)),
     EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME
@@ -63,14 +68,14 @@ public class EventController {
   @GetMapping(path = "/events/{eventID}")
   @ResponseStatus(HttpStatus.OK)
   public EventTO findEvent(@PathVariable("eventID") UUID eventID) {
-    return eventService.findEvent(eventID, eventMapper::toDTO);
+    return eventService.findEvent(eventID, TNT_EVENT_TYPE_ENUMS, eventMapper::toDTO);
   }
 
   @GetMapping(path = "/events")
   @ResponseStatus(HttpStatus.OK)
   public List<EventTO> findEvents(
-    @RequestParam(value = "eventType", required = false)
-    @EnumSubset(anyOf = {"SHIPMENT", "TRANSPORT", "EQUIPMENT"})
+    @RequestParam(value = "eventType", required = false, defaultValue = TNT_EVENT_TYPES)
+    @EnumSubset(anyOf = TNT_EVENT_TYPES)
     String eventType,
 
     @RequestParam(value = "shipmentEventTypeCode", required = false)

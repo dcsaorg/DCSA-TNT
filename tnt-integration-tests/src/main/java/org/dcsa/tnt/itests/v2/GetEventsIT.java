@@ -2,27 +2,20 @@ package org.dcsa.tnt.itests.v2;
 
 import io.restassured.http.ContentType;
 import org.dcsa.tnt.itests.config.RestAssuredConfigurator;
-import org.dcsa.tnt.transferobjects.EquipmentEventPayloadTO;
-import org.dcsa.tnt.transferobjects.EventTO;
-import org.dcsa.tnt.transferobjects.ShipmentEventPayloadTO;
-import org.dcsa.tnt.transferobjects.TransportEventPayloadTO;
-import org.dcsa.tnt.transferobjects.enums.DocumentReferenceType;
-import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
+import org.dcsa.tnt.transferobjects.*;
 import org.dcsa.tnt.transferobjects.enums.EquipmentEventTypeCode;
+import org.dcsa.tnt.transferobjects.enums.ReferenceType;
 import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 import org.dcsa.tnt.transferobjects.enums.TransportEventTypeCode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GetEventsIT {
   @BeforeAll
@@ -100,9 +93,6 @@ public class GetEventsIT {
     events.forEach(e -> assertInstanceOf(TransportEventPayloadTO.class, e.payload()));
   }
 
-  /*
-  TODO rewrite/update these tests for 3.0 spec filters
-
   @Test
   public void getByShipmentEventTypeCode() {
     List<EventTO> events =
@@ -120,18 +110,17 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(ShipmentEventPayloadTO.class, e.payload());
-      ShipmentEventPayloadTO payload = (ShipmentEventPayloadTO) e.payload();
+      ShipmentEventPayloadTO payload = assertInstanceOf(ShipmentEventPayloadTO.class, e.payload());
       assertEquals(ShipmentEventTypeCode.RECE, payload.getShipmentEventTypeCode());
     });
   }
 
   @Test
-  public void getByCarrierBookingReference() {
+  public void getByDocumentReferenceCBR() {
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?carrierBookingReference=cbr-b83765166707812c8ff4")
+        .get("/v3/events?documentReference=cbr-b83765166707812c8ff4")
         .then()
         .assertThat()
         .statusCode(200)
@@ -142,19 +131,17 @@ public class GetEventsIT {
         .jsonPath()
         .getList(".", EventTO.class);
 
-    events.forEach(e -> {
-      assertTrue(e.payload().getRelatedDocumentReferences().stream()
-        .anyMatch(docRef -> docRef.type() == DocumentReferenceType.BKG && "cbr-b83765166707812c8ff4".equals(docRef.value()))
-      );
-    });
+    events.forEach(e -> assertTrue(e.payload().getRelatedDocumentReferences().stream()
+      .anyMatch(docRef -> "cbr-b83765166707812c8ff4".equals(docRef.value()))
+    ));
   }
 
   @Test
-  public void getByTransportDocumentReferenceRelatedDocuments() {
+  public void getByDocumentReferenceTRD() {
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?transportDocumentReference=2b02401c-b2fb-5009")
+        .get("/v3/events?documentReference=2b02401c-b2fb-5009")
         .then()
         .assertThat()
         .statusCode(200)
@@ -165,56 +152,9 @@ public class GetEventsIT {
         .jsonPath()
         .getList(".", EventTO.class);
 
-    events.forEach(e -> {
-      assertTrue(e.payload().getRelatedDocumentReferences().stream()
-        .anyMatch(docRef -> docRef.type() == DocumentReferenceType.TRD && "2b02401c-b2fb-5009".equals(docRef.value()))
-      );
-    });
-  }
-
-  @Test
-  public void getByTransportDocumentReferenceDocumentId() {
-    // Id's are random - so first find a shipment event with the correct type code.
-    List<EventTO> shipmentEvents =
-      given()
-        .contentType("application/json")
-        .get("/v3/events?eventType=SHIPMENT")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .body("size()", greaterThanOrEqualTo(1))
-        .extract()
-        .body()
-        .jsonPath()
-        .getList(".", EventTO.class);
-    UUID documentReference = shipmentEvents.stream()
-      .map(e -> (ShipmentEventPayloadTO) e.payload())
-      .filter(p -> p.getDocumentTypeCode() == DocumentTypeCode.TRD)
-      .findAny()
-      .get().getDocumentReference();
-
-    // Now test the search
-    List<EventTO> events =
-      given()
-        .contentType("application/json")
-        .get("/v3/events?transportDocumentReference=" + documentReference)
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .body("size()", greaterThanOrEqualTo(1))
-        .extract()
-        .body()
-        .jsonPath()
-        .getList(".", EventTO.class);
-
-    events.forEach(e -> {
-      assertInstanceOf(ShipmentEventTO.class, e);
-      ShipmentEventTO shipmentEvent = (ShipmentEventTO) e;
-      assertEquals(DocumentTypeCode.TRD, shipmentEvent.getDocumentTypeCode());
-      assertEquals(documentId, shipmentEvent.getDocumentID());
-    });
+    events.forEach(e -> assertTrue(e.payload().getRelatedDocumentReferences().stream()
+      .anyMatch(docRef -> "2b02401c-b2fb-5009".equals(docRef.value()))
+    ));
   }
 
   @Test
@@ -234,18 +174,18 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(TransportEventTO.class, e);
-      TransportEventTO transportEvent = (TransportEventTO) e;
-      assertEquals(TransportEventTypeCode.DEPA, transportEvent.getTransportEventTypeCode());
+      TransportEventPayloadTO transportEventPayload = assertInstanceOf(TransportEventPayloadTO.class, e.payload());
+      assertEquals(TransportEventTypeCode.DEPA, transportEventPayload.getTransportEventTypeCode());
     });
   }
 
   @Test
-  public void getByTransportCallId() {
+  public void getByTransportCallReference() {
+    final String transportCallReference = "TC-REF-08_02-A";
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?transportCallID=123e4567-e89b-12d3-a456-426614174000")
+        .get("/v3/events?transportCallReference=" + transportCallReference)
         .then()
         .assertThat()
         .statusCode(200)
@@ -257,9 +197,11 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EventTOWithTransportCall.class, e);
-      EventTOWithTransportCall event = (EventTOWithTransportCall) e;
-      assertEquals("123e4567-e89b-12d3-a456-426614174000", event.getTransportCall().id().toString());
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
+      assertEquals(transportCallReference, payload.getTransportCall().transportCallReference());
     });
   }
 
@@ -280,9 +222,11 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EventTOWithTransportCall.class, e);
-      EventTOWithTransportCall event = (EventTOWithTransportCall) e;
-      assertEquals("1234567", event.getTransportCall().vessel().vesselIMONumber());
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
+      assertEquals("1234567", payload.getTransportCall().vessel().vesselIMONumber());
     });
   }
 
@@ -291,7 +235,7 @@ public class GetEventsIT {
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?carrierVoyageNumber=2418W")
+        .get("/v3/events?carrierExportVoyageNumber=TNT1E")
         .then()
         .assertThat()
         .statusCode(200)
@@ -303,12 +247,13 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EventTOWithTransportCall.class, e);
-      EventTOWithTransportCall event = (EventTOWithTransportCall) e;
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
 
-      String importCarrierVoyageNumber = event.getTransportCall().importVoyage().carrierVoyageNumber();
-      String exportCarrierVoyageNumber = event.getTransportCall().exportVoyage().carrierVoyageNumber();
-      assertTrue("2418W".equals(importCarrierVoyageNumber) || "2418W".equals(exportCarrierVoyageNumber));
+      String exportCarrierVoyageNumber = payload.getTransportCall().carrierExportVoyageNumber();
+      assertEquals("TNT1E", exportCarrierVoyageNumber);
     });
   }
 
@@ -317,7 +262,7 @@ public class GetEventsIT {
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?carrierVoyageNumber=2419E")
+        .get("/v3/events?carrierExportVoyageNumber=3419E")
         .then()
         .assertThat()
         .statusCode(200)
@@ -329,12 +274,13 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EventTOWithTransportCall.class, e);
-      EventTOWithTransportCall event = (EventTOWithTransportCall) e;
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
 
-      String importCarrierVoyageNumber = event.getTransportCall().importVoyage().carrierVoyageNumber();
-      String exportCarrierVoyageNumber = event.getTransportCall().exportVoyage().carrierVoyageNumber();
-      assertTrue("2419E".equals(importCarrierVoyageNumber) || "2419E".equals(exportCarrierVoyageNumber));
+      String exportCarrierVoyageNumber = payload.getTransportCall().carrierExportVoyageNumber();
+      assertEquals("3419E", exportCarrierVoyageNumber);
     });
   }
 
@@ -355,12 +301,39 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EventTOWithTransportCall.class, e);
-      EventTOWithTransportCall event = (EventTOWithTransportCall) e;
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
+      String carrierServiceCode = payload.getTransportCall().carrierServiceCode();
+      assertEquals("TNT1", carrierServiceCode);
+    });
+  }
 
-      String importCarrierServiceCode = event.getTransportCall().importVoyage().service().carrierServiceCode();
-      String exportCarrierServiceCode = event.getTransportCall().exportVoyage().service().carrierServiceCode();
-      assertTrue("TNT1".equals(importCarrierServiceCode) || "TNT1".equals(exportCarrierServiceCode));
+  @Test
+  public void getByUniversalServiceReference() {
+    final String usr = "SR00033F";
+    List<EventTO> events =
+      given()
+        .contentType("application/json")
+        .get("/v3/events?universalServiceReference=" + usr)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .body("size()", greaterThanOrEqualTo(2))
+        .extract()
+        .body()
+        .jsonPath()
+        .getList(".", EventTO.class);
+
+    events.forEach(e -> {
+      EventPayloadTO.EventPayloadTOWithTransportCall payload = assertInstanceOf(
+        EventPayloadTO.EventPayloadTOWithTransportCall.class,
+        e.payload()
+      );
+      String universalServiceReference = payload.getTransportCall().universalServiceReference();
+      assertEquals(usr, universalServiceReference);
     });
   }
 
@@ -381,18 +354,19 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EquipmentEventTO.class, e);
-      EquipmentEventTO equipmentEvent = (EquipmentEventTO) e;
-      assertEquals(EquipmentEventTypeCode.LOAD, equipmentEvent.getEquipmentEventTypeCode());
+      EquipmentEventPayloadTO equipmentEventPayload = assertInstanceOf(EquipmentEventPayloadTO.class, e.payload());
+      assertEquals(EquipmentEventTypeCode.LOAD, equipmentEventPayload.getEquipmentEventTypeCode());
     });
   }
 
   @Test
   public void getByEquipmentReference() {
+    String equipmentReference = "APZU4812090";
+
     List<EventTO> events =
       given()
         .contentType("application/json")
-        .get("/v3/events?equipmentReference=APZU4812090")
+        .get("/v3/events?equipmentReference=" + equipmentReference)
         .then()
         .assertThat()
         .statusCode(200)
@@ -404,11 +378,15 @@ public class GetEventsIT {
         .getList(".", EventTO.class);
 
     events.forEach(e -> {
-      assertInstanceOf(EquipmentEventTO.class, e);
-      EquipmentEventTO equipmentEvent = (EquipmentEventTO) e;
-      assertEquals("APZU4812090", equipmentEvent.getEquipmentReference());
+      EventPayloadTO payload = e.payload();
+      boolean presentInReferences = payload.getReferences() != null && payload.getReferences().stream()
+        .anyMatch(ref -> ref.referenceType() == ReferenceType.EQ && equipmentReference.equals(ref.referenceValue()));
+      boolean equipmentEventReference = payload instanceof EquipmentEventPayloadTO equipmentPayload
+        && equipmentReference.equals(equipmentPayload.getEquipmentReference());
+      assertTrue(presentInReferences ||equipmentEventReference);
     });
   }
+
 
   @Test
   public void getTransportEventCombo() {
@@ -426,7 +404,7 @@ public class GetEventsIT {
         .jsonPath()
         .getList(".", EventTO.class);
 
-    events.forEach(e -> assertInstanceOf(TransportEventTO.class, e));
+    events.forEach(e -> assertInstanceOf(TransportEventPayloadTO.class, e.payload()));
   }
 
   @Test
@@ -440,6 +418,4 @@ public class GetEventsIT {
       .contentType(ContentType.JSON)
       .body("size()", equalTo(0));
   }
-
-   */
 }

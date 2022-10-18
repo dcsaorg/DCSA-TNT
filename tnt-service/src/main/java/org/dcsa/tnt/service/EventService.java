@@ -10,6 +10,7 @@ import org.dcsa.tnt.persistence.entity.EquipmentEvent;
 import org.dcsa.tnt.persistence.entity.EventCache;
 import org.dcsa.tnt.persistence.entity.ShipmentEvent;
 import org.dcsa.tnt.persistence.entity.TransportEvent;
+import org.dcsa.tnt.persistence.entity.enums.EventType;
 import org.dcsa.tnt.persistence.repository.EquipmentEventRepository;
 import org.dcsa.tnt.persistence.repository.EventCacheRepository;
 import org.dcsa.tnt.persistence.repository.ShipmentEventRepository;
@@ -42,8 +43,8 @@ public class EventService {
   private final SealService sealService;
 
   @Transactional
-  public <T> T findEvent(UUID eventId, Function<Event, T> toMapper) {
-    return eventCacheRepository.findById(eventId)
+  public <T> T findEvent(UUID eventId, List<EventType> eventTypes, Function<Event, T> toMapper) {
+    return eventCacheRepository.findByEventIDAndEventTypeIn(eventId, eventTypes)
       .map(this::deserializeEvent)
       .map(toMapper)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No event found with id = " + eventId));
