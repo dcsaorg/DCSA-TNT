@@ -380,7 +380,7 @@ public class GetEventsIT {
     events.forEach(e -> {
       EventPayloadTO payload = e.payload();
       boolean presentInReferences = payload.getReferences() != null && payload.getReferences().stream()
-        .anyMatch(ref -> ref.referenceType() == ReferenceType.EQ && equipmentReference.equals(ref.referenceValue()));
+        .anyMatch(ref -> ref.type() == ReferenceType.EQ && equipmentReference.equals(ref.value()));
       boolean equipmentEventReference = payload instanceof EquipmentEventPayloadTO equipmentPayload
         && equipmentReference.equals(equipmentPayload.getEquipmentReference());
       assertTrue(presentInReferences ||equipmentEventReference);
