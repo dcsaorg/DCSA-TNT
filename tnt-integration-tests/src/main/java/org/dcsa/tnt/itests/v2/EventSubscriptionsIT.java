@@ -7,7 +7,7 @@ import org.dcsa.tnt.transferobjects.EventSubscriptionTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithIdTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithSecretTO;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.dcsa.tnt.transferobjects.enums.DocumentTypeCode;
@@ -20,14 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public class EventSubscriptionsIT {
   @BeforeAll
@@ -243,9 +238,10 @@ public class EventSubscriptionsIT {
   }
 
   private <T extends Enum<T>> Set<T> inverseSet(Set<T> values, Class<T> enumClass) {
-    Set<T> result = new HashSet<>(Set.of(enumClass.getEnumConstants()));
-    result.removeAll(values);
-    return result;
+    if (values.isEmpty()) {
+      return EnumSet.allOf(enumClass);
+    }
+    return EnumSet.complementOf(EnumSet.copyOf(values));
   }
 
   private void assertEventSubscriptionTOEquals(EventSubscriptionTO v1, EventSubscriptionTO v2) {
