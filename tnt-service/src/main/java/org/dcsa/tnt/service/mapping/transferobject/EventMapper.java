@@ -17,7 +17,8 @@ import org.mapstruct.Mapping;
   uses = {
     TransportCallMapper.class,
     LocationMapper.class,
-    SealMapper.class
+    SealMapper.class,
+    ReferenceMapper.class
   }
 )
 public interface EventMapper {
