@@ -1,4 +1,4 @@
-package org.dcsa.tnt.itests.v2;
+package org.dcsa.tnt.itests.v3;
 
 import io.restassured.http.ContentType;
 import org.dcsa.tnt.itests.config.RestAssuredConfigurator;
