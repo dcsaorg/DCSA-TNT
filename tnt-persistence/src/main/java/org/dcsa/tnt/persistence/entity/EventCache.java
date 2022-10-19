@@ -45,6 +45,9 @@ public class EventCache {
   @Column(name = "document_references", columnDefinition = "text")
   private String documentReferences;
 
+  @Column(name = "\"references\"", columnDefinition = "text")
+  private String references;
+
   @CreatedDate
   @Column(name = "event_created_date_time", nullable = false)
   private OffsetDateTime eventCreatedDateTime;

@@ -13,9 +13,11 @@ import org.dcsa.tnt.persistence.repository.EventCacheQueueDeadRepository;
 import org.dcsa.tnt.persistence.repository.EventCacheRepository;
 import org.dcsa.tnt.service.domain.DocumentReference;
 import org.dcsa.tnt.service.domain.Event;
+import org.dcsa.tnt.service.domain.Reference;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,8 @@ public class EventCachingService extends RouteBuilder {
     ;
   }
 
+  // Used from camel via .bean (IntelliJ / javac cannot see that and wrongfully marks it as unused)
+  @SuppressWarnings({"unused"})
   @SneakyThrows
   public void cacheEvent(EventCacheQueue eventCacheQueue) {
     Event domainEvent = switch (eventCacheQueue.getEventType()) {
@@ -53,18 +57,37 @@ public class EventCachingService extends RouteBuilder {
         .eventDateTime(domainEvent.getEventDateTime())
         .content(objectMapper.writeValueAsString(domainEvent))
         .documentReferences(extractDocumentReferences(domainEvent))
+        .references(extractReferences(domainEvent))
       .build());
   }
 
   private String extractDocumentReferences(Event domainEvent) {
-    List<DocumentReference> documentReferences = domainEvent.getRelatedDocumentReferences();
-    if (documentReferences != null && !documentReferences.isEmpty()) {
-      return documentReferences.stream()
-        .map(dr ->  "|" + dr.type().name() + "=" + dr.value() + "|")
-        .collect(Collectors.joining())
-      ;
+    return compileReferenceList(
+      domainEvent.getRelatedDocumentReferences(),
+      EventCachingService::serializeDocumentReference
+    );
+  }
+
+  private String extractReferences(Event domainEvent) {
+    return compileReferenceList(domainEvent.getReferences(), EventCachingService::serializeReference);
+  }
+
+  private static <R> String compileReferenceList(List<R> refs, Function<R, String> serializer) {
+    if (refs != null && !refs.isEmpty()) {
+      return refs.stream()
+        .map(serializer)
+        .collect(Collectors.joining("|", "|", "|"))
+        ;
     }
     return null;
+  }
+
+  private static String serializeDocumentReference(DocumentReference reference) {
+    return reference.type().name() + "=" + reference.value();
+  }
+
+  private static String serializeReference(Reference reference) {
+    return reference.referenceType().name() + "=" + reference.referenceValue();
   }
 
   private void handleFailedEventMessage(Exchange exchange) {
