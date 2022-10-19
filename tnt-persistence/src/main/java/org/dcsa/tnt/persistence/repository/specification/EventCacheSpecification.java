@@ -6,21 +6,12 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.dcsa.skernel.domain.persistence.entity.Location_;
 import org.dcsa.skernel.domain.persistence.entity.base.BaseTransportCall_;
-import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
 import org.dcsa.skernel.infrastructure.http.queryparams.ParsedQueryParameter;
 import org.dcsa.tnt.persistence.entity.*;
-import org.dcsa.tnt.persistence.entity.enums.DocumentTypeCode;
-import org.dcsa.tnt.persistence.entity.enums.EquipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.enums.EventType;
-import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
-import org.dcsa.tnt.persistence.entity.enums.TransportEventTypeCode;
+import org.dcsa.tnt.persistence.entity.enums.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -170,8 +161,7 @@ public class EventCacheSpecification {
               jsonPath.of(EquipmentEvent_.EQUIPMENT, Equipment_.EQUIPMENT_REFERENCE),
               builder.literal(filters.equipmentReference)
             ),
-            // FIXME: search references for referenceType=EQ, referenceValue=filters.equipmentReference
-            builder.equal(builder.literal("1"), builder.literal("0"))
+            builder.like(root.get(EventCache_.REFERENCES), "%|CA=" + filters.equipmentReference+ "|%")
           )
         );
       }
