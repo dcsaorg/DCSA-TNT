@@ -1,14 +1,10 @@
 package org.dcsa.tnt.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
 import org.dcsa.skernel.infrastructure.http.queryparams.DCSAQueryParameterParser;
-import org.dcsa.skernel.infrastructure.pagination.Cursor;
-import org.dcsa.skernel.infrastructure.pagination.Cursor.SortBy;
-import org.dcsa.skernel.infrastructure.pagination.CursorDefaults;
-import org.dcsa.skernel.infrastructure.pagination.PagedResult;
-import org.dcsa.skernel.infrastructure.pagination.Paginator;
-import org.dcsa.skernel.infrastructure.sorting.Sorter;
+import org.dcsa.skernel.infrastructure.pagination.Pagination;
+import org.dcsa.skernel.infrastructure.pagination.Pagination.FilterParameters;
+import org.dcsa.skernel.infrastructure.sorting.Sorter.SortableFields;
 import org.dcsa.skernel.infrastructure.validation.EnumSubset;
 import org.dcsa.skernel.infrastructure.validation.UniversalServiceReference;
 import org.dcsa.tnt.persistence.entity.EventCache_;
@@ -22,7 +18,6 @@ import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.service.mapping.transferobject.EventMapper;
 import org.dcsa.tnt.transferobjects.EventTO;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,14 +50,12 @@ public class EventController {
     .map(EventType::valueOf)
     .toList();
 
-  private final Sorter sortHelper = new Sorter(
-    List.of(new SortBy(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME)),
-    EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME
-  );
+  private final List<Sort.Order> defaultSort = List.of(new Sort.Order(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME));
+  private final SortableFields sortableFields = SortableFields.of(EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME);
+  private final FilterParameters filterParameters = FilterParameters.allow(EventCacheFilters.class);
 
   private final EventService eventService;
   private final EventMapper eventMapper;
-  private final Paginator paginator;
   private final DCSAQueryParameterParser queryParameterParser;
 
   @GetMapping(path = "/events/{eventID}")
@@ -119,40 +112,44 @@ public class EventController {
     @RequestParam(value = "equipmentReference", required = false) @Size(max = 15)
     String equipmentReference,
 
-    @RequestParam(value = "sort", required = false)
-    String sort,
+    @RequestParam(value = Pagination.DCSA_PAGE_PARAM_NAME, defaultValue = "0", required = false) @Min(0)
+    int page,
 
-    @RequestParam(value = "limit", defaultValue = "100", required = false) @Min(1)
-    int limit,
+    @RequestParam(value = Pagination.DCSA_PAGESIZE_PARAM_NAME, defaultValue = "100", required = false) @Min(1)
+    int pageSize,
+
+    @RequestParam(value = Pagination.DCSA_SORT_PARAM_NAME, required = false)
+    String sort,
 
     @RequestParam
     Map<String, String> queryParams,
 
     HttpServletRequest request, HttpServletResponse response
   ) {
-    Cursor cursor = paginator.parseRequest(request, new CursorDefaults(limit, sortHelper.parseSort(sort)));
-
-    PagedResult<EventTO> result = eventService.findAll(cursor, EventCacheFilters.builder()
-        .eventCreatedDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventCreatedDateTime", OffsetDateTime::parse))
-        .eventDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventDateTime", OffsetDateTime::parse))
-        .eventType(toEnumList(eventType, EventType.class))
-        .shipmentEventTypeCode(toEnumList(shipmentEventTypeCode, ShipmentEventTypeCode.class))
-        .transportEventTypeCode(toEnumList(transportEventTypeCode, TransportEventTypeCode.class))
-        .equipmentEventTypeCode(toEnumList(equipmentEventTypeCode, EquipmentEventTypeCode.class))
-        .documentTypeCode(toEnumList(documentTypeCode, DocumentTypeCode.class))
-        .documentReference(documentReference)
-        .transportCallReference(transportCallReference)
-        .carrierExportVoyageNumber(carrierExportVoyageNumber)
-        .universalExportVoyageReference(universalExportVoyageReference)
-        .universalServiceReference(universalServiceReference)
-        .UNLocationCode(UNLocationCode)
-        .vesselIMONumber(vesselIMONumber)
-        .carrierServiceCode(carrierServiceCode)
-        .equipmentReference(equipmentReference)
-      .build(),
-      eventMapper::toDTO);
-
-    paginator.setPageHeaders(request, response, cursor, result);
-    return result.content();
+    return Pagination
+      .with(request, response, page, pageSize)
+      .sortBy(sort, defaultSort, sortableFields)
+      .filterParameters(filterParameters)
+      .paginate(pageRequest ->
+        eventService.findAll(pageRequest, EventCacheFilters.builder()
+            .eventCreatedDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventCreatedDateTime", OffsetDateTime::parse))
+            .eventDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventDateTime", OffsetDateTime::parse))
+            .eventType(toEnumList(eventType, EventType.class))
+            .shipmentEventTypeCode(toEnumList(shipmentEventTypeCode, ShipmentEventTypeCode.class))
+            .transportEventTypeCode(toEnumList(transportEventTypeCode, TransportEventTypeCode.class))
+            .equipmentEventTypeCode(toEnumList(equipmentEventTypeCode, EquipmentEventTypeCode.class))
+            .documentTypeCode(toEnumList(documentTypeCode, DocumentTypeCode.class))
+            .documentReference(documentReference)
+            .transportCallReference(transportCallReference)
+            .carrierExportVoyageNumber(carrierExportVoyageNumber)
+            .universalExportVoyageReference(universalExportVoyageReference)
+            .universalServiceReference(universalServiceReference)
+            .UNLocationCode(UNLocationCode)
+            .vesselIMONumber(vesselIMONumber)
+            .carrierServiceCode(carrierServiceCode)
+            .equipmentReference(equipmentReference)
+            .build(),
+          eventMapper::toDTO)
+      );
   }
 }
