@@ -3,7 +3,6 @@ package org.dcsa.tnt.controller;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.skernel.infrastructure.http.queryparams.DCSAQueryParameterParser;
 import org.dcsa.skernel.infrastructure.pagination.Pagination;
-import org.dcsa.skernel.infrastructure.pagination.Pagination.FilterParameters;
 import org.dcsa.skernel.infrastructure.sorting.Sorter.SortableFields;
 import org.dcsa.skernel.infrastructure.validation.EnumSubset;
 import org.dcsa.skernel.infrastructure.validation.UniversalServiceReference;
@@ -52,7 +51,6 @@ public class EventController {
 
   private final List<Sort.Order> defaultSort = List.of(new Sort.Order(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME));
   private final SortableFields sortableFields = SortableFields.of(EventCache_.EVENT_CREATED_DATE_TIME, EventCache_.EVENT_DATE_TIME);
-  private final FilterParameters filterParameters = FilterParameters.allow(EventCacheFilters.class);
 
   private final EventService eventService;
   private final EventMapper eventMapper;
@@ -129,7 +127,6 @@ public class EventController {
     return Pagination
       .with(request, response, page, pageSize)
       .sortBy(sort, defaultSort, sortableFields)
-      .filterParameters(filterParameters)
       .paginate(pageRequest ->
         eventService.findAll(pageRequest, EventCacheFilters.builder()
             .eventCreatedDateTime(queryParameterParser.parseCustomQueryParameter(queryParams, "eventCreatedDateTime", OffsetDateTime::parse))

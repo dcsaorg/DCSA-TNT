@@ -2,7 +2,6 @@ package org.dcsa.tnt.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dcsa.skernel.infrastructure.pagination.Pagination;
-import org.dcsa.skernel.infrastructure.pagination.Pagination.FilterParameters;
 import org.dcsa.tnt.persistence.entity.EventSubscription_;
 import org.dcsa.tnt.service.EventSubscriptionService;
 import org.dcsa.tnt.transferobjects.EventSubscriptionSecretTO;
@@ -51,7 +50,6 @@ public class EventSubscriptionController {
     return Pagination
       .with(request, response, page, pageSize)
       .sortBy(defaultSort)
-      .filterParameters(FilterParameters.allowNone())
       .paginate(eventSubscriptionService::findAll);
   }
 
