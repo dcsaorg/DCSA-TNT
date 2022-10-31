@@ -18,6 +18,7 @@ import org.dcsa.tnt.transferobjects.EventSubscriptionSecretTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithIdTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionWithSecretTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -40,9 +41,9 @@ public class EventSubscriptionService {
   private final EventSubscriptionMapper eventSubscriptionMapper;
 
   @Transactional
-  public PagedResult<EventSubscriptionWithIdTO> findAll(final Cursor cursor) {
+  public PagedResult<EventSubscriptionWithIdTO> findAll(final PageRequest pageRequest) {
     return new PagedResult<>(
-      eventSubscriptionRepository.findAll(cursor.toPageRequest()),
+      eventSubscriptionRepository.findAll(pageRequest),
       eventSubscriptionMapper::toDTO
     );
   }

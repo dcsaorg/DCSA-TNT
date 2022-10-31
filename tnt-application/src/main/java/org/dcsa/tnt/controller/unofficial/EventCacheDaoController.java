@@ -1,14 +1,12 @@
 package org.dcsa.tnt.controller.unofficial;
 
 import lombok.RequiredArgsConstructor;
-import org.dcsa.skernel.infrastructure.pagination.Cursor;
-import org.dcsa.skernel.infrastructure.pagination.CursorDefaults;
-import org.dcsa.skernel.infrastructure.pagination.Paginator;
 import org.dcsa.tnt.persistence.entity.EventCache_;
 import org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.EventCacheFilters;
 import org.dcsa.tnt.service.EventService;
 import org.dcsa.tnt.service.domain.Event;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +26,16 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class EventCacheDaoController {
   private final EventService eventService;
-  private final Paginator paginator;
+
+  private final List<Sort.Order> defaultSort = List.of(new Sort.Order(Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME));
 
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(path = "/unofficial/events-dao/")
   public List<Event> findAll(HttpServletRequest request, HttpServletResponse response) {
-    Cursor cursor = paginator.parseRequest(
-      request,
-      new CursorDefaults(1000, Sort.Direction.ASC, EventCache_.EVENT_CREATED_DATE_TIME)
-    );
-    return eventService.findAll(cursor, EventCacheFilters.builder().build(), Function.identity()).content();
+    return eventService.findAll(
+      PageRequest.of(0, 1000, Sort.by(defaultSort)),
+      EventCacheFilters.builder().build(),
+      Function.identity()
+      ).content();
   }
 }

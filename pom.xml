@@ -23,7 +23,7 @@
 		<!-- End: Define DCSA-TNT version -->
 
 		<!-- Define Shared Kernel version -->
-		<dcsa.shared-kernel.version>0.1.0</dcsa.shared-kernel.version>
+		<dcsa.shared-kernel.version>0.2.0</dcsa.shared-kernel.version>
 		<dcsa.shared-kernel.tag/>
 		<dcsa.shared-kernel.artifacttype>-SNAPSHOT</dcsa.shared-kernel.artifacttype>
 		<shared-kernel.version>${dcsa.shared-kernel.version}${dcsa.shared-kernel.tag}${dcsa.shared-kernel.artifacttype}</shared-kernel.version>

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.dcsa.skernel.errors.exceptions.ConcreteRequestErrorMessageException;
-import org.dcsa.skernel.infrastructure.pagination.Cursor;
 import org.dcsa.skernel.infrastructure.pagination.PagedResult;
 import org.dcsa.tnt.persistence.entity.EquipmentEvent;
 import org.dcsa.tnt.persistence.entity.EventCache;
@@ -18,6 +17,7 @@ import org.dcsa.tnt.persistence.repository.TransportEventRepository;
 import org.dcsa.tnt.persistence.repository.specification.EventCacheSpecification.EventCacheFilters;
 import org.dcsa.tnt.service.domain.Event;
 import org.dcsa.tnt.service.mapping.domain.DomainEventMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -51,9 +51,9 @@ public class EventService {
   }
 
   @Transactional
-  public <T> PagedResult<T> findAll(final Cursor cursor, final EventCacheFilters filters, Function<Event, T> toMapper) {
+  public <T> PagedResult<T> findAll(final PageRequest pageRequest, final EventCacheFilters filters, Function<Event, T> toMapper) {
     return new PagedResult<>(
-        eventCacheRepository.findAll(withFilters(filters), cursor.toPageRequest()),
+        eventCacheRepository.findAll(withFilters(filters), pageRequest),
         event -> toMapper.apply(deserializeEvent(event)));
   }
 
