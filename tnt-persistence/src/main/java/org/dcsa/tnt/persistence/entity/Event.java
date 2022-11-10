@@ -1,11 +1,7 @@
 package org.dcsa.tnt.persistence.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.dcsa.tnt.persistence.entity.enums.EventClassifierCode;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -23,6 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @MappedSuperclass
+@SuperBuilder
 public abstract class Event {
   @Id
   @Column(name = "event_id", nullable = false)
