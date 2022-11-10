@@ -1,10 +1,7 @@
 package org.dcsa.tnt.persistence.entity;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.dcsa.tnt.persistence.entity.enums.DocumentTypeCode;
 import org.dcsa.tnt.persistence.entity.enums.ShipmentEventTypeCode;
 
@@ -20,7 +17,9 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
+@SuperBuilder
 @Table(name = "shipment_event")
+@NoArgsConstructor
 public class ShipmentEvent extends Event {
   @Enumerated(EnumType.STRING)
   @Column(name = "shipment_event_type_code", nullable = false)
