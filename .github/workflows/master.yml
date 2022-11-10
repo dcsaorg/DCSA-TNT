@@ -68,3 +68,7 @@ jobs:
       - name: Run Integration Tests
         run: |
           cd DCSA-TNT && java -jar tnt-integration-tests/target/dcsa-tnt-integration-tests-with-dependencies.jar
+
+      - name: Publish package
+        run: cd DCSA-TNT && mvn -U -B deploy -DskipTests -Ddcsa.artifacttype=-SNAPSHOT
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
