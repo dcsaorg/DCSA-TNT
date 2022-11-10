@@ -1,9 +1,6 @@
 package org.dcsa.tnt.persistence.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.dcsa.tnt.persistence.entity.enums.WeightUnit;
 
 import javax.persistence.Column;
@@ -13,6 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @ToString
