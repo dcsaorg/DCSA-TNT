@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.dcsa.skernel.infrastructure.transferobject.LocationTO;
 import org.dcsa.tnt.transferobjects.EventPayloadTO.EventPayloadTOWithTransportCall;
 import org.dcsa.tnt.transferobjects.enums.EmptyIndicatorCode;
 import org.dcsa.tnt.transferobjects.enums.EquipmentEventTypeCode;

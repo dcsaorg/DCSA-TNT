@@ -44,7 +44,7 @@ public class EnumValuesTest {
 
   @Test
   public void testFacilityCodeListProvider() {
-    EnumValidator.assertHaveSameValues(FacilityCodeListProvider.class, org.dcsa.tnt.transferobjects.enums.FacilityCodeListProvider.class);
+    EnumValidator.assertHaveSameValues(FacilityCodeListProvider.class, org.dcsa.skernel.infrastructure.transferobject.enums.FacilityCodeListProvider.class);
   }
 
   @Test

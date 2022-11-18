@@ -1,6 +1,7 @@
 package org.dcsa.tnt.transferobjects;
 
 import lombok.Builder;
+import org.dcsa.skernel.infrastructure.transferobject.LocationTO;
 import org.dcsa.tnt.transferobjects.enums.FacilityTypeCode;
 
 public record TransportCallTO(

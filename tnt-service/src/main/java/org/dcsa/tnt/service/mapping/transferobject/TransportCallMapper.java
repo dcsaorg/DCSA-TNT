@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(
   componentModel = "spring",
   uses = {
-    LocationMapper.class,
+    LocationTOMapper.class,
     VesselMapper.class
   }
 )
