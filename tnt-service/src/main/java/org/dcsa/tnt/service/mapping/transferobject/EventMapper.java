@@ -16,7 +16,7 @@ import org.mapstruct.Mapping;
   componentModel = "spring",
   uses = {
     TransportCallMapper.class,
-    LocationMapper.class,
+    LocationTOMapper.class,
     SealMapper.class,
     ReferenceMapper.class
   }

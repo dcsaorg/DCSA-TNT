@@ -2,20 +2,17 @@ package org.dcsa.tnt.service.mapping.transferobject;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dcsa.skernel.infrastructure.transferobject.LocationTO;
+import org.dcsa.skernel.infrastructure.transferobject.enums.FacilityCodeListProvider;
 import org.dcsa.tnt.service.domain.Facility;
 import org.dcsa.tnt.service.domain.Location;
-import org.dcsa.tnt.transferobjects.AddressLocationTO;
-import org.dcsa.tnt.transferobjects.FacilityLocationTO;
-import org.dcsa.tnt.transferobjects.LocationTO;
-import org.dcsa.tnt.transferobjects.UNLocationLocationTO;
-import org.dcsa.tnt.transferobjects.enums.FacilityCodeListProvider;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @AllArgsConstructor
-public class LocationMapper {
-  private final AddressMapper addressMapper;
+public class LocationTOMapper {
+  private final AddressTOMapper addressTOMapper;
 
   public LocationTO toDTO(Location location) {
     if (location == null) {
@@ -23,9 +20,9 @@ public class LocationMapper {
     }
 
     if (location.address() != null) {
-      return AddressLocationTO.builder()
+      return LocationTO.addressLocationBuilder()
         .locationName(location.locationName())
-        .address(addressMapper.toDomain(location.address()))
+        .address(addressTOMapper.toDomain(location.address()))
         .build();
     } else if (location.facility() != null) {
       Facility facility = location.facility();
@@ -40,14 +37,14 @@ public class LocationMapper {
       } else {
         throw new IllegalArgumentException("Facility " + facility.id()+ " has neither SMDG code nor BIC code");
       }
-      return FacilityLocationTO.builder()
+      return LocationTO.facilityLocationBuilder()
         .locationName(location.locationName())
         .UNLocationCode(location.UNLocationCode())
         .facilityCode(facilityCode)
         .facilityCodeListProvider(facilityCodeListProvider)
         .build();
     } else if (location.UNLocationCode() != null) {
-      return UNLocationLocationTO.builder()
+      return LocationTO.unLocationLocationBuilder()
         .locationName(location.locationName())
         .UNLocationCode(location.UNLocationCode())
         .build();
