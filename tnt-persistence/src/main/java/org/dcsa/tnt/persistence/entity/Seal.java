@@ -36,6 +36,6 @@ public class Seal {
   private SealSourceCode sealSourceCode;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "seal_type_code", nullable = false)
+  @Column(name = "seal_type_code")
   private SealType sealType;
 }
