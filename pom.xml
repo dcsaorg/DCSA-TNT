@@ -30,7 +30,7 @@
 		<!-- End: Define Shared kernel version -->
 
 		<hibernate-types.version>2.20.0</hibernate-types.version>
-		<camel.version>3.18.1</camel.version>
+		<camel.version>3.19.0</camel.version>
 		<testcontainers.version>1.17.5</testcontainers.version>
 
 	</properties>
