@@ -32,6 +32,7 @@ public class EventCachingService extends RouteBuilder {
   @Override
   public void configure() {
     from("{{camel.route.event-cache-queue}}")
+      .routeId("event-cache-processing")
       .bean(this, "cacheEvent")
       .onException(Exception.class)
         .useOriginalMessage()
@@ -90,7 +91,7 @@ public class EventCachingService extends RouteBuilder {
     return reference.referenceType().name() + "=" + reference.referenceValue();
   }
 
-  private void handleFailedEventMessage(Exchange exchange) {
+  public void handleFailedEventMessage(Exchange exchange) {
     EventCacheQueue eventCacheQueue = exchange.getUnitOfWork().getOriginalInMessage().getBody(EventCacheQueue.class);
     Exception cause = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
     log.error("Processing dead message: {} -> {} '{}'", eventCacheQueue, cause.getClass().getName(), cause.getMessage());

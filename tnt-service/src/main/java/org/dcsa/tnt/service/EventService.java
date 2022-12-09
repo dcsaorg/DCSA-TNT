@@ -86,18 +86,21 @@ public class EventService {
       .toList();
   }
 
+  @Transactional
   public org.dcsa.tnt.service.domain.EquipmentEvent findEquipmentEvent(UUID eventId) {
     return equipmentEventRepository.findById(eventId)
       .map(this::toDomain)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No EquipmentEvent with id = " + eventId));
   }
 
+  @Transactional
   public org.dcsa.tnt.service.domain.ShipmentEvent findShipmentEvent(UUID eventId) {
     return shipmentEventRepository.findById(eventId)
       .map(this::toDomain)
       .orElseThrow(() -> ConcreteRequestErrorMessageException.notFound("No ShipmentEvent with id = " + eventId));
   }
 
+  @Transactional
   public org.dcsa.tnt.service.domain.TransportEvent findTransportEvent(UUID eventId) {
     return transportEventRepository.findById(eventId)
       .map(this::toDomain)

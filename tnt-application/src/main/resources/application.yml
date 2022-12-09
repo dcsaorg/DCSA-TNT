@@ -8,6 +8,15 @@ camel:
   redelivery-delay: 10000
   route:
     event-cache-queue: "jpa:org.dcsa.tnt.persistence.entity.EventCacheQueue?namedQuery=EventCacheQueue.nextEvents&delay=60000&maximumResults=100"
+  servlet:
+    mapping:
+      context-path: /*
+      #needed to configure the camel servlet binding used in the restDSL to override the default /camel
+  camel:
+    component:
+      jpa:
+        shared-entity-manager: true
+        join-transaction: false
 
 spring:
   application:
