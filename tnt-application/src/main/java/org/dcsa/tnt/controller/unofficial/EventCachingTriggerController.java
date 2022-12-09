@@ -1,20 +1,29 @@
 package org.dcsa.tnt.controller.unofficial;
 
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.rest.RestBindingMode;
+import lombok.RequiredArgsConstructor;
+import org.apache.camel.FluentProducerTemplate;
+import org.dcsa.tnt.persistence.entity.EventCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Just for testing and local development.
  */
 @Profile({"test", "dev"})
-@Component
-public class EventCachingTriggerController extends RouteBuilder {
-  @Override
-  public void configure() throws Exception {
-    restConfiguration().component("servlet").bindingMode(RestBindingMode.json);
-    rest("/unoffical")//POST does not require a body in the request as it acts as a trigger. POST was chosen since it is not safe and not idempotent
-      .post("/events-cache-trigger").id("unofficial-events-cache-trigger-endpoint").to("direct:events-cache-trigger");
+@RestController
+@RequiredArgsConstructor
+public class EventCachingTriggerController {
+
+  @Autowired FluentProducerTemplate fluentProducerTemplate;
+
+  @PostMapping(value = "/unofficial/events-cache-trigger", produces = "application/json")
+  @ResponseBody
+  public List<EventCache> triggerEventCacheProcessing() {
+    return fluentProducerTemplate.to("direct:events-cache-trigger").request(List.class);
   }
 }
