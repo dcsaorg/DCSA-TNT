@@ -19,15 +19,10 @@ public class LocationTOMapper {
       return null;
     }
 
-    if (location.address() != null) {
-      return LocationTO.addressLocationBuilder()
-        .locationName(location.locationName())
-        .address(addressTOMapper.toDomain(location.address()))
-        .build();
-    } else if (location.facility() != null) {
+    String facilityCode = null;
+    FacilityCodeListProvider facilityCodeListProvider = null;
+    if (location.facility() != null) {
       Facility facility = location.facility();
-      String facilityCode;
-      FacilityCodeListProvider facilityCodeListProvider;
       if (facility.facilitySMDGCode() != null) {
         facilityCode = facility.facilitySMDGCode();
         facilityCodeListProvider = FacilityCodeListProvider.SMDG;
@@ -35,21 +30,18 @@ public class LocationTOMapper {
         facilityCode = facility.facilityBICCode();
         facilityCodeListProvider = FacilityCodeListProvider.BIC;
       } else {
-        throw new IllegalArgumentException("Facility " + facility.id()+ " has neither SMDG code nor BIC code");
+        throw new IllegalArgumentException("Facility '" + facility.id() + "' has neither SMDG code nor BIC code");
       }
-      return LocationTO.facilityLocationBuilder()
-        .locationName(location.locationName())
-        .UNLocationCode(location.UNLocationCode())
-        .facilityCode(facilityCode)
-        .facilityCodeListProvider(facilityCodeListProvider)
-        .build();
-    } else if (location.UNLocationCode() != null) {
-      return LocationTO.unLocationLocationBuilder()
-        .locationName(location.locationName())
-        .UNLocationCode(location.UNLocationCode())
-        .build();
-    } else {
-      throw new IllegalArgumentException("Location " + location.id() + " has neither address, facility nor unLocation");
     }
+
+    return LocationTO.builder()
+      .locationName(location.locationName())
+      .address(addressTOMapper.toDomain(location.address()))
+      .UNLocationCode(location.UNLocationCode())
+      .facilityCode(facilityCode)
+      .facilityCodeListProvider(facilityCodeListProvider)
+      .latitude(location.latitude())
+      .longitude(location.longitude())
+      .build();
   }
 }
