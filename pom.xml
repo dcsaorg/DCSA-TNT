@@ -29,7 +29,7 @@
 		<shared-kernel.version>${dcsa.shared-kernel.version}${dcsa.shared-kernel.tag}${dcsa.shared-kernel.artifacttype}</shared-kernel.version>
 		<!-- End: Define Shared kernel version -->
 
-		<hibernate-types.version>2.20.0</hibernate-types.version>
+		<hibernate-types.version>2.21.0</hibernate-types.version>
 		<camel.version>3.18.1</camel.version>
 		<testcontainers.version>1.17.5</testcontainers.version>
 
