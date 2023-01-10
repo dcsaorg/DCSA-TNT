@@ -28,7 +28,7 @@ import java.util.UUID;
 @Getter
 @NamedQuery(
   name = "EventCacheQueue.nextEvents",
-  query = "FROM EventCacheQueue"
+  query = "FROM EventCacheQueue WHERE eventType in ('SHIPMENT', 'TRANSPORT', 'EQUIPMENT')"
 )
 public class EventCacheQueue {
   @Id
