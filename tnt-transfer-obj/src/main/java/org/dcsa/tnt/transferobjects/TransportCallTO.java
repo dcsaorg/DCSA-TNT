@@ -14,7 +14,7 @@ public record TransportCallTO(
   String carrierImportVoyageNumber,
   String universalImportVoyageReference,
   Integer transportCallSequenceNumber,
-  String modeOfTransportCode,
+  ModeOfTransport modeOfTransport,
   LocationTO location,
   FacilityTypeCode facilityTypeCode,
   VesselTO vessel
