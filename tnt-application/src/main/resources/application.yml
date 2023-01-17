@@ -1,7 +1,6 @@
-
 dcsa:
   specification:
-    version: 3.0
+    version: 3.0.0
 
 camel:
   max-redeliveries: 3
