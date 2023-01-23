@@ -39,7 +39,7 @@ public class Service {
   @JoinColumn(name = "carrier_id")
   private Carrier carrier;
 
-  @Column(name = "carrier_service_code", length = 5)
+  @Column(name = "carrier_service_code", length = 11)
   private String carrierServiceCode;
 
   @Column(name = "carrier_service_name", length = 50)

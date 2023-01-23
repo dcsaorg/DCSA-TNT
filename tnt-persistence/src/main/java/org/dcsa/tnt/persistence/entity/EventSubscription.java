@@ -56,7 +56,7 @@ public class EventSubscription {
   @Column(name = "universal_export_voyage_reference", length = 5)
   private String universalExportVoyageReference;
 
-  @Column(name = "carrier_service_code", length = 5)
+  @Column(name = "carrier_service_code", length = 11)
   private String carrierServiceCode;
 
   @Column(name = "universal_service_reference", length = 8)
