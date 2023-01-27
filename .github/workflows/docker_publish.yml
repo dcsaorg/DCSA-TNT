@@ -38,7 +38,7 @@ jobs:
           cache: 'maven'
 
       - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v12
+        uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: '[{ "id": "github", "name": "DCSA Backend repo", "url": "https://maven.pkg.github.com/dcsaorg/DCSA-Core", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
           servers: '[{ "id": "github", "username": "${{ secrets.DCSA_USER }}", "password": "${{ secrets.DCSA_PACKAGES_PAT }}" }]'
