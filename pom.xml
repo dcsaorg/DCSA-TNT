@@ -40,7 +40,6 @@
 		<module>tnt-persistence</module>
 		<module>tnt-service</module>
 		<module>tnt-application</module>
-		<module>tnt-integration-tests</module>
 	</modules>
 
 	<dependencies>

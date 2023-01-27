@@ -65,9 +65,11 @@ jobs:
         run: |
           echo "The DCSA-TNT service is UP."
 
-      - name: Run Integration Tests
-        run: |
-          cd DCSA-TNT && java -jar tnt-integration-tests/target/dcsa-tnt-integration-tests-with-dependencies.jar
+      - name: Run Postman Integration Tests
+        uses: anthonyvscode/newman-action@v1
+        with:
+          collection: DCSA-TNT/postman_collection.json
+          reporters: cli
 
       - name: Publish package
         run: cd DCSA-TNT && mvn -U -B deploy -DskipTests -Ddcsa.artifacttype=-SNAPSHOT
