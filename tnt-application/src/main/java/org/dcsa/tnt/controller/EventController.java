@@ -104,7 +104,7 @@ public class EventController {
     @RequestParam(value = "vesselIMONumber", required = false) @Size(max = 7)
     String vesselIMONumber,
 
-    @RequestParam(value = "carrierServiceCode", required = false) @Size(max = 5)
+    @RequestParam(value = "carrierServiceCode", required = false) @Size(max = 11)
     String carrierServiceCode,
 
     @RequestParam(value = "equipmentReference", required = false) @Size(max = 15)

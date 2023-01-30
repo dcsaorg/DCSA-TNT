@@ -43,7 +43,7 @@ public class EventSubscriptionTO {
   @Pattern(regexp = "\\d{2}[0-9A-Z]{2}[NEWS]", message = "Not a valid voyage reference")
   private String universalExportVoyageReference;
 
-  @Size(max = 5)
+  @Size(max = 11)
   private String carrierServiceCode;
 
   @UniversalServiceReference
