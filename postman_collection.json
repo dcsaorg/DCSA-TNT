@@ -1,11 +1,53 @@
 {
 	"info": {
-		"_postman_id": "dde381e3-2f5b-4f7f-a35c-096b7efa7eea",
+		"_postman_id": "f2258bcb-0d9e-472d-ab69-37401e073f43",
 		"name": "DCSA-TNT",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "16570202"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Setup Test Data",
+			"item": [
+				{
+					"name": "Load Test Data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{TNT_CONTEXT_PATH}}/unofficial/dataloader/load/test",
+							"host": [
+								"{{BASE_URL}}{{TNT_CONTEXT_PATH}}"
+							],
+							"path": [
+								"unofficial",
+								"dataloader",
+								"load",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Trigger Event Caching",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}{{TNT_CONTEXT_PATH}}/unofficial/events-cache-trigger",
+							"host": [
+								"{{BASE_URL}}{{TNT_CONTEXT_PATH}}"
+							],
+							"path": [
+								"unofficial",
+								"events-cache-trigger"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "GET events",
 			"item": [

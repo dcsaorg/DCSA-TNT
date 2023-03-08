@@ -1,6 +1,10 @@
 dcsa:
   specification:
     version: 3.0.0
+  dataloader:
+    autoload: [reference]
+    sources: classpath:db/dataloader-sources.yml
+    endpoint: /unofficial/dataloader/load
 
 camel:
   max-redeliveries: 3
@@ -18,10 +22,8 @@ spring:
     name: DCSA-TNT
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${db_hostname}/dcsa_openapi
+    url: jdbc:postgresql://${db_hostname}/dcsa_tnt
     username: dcsa_db_owner
-    hikari:
-      schema: dcsa_im_v3_0
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     hibernate.ddl-auto: validate
@@ -79,7 +81,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${db_hostname:localhost}/dcsa_openapi
+    url: jdbc:postgresql://${db_hostname:localhost}/dcsa_tnt
     username: dcsa_db_owner
     password: 9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5
 

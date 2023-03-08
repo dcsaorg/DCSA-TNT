@@ -1,28 +1,49 @@
 version: '3.5'
 
 services:
-    dcsa-tnt:
-        build:
-           .
-        ports:
-            - 9090:9090
-        environment:
-          - "db_hostname=dcsa-test-db"
-          - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-nosecurity}"
-          - "SPRING_DATASOURCE_PASSWORD=9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5"
-          - "ROOT_LOG_LEVEL=${ROOT_LOG_LEVEL:-INFO}"
-          - "DCSA_LOG_LEVEL=${DCSA_LOG_LEVEL:-INFO}"
-        logging:
-          options:
-            max-file: '10'
-            max-size: 200k
+  dcsa-tnt:
+    container_name: dcsa_tnt
+    build:
+      .
+    ports:
+      - 9090:9090
+    environment:
+      - "db_hostname=dcsa-test-db"
+      - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-nosecurity}"
+      - "SPRING_DATASOURCE_PASSWORD=9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5"
+      - "ROOT_LOG_LEVEL=${ROOT_LOG_LEVEL:-INFO}"
+      - "DCSA_LOG_LEVEL=${DCSA_LOG_LEVEL:-INFO}"
+    logging:
+      options:
+        max-file: '10'
+        max-size: 200k
+    links:
+      - dcsa-test-db:dcsa-test-db
+    depends_on:
+      - dcsa-test-db
 
-    dcsa-test-db:
-        container_name: dcsa_db
-        environment:
-            POSTGRES_PASSWORD: "change_this_password"
-        build:
-            DCSA-Information-Model/datamodel/
-        ports:
-            - 5432:5432
+  dcsa-test-db:
+    image: postgres:15-alpine
+    container_name: dcsa_ovs_db
+    environment:
+      POSTGRES_PASSWORD: "change_this_password"
+    volumes:
+      - ./tnt-persistence/src/main/init.db:/docker-entrypoint-initdb.d:ro
+    ports:
+      - 5432:5432
 
+  # Only activated when using the "pgweb" profile
+  pgweb-test-db:
+    image: sosedoff/pgweb
+    container_name: dcsa_tnt_pgweb
+    restart: unless-stopped
+    ports:
+      - "54321:8081"
+    environment:
+      - "DATABASE_URL=postgres://dcsa_db_owner:9c072fe8-c59c-11ea-b8d1-7b6577e9f3f5@dcsa-test-db:5432/dcsa_tnt?sslmode=disable"
+    links:
+      - dcsa-test-db:dcsa-test-db
+    depends_on:
+      - dcsa-test-db
+    profiles:
+      - pgweb
