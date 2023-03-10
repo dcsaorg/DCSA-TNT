@@ -27,6 +27,7 @@
 		<dcsa.shared-kernel.tag/>
 		<dcsa.shared-kernel.artifacttype>-SNAPSHOT</dcsa.shared-kernel.artifacttype>
 		<shared-kernel.version>${dcsa.shared-kernel.version}${dcsa.shared-kernel.tag}${dcsa.shared-kernel.artifacttype}</shared-kernel.version>
+		<dcsa.shared-kernel-dataloader.version>0.4.0-SNAPSHOT</dcsa.shared-kernel-dataloader.version>
 		<!-- End: Define Shared kernel version -->
 
 		<hibernate-types.version>2.20.0</hibernate-types.version>
@@ -104,6 +105,11 @@
 				<version>${shared-kernel.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency><!-- Remove this if OVS is updated to newer shared-kernel (spring boot 3) -->
+				<groupId>org.dcsa.shared-kernel</groupId>
+				<artifactId>dcsa-shared-kernel-dataloader</artifactId>
+				<version>${dcsa.shared-kernel-dataloader.version}</version>
 			</dependency>
 
 			<!-- Solve convergence errors -->

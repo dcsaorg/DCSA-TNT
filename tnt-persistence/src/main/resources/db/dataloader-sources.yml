@@ -1,0 +1,41 @@
+# Configuration for Dataloader
+
+# All sources:
+#  * path - path to load data from
+#  * type - "csv" or "flyway"
+#  * groups (list) - which groups does the source belong to
+#  * dependsOn (list) - which other groups does the source depend on (optional)
+#
+# CSV sources additionally:
+#  * onChecksumError - "REFRESH" or "FAIL" - should the database be refreshed if the checksum fails or should
+#                      the application fail (optional)
+#  * includes (list) - list of tables or files to process from this source (optional)
+#  * excludes (list) - list of tables or files to exclude from this source (optional)
+#
+# Flyway sources additionally:
+#  * historyTable - name of a history table for the migrations in this source.
+#
+defaults:
+  csv:
+    # Defaults for CSV files if not specified explicitly for a CSV source
+    onChecksumError: REFRESH
+
+sources:
+  - path: classpath:db/referencedata.d
+    type: csv
+    groups: [reference]
+
+  - path: classpath:db/samples.d
+    type: csv
+    groups: [sample]
+
+  - path: classpath:db/implementation-detail-data.d
+    type: csv
+    groups: [impl-detail]
+    dependsOn: [reference, sample]
+
+  - path: classpath:db/testdata.d
+    type: flyway
+    historyTable: flyway_testdata_history
+    groups: [test]
+    dependsOn: [reference, sample, impl-detail]
