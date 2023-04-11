@@ -24,7 +24,7 @@ services:
 
   dcsa-test-db:
     image: postgres:15-alpine
-    container_name: dcsa_ovs_db
+    container_name: dcsa_tnt_db
     environment:
       POSTGRES_PASSWORD: "change_this_password"
     volumes:
