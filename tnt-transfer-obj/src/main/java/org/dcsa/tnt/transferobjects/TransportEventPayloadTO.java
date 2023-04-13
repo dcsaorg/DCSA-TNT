@@ -10,12 +10,12 @@ import org.dcsa.tnt.transferobjects.EventPayloadTO.EventPayloadTOWithTransportCa
 import org.dcsa.tnt.transferobjects.enums.TransportEventTypeCode;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class TransportEventPayloadTO extends EventPayloadTO implements EventPayloadTOWithTransportCall {
+public final class TransportEventPayloadTO extends EventPayloadTO implements EventPayloadTOWithTransportCall {
   private TransportEventTypeCode transportEventTypeCode;
   private String delayReasonCode;
   private String changeRemark;

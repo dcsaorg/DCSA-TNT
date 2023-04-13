@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 import lombok.experimental.SuperBuilder;
 import org.dcsa.tnt.transferobjects.enums.EventClassifierCode;
 
@@ -20,10 +21,10 @@ import java.util.List;
   @Type(value = ShipmentEventPayloadTO.class)
 })
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class EventPayloadTO {
+public sealed abstract class EventPayloadTO permits EquipmentEventPayloadTO, TransportEventPayloadTO, ShipmentEventPayloadTO {
   private OffsetDateTime eventDateTime;
   private EventClassifierCode eventClassifierCode;
 

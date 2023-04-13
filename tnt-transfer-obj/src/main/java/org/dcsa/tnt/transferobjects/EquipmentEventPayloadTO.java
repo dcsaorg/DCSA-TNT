@@ -16,12 +16,12 @@ import org.dcsa.tnt.transferobjects.enums.FacilityTypeCode;
 import java.util.List;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class EquipmentEventPayloadTO extends EventPayloadTO implements EventPayloadTOWithTransportCall {
+public final class EquipmentEventPayloadTO extends EventPayloadTO implements EventPayloadTOWithTransportCall {
   private EquipmentEventTypeCode equipmentEventTypeCode;
   private String equipmentReference;
   private String ISOEquipmentCode;

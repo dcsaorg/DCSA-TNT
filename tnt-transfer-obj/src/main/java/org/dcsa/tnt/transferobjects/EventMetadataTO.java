@@ -4,14 +4,13 @@ import lombok.Builder;
 import org.dcsa.tnt.transferobjects.enums.EventType;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 public record EventMetadataTO(
-  UUID eventID,
+  String eventID,
   OffsetDateTime eventCreatedDateTime,
   EventType eventType,
-  UUID retractedEventID
+  String retractedEventID
 ) {
-  @Builder
+  @Builder(toBuilder = true)
   public EventMetadataTO { }
 }

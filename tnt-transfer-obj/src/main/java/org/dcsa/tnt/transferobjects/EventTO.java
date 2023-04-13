@@ -6,6 +6,6 @@ public record EventTO(
   EventMetadataTO metadata,
   EventPayloadTO payload
 ) {
-  @Builder
+  @Builder(toBuilder = true)
   public EventTO { }
 }
