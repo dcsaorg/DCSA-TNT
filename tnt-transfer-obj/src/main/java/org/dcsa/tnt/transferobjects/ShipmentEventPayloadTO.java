@@ -12,12 +12,12 @@ import org.dcsa.tnt.transferobjects.enums.ShipmentEventTypeCode;
 import java.util.UUID;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class ShipmentEventPayloadTO extends EventPayloadTO {
+public final class ShipmentEventPayloadTO extends EventPayloadTO {
   private ShipmentEventTypeCode shipmentEventTypeCode;
   private DocumentTypeCode documentTypeCode;
   private String documentReference;

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.dcsa</groupId>
 		<artifactId>dcsa-bom</artifactId>
-		<version>1.3-SNAPSHOT</version>
+		<version>1.5-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.dcsa.tnt</groupId>
@@ -23,22 +23,19 @@
 		<!-- End: Define DCSA-TNT version -->
 
 		<!-- Define Shared Kernel version -->
-		<dcsa.shared-kernel.version>0.2.0</dcsa.shared-kernel.version>
+		<dcsa.shared-kernel.version>0.4.0</dcsa.shared-kernel.version>
 		<dcsa.shared-kernel.tag/>
 		<dcsa.shared-kernel.artifacttype>-SNAPSHOT</dcsa.shared-kernel.artifacttype>
 		<shared-kernel.version>${dcsa.shared-kernel.version}${dcsa.shared-kernel.tag}${dcsa.shared-kernel.artifacttype}</shared-kernel.version>
-		<dcsa.shared-kernel-dataloader.version>0.4.0-SNAPSHOT</dcsa.shared-kernel-dataloader.version>
 		<!-- End: Define Shared kernel version -->
 
-		<hibernate-types.version>2.20.0</hibernate-types.version>
-		<camel.version>3.18.1</camel.version>
-		<testcontainers.version>1.17.5</testcontainers.version>
+		<hibernate-types.version>2.21.1</hibernate-types.version>
 
 	</properties>
 
 	<modules>
 		<module>tnt-transfer-obj</module>
-		<module>tnt-persistence</module>
+		<module>tnt-domain</module>
 		<module>tnt-service</module>
 		<module>tnt-application</module>
 	</modules>
@@ -55,33 +52,8 @@
 		<dependencies>
 			<dependency><!-- TODO: Move this to super-pom -->
 				<groupId>com.vladmihalcea</groupId><!-- Support for json and jsonb data types in hibernate/JPA -->
-				<artifactId>hibernate-types-55</artifactId>
+				<artifactId>hibernate-types-60</artifactId>
 				<version>${hibernate-types.version}</version>
-			</dependency>
-			<dependency><!-- TODO: Move this to super-pom -->
-				<groupId>org.apache.camel.springboot</groupId>
-				<artifactId>camel-spring-boot-bom</artifactId>
-				<version>${camel.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>testcontainers</artifactId>
-				<version>${testcontainers.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>junit-jupiter</artifactId>
-				<version>${testcontainers.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>${testcontainers.version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -91,7 +63,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.dcsa.tnt</groupId>
-				<artifactId>dcsa-tnt-persistence</artifactId>
+				<artifactId>dcsa-tnt-domain</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -106,29 +78,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency><!-- Remove this if OVS is updated to newer shared-kernel (spring boot 3) -->
-				<groupId>org.dcsa.shared-kernel</groupId>
-				<artifactId>dcsa-shared-kernel-dataloader</artifactId>
-				<version>${dcsa.shared-kernel-dataloader.version}</version>
-			</dependency>
 
-			<!-- Solve convergence errors -->
-			<dependency>
-				<groupId>com.sun.istack</groupId>
-				<artifactId>istack-commons-runtime</artifactId>
-				<version>3.0.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.core</artifactId>
-				<version>4.3.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jetbrains</groupId>
-				<artifactId>annotations</artifactId>
-				<version>21.0.1</version>
-			</dependency>
-			<!-- /Solve convergence errors -->
 		</dependencies>
 	</dependencyManagement>
 

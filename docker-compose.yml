@@ -28,7 +28,7 @@ services:
     environment:
       POSTGRES_PASSWORD: "change_this_password"
     volumes:
-      - ./tnt-persistence/src/main/init.db:/docker-entrypoint-initdb.d:ro
+      - ./tnt-domain/src/main/init.db:/docker-entrypoint-initdb.d:ro
     ports:
       - 5432:5432
 

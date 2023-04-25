@@ -3,7 +3,7 @@ package org.dcsa.tnt.service.mapping;
 import org.dcsa.skernel.domain.persistence.entity.enums.DimensionUnit;
 import org.dcsa.skernel.domain.persistence.entity.enums.*;
 import org.dcsa.skernel.test.helpers.EnumValidator;
-import org.dcsa.tnt.persistence.entity.enums.*;
+import org.dcsa.tnt.domain.valueobjects.enums.*;
 import org.junit.jupiter.api.Test;
 
 public class EnumValuesTest {

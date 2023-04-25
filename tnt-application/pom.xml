@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.dcsa.tnt</groupId>
-			<artifactId>dcsa-tnt-persistence</artifactId>
+			<artifactId>dcsa-tnt-domain</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.dcsa.tnt</groupId>
@@ -53,22 +53,6 @@
 			<artifactId>dcsa-shared-kernel-all</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.dcsa.shared-kernel</groupId>
-			<artifactId>dcsa-shared-kernel-dataloader</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel.springboot</groupId>
-			<artifactId>camel-spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel.springboot</groupId>
-			<artifactId>camel-servlet-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel.springboot</groupId>
-			<artifactId>camel-jackson-starter</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -87,26 +71,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-test-spring-junit5</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured-all</artifactId>
 			<scope>test</scope>
@@ -114,11 +78,6 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel.springboot</groupId>
-			<artifactId>camel-mock-starter</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

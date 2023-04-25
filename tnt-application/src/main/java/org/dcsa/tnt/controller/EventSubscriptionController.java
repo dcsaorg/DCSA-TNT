@@ -3,8 +3,7 @@ package org.dcsa.tnt.controller;
 import lombok.RequiredArgsConstructor;
 import org.dcsa.skernel.infrastructure.pagination.Pagination;
 import org.dcsa.skernel.infrastructure.sorting.Sorter.SortableFields;
-import org.dcsa.tnt.persistence.entity.EventCache_;
-import org.dcsa.tnt.persistence.entity.EventSubscription_;
+import org.dcsa.tnt.domain.persistence.entity.EventSubscription_;
 import org.dcsa.tnt.service.EventSubscriptionService;
 import org.dcsa.tnt.transferobjects.EventSubscriptionSecretTO;
 import org.dcsa.tnt.transferobjects.EventSubscriptionTO;
@@ -13,26 +12,19 @@ import org.dcsa.tnt.transferobjects.EventSubscriptionWithSecretTO;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.UUID;
 
 @Validated
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("${spring.application.context-path}")
 public class EventSubscriptionController {
   private final EventSubscriptionService eventSubscriptionService;
 

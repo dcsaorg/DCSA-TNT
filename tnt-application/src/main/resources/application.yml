@@ -1,31 +1,17 @@
 dcsa:
   specification:
     version: 3.0.0
-  dataloader:
-    autoload: [reference]
-    sources: classpath:db/dataloader-sources.yml
-    endpoint: /unofficial/dataloader/load
-
-camel:
-  max-redeliveries: 3
-  redelivery-delay: 10000
-  route:
-    event-cache-queue: "jpa:org.dcsa.tnt.persistence.entity.EventCacheQueue?namedQuery=EventCacheQueue.nextEvents&delay=60000&maximumResults=100"
-  camel:
-    component:
-      jpa:
-        shared-entity-manager: true
-        join-transaction: false
 
 spring:
   application:
     name: DCSA-TNT
+    context-path: /tnt/v3
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${db_hostname}/dcsa_tnt
     username: dcsa_db_owner
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate.ddl-auto: validate
   security:
     oauth2:
@@ -41,16 +27,19 @@ spring:
 
 server:
   port: 9090
-  servlet.context-path: /v3
   error:
     include-binding-errors: on_param
     include-message: always
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "health"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    diskspace:
+      enabled: false
 
 logging:
   level:
