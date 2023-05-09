@@ -15,8 +15,8 @@ import org.dcsa.tnt.transferobjects.EventMetadataTO;
 import org.dcsa.tnt.transferobjects.EventPayloadTO;
 import org.dcsa.tnt.transferobjects.EventTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;

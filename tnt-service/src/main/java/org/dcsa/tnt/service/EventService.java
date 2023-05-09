@@ -11,8 +11,8 @@ import org.dcsa.tnt.service.mapping.EventMapper;
 import org.dcsa.tnt.transferobjects.EventTO;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
