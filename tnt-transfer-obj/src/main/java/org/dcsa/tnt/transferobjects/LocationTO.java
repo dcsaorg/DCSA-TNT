@@ -1,5 +1,6 @@
 package org.dcsa.tnt.transferobjects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.dcsa.skernel.infrastructure.transferobject.AddressTO;
@@ -18,6 +19,7 @@ public class LocationTO {
   private String longitude;
 
   @Size(max = 5)
+  @JsonProperty("UNLocationCode")
   private String UNLocationCode;
 
   private String locationType;
