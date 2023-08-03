@@ -4,11 +4,7 @@ import org.dcsa.tnt.domain.valueobjects.DomainEvent;
 import org.dcsa.tnt.domain.valueobjects.EquipmentEvent;
 import org.dcsa.tnt.domain.valueobjects.ShipmentEvent;
 import org.dcsa.tnt.domain.valueobjects.TransportEvent;
-import org.dcsa.tnt.transferobjects.EquipmentEventPayloadTO;
-import org.dcsa.tnt.transferobjects.EventMetadataTO;
-import org.dcsa.tnt.transferobjects.EventTO;
-import org.dcsa.tnt.transferobjects.ShipmentEventPayloadTO;
-import org.dcsa.tnt.transferobjects.TransportEventPayloadTO;
+import org.dcsa.tnt.transferobjects.*;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
