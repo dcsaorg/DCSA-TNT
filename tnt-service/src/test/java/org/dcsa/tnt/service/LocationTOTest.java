@@ -18,7 +18,7 @@ public class LocationTOTest {
   @Test
   public void testLatitudeAndLongitudeLocationType() {
     LocationTO location = LocationTO.builder().latitude("53.551° N").longitude("9.9937° E").build();
-    assertEquals(LocationTO.LocationType.GEO.name(), location.getLocationType());
+    assertEquals(LocationTO.LocationType.GEOL.name(), location.getLocationType());
   }
 
   @Test
@@ -49,6 +49,6 @@ public class LocationTOTest {
             .latitude("53.551° N")
             .longitude("9.9937° E")
             .build();
-    assertEquals(LocationTO.LocationType.GEO.name(), location.getLocationType());
+    assertEquals(LocationTO.LocationType.GEOL.name(), location.getLocationType());
   }
 }

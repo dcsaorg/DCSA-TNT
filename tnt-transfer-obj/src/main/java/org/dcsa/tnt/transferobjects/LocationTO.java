@@ -44,7 +44,7 @@ public class LocationTO {
         return locationTO;
       }
       if (locationTO.getLatitude() != null && locationTO.getLongitude() != null) {
-        locationTO.setLocationType(String.valueOf(LocationType.GEO));
+        locationTO.setLocationType(String.valueOf(LocationType.GEOL));
         return locationTO;
       }
       if (locationTO.getFacilityCode() != null) {
@@ -63,6 +63,6 @@ public class LocationTO {
     ADDR,
     UNLO,
     FACI,
-    GEO;
+    GEOL;
   }
 }
